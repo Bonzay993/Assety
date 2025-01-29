@@ -18,32 +18,82 @@
     color: white;
     padding: 20px;
     font-family: Arial, sans-serif;
+    position: relative;
+    transition: width 0.3s;
 }
 
-.sidebar-logo h2 {
-    text-align: center;
-    margin-bottom: 30px;
+.sidebar.minimized {
+    width: 60px;
 }
 
+.sidebar-logo {
+    display: block;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.logo-text {
+    transition: opacity 0.3s;
+}
+
+/* The logo text will be hidden when minimized */
+.sidebar.minimized .logo-text {
+    opacity: 0;
+    height: 0;
+}
+
+/* Hamburger button */
+.toggle-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    z-index: 10;
+}
+
+/* Sidebar Menu */
 .sidebar-menu {
     list-style-type: none;
+    padding: 0;
+    margin-top: 60px; /* Push down the items below the button */
 }
 
 .sidebar-menu li {
     margin: 20px 0;
 }
 
-.sidebar-menu a {
-    color: white;
+.menu-item {
+    display: flex;
+    align-items: center;
     text-decoration: none;
+    color: white;
     font-size: 18px;
-    display: block;
-    padding: 10px;
     transition: background-color 0.3s;
 }
 
-.sidebar-menu a:hover {
+.menu-item .text {
+    margin-left: 10px;
+}
+
+.menu-item:hover {
     background-color: #3e5363;
+}
+
+/* Minimized Sidebar Items */
+.sidebar.minimized .menu-item .text {
+    display: none;
+}
+
+.sidebar.minimized .menu-item {
+    justify-content: center;
+}
+
+.sidebar.minimized .menu-item i {
+    font-size: 22px;
 }
 
 /* Main Content Area */

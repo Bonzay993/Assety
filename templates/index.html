@@ -5,20 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Asset Management System</title>
     <link rel="stylesheet" href="./static/css/styles.css">
+    <!-- Add Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
     <div class="container">
         <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="sidebar-logo">
-                <h2>AssetMgmt</h2>
-            </div>
-            <ul class="sidebar-menu">
-                <li><a href="#">Dashboard</a></li>
-                <li><a href="#">Assets</a></li>
-                <li><a href="#">Categories</a></li>
-                <li><a href="#">Reports</a></li>
-                <li><a href="#">Settings</a></li>
+        <aside class="sidebar" id="sidebar">
+            <button class="toggle-btn" id="toggle-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+            <ul class="sidebar-menu" id="menu">
+                <li><a href="#" class="menu-item"><i class="fas fa-tachometer-alt"></i><span class="text">Dashboard</span></a></li>
+                <li><a href="#" class="menu-item"><i class="fas fa-cogs"></i><span class="text">Assets</span></a></li>
+                <li><a href="#" class="menu-item"><i class="fas fa-box"></i><span class="text">Categories</span></a></li>
+                <li><a href="#" class="menu-item"><i class="fas fa-chart-line"></i><span class="text">Reports</span></a></li>
+                <li><a href="#" class="menu-item"><i class="fas fa-cogs"></i><span class="text">Settings</span></a></li>
             </ul>
         </aside>
 
@@ -53,5 +55,21 @@
             </section>
         </main>
     </div>
+
+    <script>
+        // Toggle sidebar visibility
+        const toggleBtn = document.getElementById('toggle-btn');
+        const sidebar = document.getElementById('sidebar');
+        const menuItems = document.querySelectorAll('.sidebar-menu .menu-item');
+        const logoText = document.querySelector('.logo-text');
+        
+        toggleBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('minimized');
+            menuItems.forEach(item => {
+                item.classList.toggle('minimized-item');
+            });
+            logoText.classList.toggle('hidden');
+        });
+    </script>
 </body>
 </html>
