@@ -19,7 +19,8 @@ header {
     flex-direction: row;
     background-color: #2c3e50;
     color: white;
-    padding: 20px;
+    padding-left:20px;
+    padding-right:20px;
     text-align: center;
     justify-content: space-between;
     align-items: center;
@@ -50,13 +51,17 @@ nav ul li a {
 }
 
 .hero {
-    display:flex;
+    display: flex;
     justify-content: center;
-    background: linear-gradient(135deg, #00aaff, #0088cc);
-    color: white;
-    text-align: center;
-    height:500px;
     align-items: center;
+    text-align: center;
+    height: 600px;
+    color: white;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.0), rgba(167, 170, 171, 0.0)), 
+                url("../img/hero3.jpg");
+    background-size:cover;
+    background-position: contain;
+    margin:0 auto;
 }
 
 .hero h2 {
@@ -89,7 +94,7 @@ nav ul li a {
     padding: 40px 20px;
     background-color: #ecf0f1;
     text-align: center;
-    height:260px;
+    height:300px;
     align-items: center;
 }
 
