@@ -3,73 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Asset Management System</title>
+    <title>Assety</title>
     <link rel="stylesheet" href="./static/css/styles.css">
-    <!-- Add Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-    <div class="container">
-        <!-- Sidebar -->
-        <aside class="sidebar" id="sidebar">
-            <button class="toggle-btn" id="toggle-btn">
-                <i class="fas fa-bars"></i>
-            </button>
-            <ul class="sidebar-menu" id="menu">
-                <li><a href="#" class="menu-item"><i class="fas fa-tachometer-alt"></i><span class="text">Dashboard</span></a></li>
-                <li><a href="#" class="menu-item"><i class="fas fa-cogs"></i><span class="text">Assets</span></a></li>
-                <li><a href="#" class="menu-item"><i class="fas fa-box"></i><span class="text">Categories</span></a></li>
-                <li><a href="#" class="menu-item"><i class="fas fa-chart-line"></i><span class="text">Reports</span></a></li>
-                <li><a href="#" class="menu-item"><i class="fas fa-cogs"></i><span class="text">Settings</span></a></li>
+    <!-- Header Section -->
+    <header>
+        <div class="logo">
+            <h1>Assety</h1>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#">Home</a></li>
+                <li><a href="#">Features</a></li>
+                <li><a href="#">Pricing</a></li>
+                <li><a href="#">Login</a></li>
+                <li><a href="#">Sign Up</a></li>
             </ul>
-        </aside>
+        </nav>
+    </header>
 
-        <!-- Main Content -->
-        <main class="main-content">
-            <header class="header">
-                <h1>Asset Dashboard</h1>
-                <div class="user-info">
-                    <span>Welcome, User</span>
-                    <button class="logout-btn">Logout</button>
-                </div>
-            </header>
+    <!-- Main Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h2>Efficient Inventory Management Made Easy</h2>
+            <p>Track your stock levels, manage products, and streamline your workflow with InventoryPro.</p>
+            <a href="#" class="cta-btn">Get Started</a>
+        </div>
+    </section>
 
-            <!-- Asset Cards -->
-            <section class="asset-cards">
-                <div class="card">
-                    <h3>Asset 1</h3>
-                    <p>Details about Asset 1</p>
-                </div>
-                <div class="card">
-                    <h3>Asset 2</h3>
-                    <p>Details about Asset 2</p>
-                </div>
-                <div class="card">
-                    <h3>Asset 3</h3>
-                    <p>Details about Asset 3</p>
-                </div>
-                <div class="card">
-                    <h3>Asset 4</h3>
-                    <p>Details about Asset 4</p>
-                </div>
-            </section>
-        </main>
-    </div>
+    <!-- Features Section -->
+    <section class="features">
+        <div class="feature-item">
+            <h3>Real-Time Updates</h3>
+            <p>Get live inventory updates to make informed decisions quickly and effectively.</p>
+        </div>
+        <div class="feature-item">
+            <h3>Easy-to-Use Interface</h3>
+            <p>Simple and intuitive design to make managing your inventory a breeze.</p>
+        </div>
+        <div class="feature-item">
+            <h3>Reports and Insights</h3>
+            <p>Generate detailed reports to analyze your inventory performance and trends.</p>
+        </div>
+    </section>
 
-    <script>
-        // Toggle sidebar visibility
-        const toggleBtn = document.getElementById('toggle-btn');
-        const sidebar = document.getElementById('sidebar');
-        const menuItems = document.querySelectorAll('.sidebar-menu .menu-item');
-        const logoText = document.querySelector('.logo-text');
-        
-        toggleBtn.addEventListener('click', () => {
-            sidebar.classList.toggle('minimized');
-            menuItems.forEach(item => {
-                item.classList.toggle('minimized-item');
-            });
-            logoText.classList.toggle('hidden');
-        });
-    </script>
+    <!-- Call to Action Section -->
+    <section class="cta">
+        <h2>Ready to take control of your inventory?</h2>
+        <a href="#" class="cta-btn">Start Your Free Trial</a>
+    </section>
+
+    <!-- Footer Section -->
+    <footer>
+        <p>&copy; 2025 InventoryPro. All rights reserved.</p>
+    </footer>
 </body>
 </html>
