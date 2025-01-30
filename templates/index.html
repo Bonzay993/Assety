@@ -14,16 +14,16 @@
         </div>
         <nav>
             <ul>
-                <li><a href="#">Home</a></li>
+                <li><a href="{{ url_for('index') }}">Home</a></li>
                 <li><a href="#">Features</a></li>
                 <li><a href="#">Pricing</a></li>
                 <li><a href="#">Login</a></li>
-                <li><a href="#">Sign Up</a></li>
+                <li><a href="{{ url_for('sign_up') }}">Sign Up</a></li>
             </ul>
         </nav>
     </header>
 
-
+{% block content %}
     <!-- Main Hero Section -->
     <section class="hero">
         <div class="hero-content">
@@ -55,6 +55,7 @@
         <a href="#" class="cta-btn">Start Your Free Trial</a>
     </section>
 
+{% endblock %}
     <!-- Footer Section -->
     <footer>
         <p>&copy; 2025 InventoryPro. All rights reserved.</p>
