@@ -30,7 +30,9 @@
                 <h1>Asset Dashboard</h1>
                 <div class="user-info">
                     <span>Welcome, User</span>
-                    <button class="logout-btn">Logout</button>
+                    <a href="{{ url_for('login') }}">
+                        <button class="logout-btn">Logout</button>
+                    </a>
                 </div>
             </header>
 
