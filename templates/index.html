@@ -10,14 +10,14 @@
     <!-- Header Section -->
     <header>
         <div class="logo">
-            <h1>Assety</h1>
+            <a class="logo-wrapper" href="{{ url_for('index') }}"><h1>Assety</h1></a>
         </div>
         <nav>
             <ul>
                 <li><a href="{{ url_for('index') }}">Home</a></li>
                 <li><a href="#">Features</a></li>
                 <li><a href="#">Pricing</a></li>
-                <li><a href="#">Login</a></li>
+                <li><a href="{{ url_for('login') }}">Login</a></li>
                 <li><a href="{{ url_for('sign_up') }}">Sign Up</a></li>
             </ul>
         </nav>

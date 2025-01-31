@@ -18,6 +18,11 @@ def sign_up():
     return render_template('sign-up.html')
 
 
+@app.route('/login')
+def login():
+    return render_template('login.html')
+
+
 if __name__ == "__main__":
     app.run(host=os.environ.get("IP"),
         port=int(os.environ.get("PORT")),

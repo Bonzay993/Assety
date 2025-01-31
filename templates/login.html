@@ -1,0 +1,25 @@
+{% extends "index.html" %}
+{% block content %}
+
+<section class="login">
+    <div class="login-container">
+        <h1>Login to Your Account</h1>
+        <p>Access your inventory and asset management dashboard.</p>
+        <form action="#" method="post" class="login-form">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" placeholder="Enter your email" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+            </div>
+            
+            <button type="submit" class="btn">Login</button>
+        </form>
+        <p>Don't have an account? <a href="signup.html">Sign up</a></p>
+    </div>
+</section>
+
+{% endblock %}
