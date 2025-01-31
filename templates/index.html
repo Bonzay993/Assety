@@ -29,30 +29,85 @@
         <div class="hero-content">
             <h2>Efficient Inventory Management Made Easy</h2>
             <p>Track your stock levels, manage products, and streamline your workflow with InventoryPro.</p>
-            <a href="#" class="cta-btn">Get Started</a>
+            <a href="{{ url_for('sign_up') }}" class="cta-btn">Get Started</a>
         </div>
     </section>
 
-    <!-- Features Section -->
-    <section class="features">
+   <!-- Features Section -->
+   <section id="features" class="features">
+    <h2>Why Choose InventoryPro?</h2>
+    <div class="feature-grid">
         <div class="feature-item">
-            <h3>Real-Time Updates</h3>
-            <p>Get live inventory updates to make informed decisions quickly and effectively.</p>
+            <h3>🔄 Real-Time Tracking</h3>
+            <p>Monitor inventory levels, orders, and updates in real time.</p>
         </div>
         <div class="feature-item">
-            <h3>Easy-to-Use Interface</h3>
-            <p>Simple and intuitive design to make managing your inventory a breeze.</p>
+            <h3>📊 Smart Analytics</h3>
+            <p>Get detailed reports and insights to optimize your inventory.</p>
         </div>
         <div class="feature-item">
-            <h3>Reports and Insights</h3>
-            <p>Generate detailed reports to analyze your inventory performance and trends.</p>
+            <h3>📦 Easy Product Management</h3>
+            <p>Add, update, and organize products effortlessly.</p>
         </div>
-    </section>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section id="how-it-works" class="how-it-works">
+    <h2>How It Works</h2>
+    <div class="how-it-works-wrapper">
+        <div class="steps">
+            <div class="step">
+                <h3>1️⃣ Sign Up</h3>
+                <p>Create your free account in minutes.</p>
+            </div>
+            <div class="step">
+                <h3>2️⃣ Add Your Inventory</h3>
+                <p>Upload products and stock details easily.</p>
+            </div>
+            <div class="step">
+                <h3>3️⃣ Track & Optimize</h3>
+                <p>Monitor stock levels and optimize efficiency.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="testimonials">
+    <h2>What Our Users Say</h2>
+    <div class="testimonial">
+        <p>"InventoryPro has transformed our business! Managing stock has never been easier." – Sarah L.</p>
+    </div>
+    <div class="testimonial">
+        <p>"A must-have for any business handling inventory. Highly recommended!" – Mark R.</p>
+    </div>
+</section>
 
     <!-- Call to Action Section -->
     <section class="cta">
         <h2>Ready to take control of your inventory?</h2>
         <a href="#" class="cta-btn">Start Your Free Trial</a>
+    </section>
+
+     <!-- FAQ Section -->
+     <section class="faq">
+        <h2>Frequently Asked Questions</h2>
+        <details>
+            <summary>Is there a free trial?</summary>
+            <p>Yes! We offer a 14-day free trial for all new users.</p>
+        </details>
+        <details>
+            <summary>Can I cancel anytime?</summary>
+            <p>Yes, you can cancel your subscription at any time with no extra fees.</p>
+        </details>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <h2>Get in Touch</h2>
+        <p>Have questions? We're here to help.</p>
+        <a href="mailto:support@inventorypro.com" class="cta-btn">Contact Support</a>
     </section>
 
 {% endblock %}

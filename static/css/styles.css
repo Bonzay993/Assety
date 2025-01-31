@@ -98,12 +98,14 @@ nav ul li a {
 
 .features {
     display: flex;
+    flex-direction: column;
     justify-content: space-around;
     padding: 40px 20px;
     background-color: #ecf0f1;
     text-align: center;
-    height:300px;
+    height:320px;
     align-items: center;
+    row-gap:60px;
 }
 
 .feature-item {
@@ -118,6 +120,31 @@ nav ul li a {
 .feature-item p {
     font-size: 1.1rem;
     color: #7f8c8d;
+}
+
+.how-it-works-wrapper{
+    margin-top:40px;
+}
+
+/* Features */
+.features, .how-it-works, .pricing, .testimonials, .faq, .contact {
+    text-align: left;
+    padding: 50px;
+    margin: 0 auto;
+    align-items: center;
+    align-content: center;
+    justify-content: center;
+    display:flex;
+    flex-direction: column;
+}
+
+.feature-grid {
+    display: flex;
+    justify-content: space-around;
+}
+
+.feature-item,  .plan {
+    width: 30%;
 }
 
 .cta {
