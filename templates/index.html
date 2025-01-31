@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Assety</title>
     <link rel="stylesheet" href="./static/css/styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 </head>
 <body>
     <!-- Header Section -->
@@ -36,18 +38,20 @@
    <!-- Features Section -->
    <section id="features" class="features">
     <h2>Why Choose InventoryPro?</h2>
-    <div class="feature-grid">
-        <div class="feature-item">
-            <h3>🔄 Real-Time Tracking</h3>
-            <p>Monitor inventory levels, orders, and updates in real time.</p>
-        </div>
-        <div class="feature-item">
-            <h3>📊 Smart Analytics</h3>
-            <p>Get detailed reports and insights to optimize your inventory.</p>
-        </div>
-        <div class="feature-item">
-            <h3>📦 Easy Product Management</h3>
-            <p>Add, update, and organize products effortlessly.</p>
+    <div class="features-wrapper">
+        <div class="feature-grid">
+            <div class="feature-item">
+                <h3>🔄 Real-Time Tracking</h3>
+                <p>Monitor inventory levels, orders, and updates in real time.</p>
+            </div>
+            <div class="feature-item">
+                <h3>📊 Smart Analytics</h3>
+                <p>Get detailed reports and insights to optimize your inventory.</p>
+            </div>
+            <div class="feature-item">
+                <h3>📦 Easy Product Management</h3>
+                <p>Add, update, and organize products effortlessly.</p>
+            </div>
         </div>
     </div>
 </section>
@@ -115,5 +119,40 @@
     <footer>
         <p>&copy; 2025 InventoryPro. All rights reserved.</p>
     </footer>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="./static/scripts/script.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Animate "Why Choose InventoryPro?" heading from the right
+            gsap.from("#features h2", { 
+                x: 100, 
+                opacity: 0, 
+                duration: 1, 
+                ease: "power3.out",
+                scrollTrigger: {
+                    trigger: ".features",
+                    start: "top 80%", // Animation starts when .features reaches 80% of the viewport
+                    once: true, // Ensures animation only happens once per page load
+                }
+            });
+    
+            // Animate feature items one by one
+            gsap.utils.toArray(".feature-item").forEach((item, index) => {
+                gsap.from(item, { 
+                    x: 100, 
+                    opacity: 0, 
+                    duration: 1, 
+                    ease: "power3.out",
+                    delay: index * 0.3, // Staggered animation
+                    scrollTrigger: {
+                        trigger: item,
+                        start: "top 85%", 
+                        once: true, // Ensures each item only animates once when scrolling
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>

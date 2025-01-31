@@ -9,11 +9,8 @@ body {
     font-family: 'Arial', sans-serif;
     line-height: 1.6;
     background-color: #fafafa;
-    color: #333;
+    color: #020318;
 }
-
-
-
 
 /* LANDING PAGE CSS */
 header {
@@ -63,23 +60,38 @@ nav ul li a {
     justify-content: center;
     align-items: center;
     text-align: center;
-    height: 600px;
+    height: 920px;
     color: white;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.0), rgba(167, 170, 171, 0.0)), 
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.8), rgba(200, 205, 206, 0.4)), 
                 url("../img/hero3.jpg");
     background-size:cover;
     background-position: contain;
     margin:0 auto;
 }
 
+@keyframes slideInFromRight {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.hero-content {
+    animation: slideInFromRight 1s ease-out;
+}
+
 .hero h2 {
-    font-size: 3rem;
+    font-size: 4rem;
     margin-bottom: 20px;
 }
 
 .hero p {
     font-size: 1.2rem;
-    margin-bottom: 30px;
+    margin-bottom: 80px;
 }
 
 .cta-btn {
@@ -108,6 +120,10 @@ nav ul li a {
     row-gap:60px;
 }
 
+.features-wrapper{
+    width:70%;
+}
+
 .feature-item {
     width: 30%;
 }
@@ -119,11 +135,21 @@ nav ul li a {
 
 .feature-item p {
     font-size: 1.1rem;
-    color: #7f8c8d;
+    color: #414748;
 }
 
 .how-it-works-wrapper{
     margin-top:40px;
+}
+
+.steps{
+    display:flex;
+    flex-direction: column;
+    gap:30px;
+}
+
+.step{
+    font-size:140%;
 }
 
 /* Features */
@@ -137,6 +163,7 @@ nav ul li a {
     display:flex;
     flex-direction: column;
 }
+
 
 .feature-grid {
     display: flex;
