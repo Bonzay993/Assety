@@ -334,6 +334,13 @@ input {
     background-color: #3e5363;
 }
 
+.version-number{
+    position:absolute;
+    top:95%;
+    font-size: 12px;
+    left:30%
+}
+
 /* Minimized Sidebar Items */
 .sidebar.minimized .menu-item .text {
     display: none;
