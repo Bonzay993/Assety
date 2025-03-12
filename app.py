@@ -1,21 +1,19 @@
 import os
 from flask import Flask, render_template
-from flask_sqlalchemy import SQLAlchemy
+from flask_pymongo import PyMongo
 
-# Import env.py to load environment variables
-import env
 
-db = SQLAlchemy()
+if os.path.exists("env.py"):
+    import env
+
 
 # Initialize the Flask app
 app = Flask(__name__)
+app.config["MONGO_DBNAME"] = os.environ.get("MONGO_DBNAME")
+app.config["MONGO_URI"] = os.environ.get("MONGO_URI")
+app.secret_key = os.environ.get("SECRET_KEY")
 
-# Use the DATABASE_URL from environment variables
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL")
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # Optional, disable modification tracking
-
-# Initialize the database with the app
-db.init_app(app)
+mongo = PyMongo(app)
 
 # Define routes inside the function
 @app.route('/')
