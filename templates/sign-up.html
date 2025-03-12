@@ -1,10 +1,11 @@
 {% extends "index.html" %}
+
 {% block content %}
 <section class="signup">
     <div class="signup-container">
         <h1>Create Your Account</h1>
         <p>Sign up to manage your inventory and assets efficiently.</p>
-        <form action="#" method="post" class="signup-form">
+        <form action="{{ url_for('sign_up') }}" method="post" class="signup-form" id="signup-form">
             <div class="form-group">
                 <label for="first-name">First Name</label>
                 <input type="text" id="first-name" name="first-name" placeholder="Enter your first name" required>
@@ -34,10 +35,70 @@
                 <label for="confirm-password">Confirm Password</label>
                 <input type="password" id="confirm-password" name="confirm-password" placeholder="Confirm your password" required>
             </div>
-            
+
+            <!-- Password Validation Feedback -->
+            <div id="password-feedback" class="password-feedback">
+                <p id="length-feedback" class="feedback-text">Password must be at least 6 characters long</p>
+                <p id="uppercase-feedback" class="feedback-text">Password must contain at least one uppercase letter</p>
+                <p id="match-feedback" class="feedback-text">Passwords must match</p>
+            </div>
+
             <button type="submit" class="btn">Sign Up</button>
         </form>
         <p>Already have an account? <a href="{{ url_for('login') }}">Log in</a></p>
     </div>
 </section>
+
+<!-- JavaScript validation -->
+<script>
+    // Function to update feedback indicators
+    function updateFeedback(id, isValid, message) {
+        const feedbackElement = document.getElementById(id);
+        if (isValid) {
+            feedbackElement.style.color = "green";
+            feedbackElement.innerHTML = "✔️ " + message;
+        } else {
+            feedbackElement.style.color = "red";
+            feedbackElement.innerHTML = "❌ " + message;
+        }
+    }
+
+    document.getElementById('signup-form').addEventListener('submit', function(event) {
+        var password = document.getElementById('password').value;
+        var confirmPassword = document.getElementById('confirm-password').value;
+
+        var isPasswordValid = true;
+
+        // Check if the password is at least 6 characters
+        if (password.length < 6) {
+            updateFeedback('length-feedback', false, "Password must be at least 6 characters long.");
+            isPasswordValid = false;
+        } else {
+            updateFeedback('length-feedback', true, "Password must be at least 6 characters long.");
+        }
+
+        // Check if the password contains at least one uppercase letter
+        var uppercaseRegex = /[A-Z]/;
+        if (!uppercaseRegex.test(password)) {
+            updateFeedback('uppercase-feedback', false, "Password must contain at least one uppercase letter.");
+            isPasswordValid = false;
+        } else {
+            updateFeedback('uppercase-feedback', true, "Password must contain at least one uppercase letter.");
+        }
+
+        // Check if the password matches the confirm password field
+        if (password !== confirmPassword) {
+            updateFeedback('match-feedback', false, "Passwords do not match.");
+            isPasswordValid = false;
+        } else {
+            updateFeedback('match-feedback', true, "Passwords must match.");
+        }
+
+        // If any condition is not satisfied, prevent form submission
+        if (!isPasswordValid) {
+            event.preventDefault();
+        }
+    });
+</script>
+
 {% endblock %}
