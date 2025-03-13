@@ -281,6 +281,16 @@ input {
     flex-direction: column;
 }
 
+.alert {
+    color: red;
+    background-color: #ffdddd;
+    border: 1px solid red;
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
 
 /* INVENTORY PAGE CSS */
 /* Overall container layout */

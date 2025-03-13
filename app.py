@@ -2,6 +2,7 @@ import os
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_pymongo import PyMongo
 from pymongo import MongoClient
+from flask import render_template, session
 from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
 
@@ -85,10 +86,14 @@ def login():
         email = request.form.get('email')
         password = request.form.get('password')
 
+        client = MongoClient(app.config["MONGO_URI"])
+        db = client[app.config["MONGO_DBNAME"]]
         users_collection = db['users']
         user = users_collection.find_one({'email': email})  # Find user by email
 
         if user and check_password_hash(user['password'], password):
+            session['user_id'] = str(user['_id'])  # Store user ID in session
+            session['first_name'] = user.get('first_name', 'User').capitalize()  # Store first name in session
             flash('Login successful!', 'success')
             return redirect(url_for('inventory_app'))  # Redirect to inventory page
         else:
@@ -96,9 +101,18 @@ def login():
 
     return render_template('login.html')
 
+
+@app.route('/logout')
+def logout():
+    session.clear()  # Clears all session data
+    flash('You are now logged out!', 'success')
+    return redirect(url_for('login'))  # Redirects to login page
+
+
 @app.route('/inventory')
 def inventory_app():
-    return render_template('inventory.html')
+    user_first_name = session.get('first_name', 'User')  # Retrieve first name from session or default to 'User'
+    return render_template('inventory.html', first_name=user_first_name)
 
 @app.route('/test-mongo')
 def test_mongo():
