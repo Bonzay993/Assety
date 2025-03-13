@@ -299,6 +299,9 @@ input {
     height: 100vh;
 }
 
+
+
+
 /* Sidebar Styles */
 .sidebar {
     width: 250px;
@@ -360,8 +363,10 @@ input {
     text-decoration: none;
     color: white;
     font-size: 18px;
-    transition: background-color 0.3s;
+    position: relative; /* To position the blue bar */
+    padding: 10px 0;
 }
+
 
 .menu-item .text {
     margin-left: 10px;
@@ -369,6 +374,22 @@ input {
 
 .menu-item:hover {
     background-color: #3e5363;
+}
+
+.menu-item::after {
+    content: '';
+    position: absolute;
+    left:0; /* Position to the right of the menu item */
+    top: 0;
+    bottom: 0;
+    width: 4px; /* Width of the blue bar */
+    background-color: rgb(255, 255, 255); /* Color of the bar */
+    opacity: 0; /* Initially hidden */
+    transition: opacity 0.3s ease; /* Smooth transition */
+}
+
+.menu-item:hover::after {
+    opacity: 1; /* Make the blue bar visible on hover */
 }
 
 .version-number{
@@ -389,6 +410,69 @@ input {
 
 .sidebar.minimized .menu-item i {
     font-size: 22px;
+}
+
+.sidebar.minimized .menu-item li{
+    margin:0;
+}
+
+  /* Sidebar Minimized */
+  .sidebar.minimized .text,
+  .sidebar.minimized #dropdown-arrow {
+      display: none;
+  }
+
+  /* Show dropdown on hover when sidebar is minimized */
+  .sidebar.minimized .dropdown:hover .dropdown-menu {
+    display: block;
+    position: absolute;
+    background: #2d3e50;
+    padding: 0px;
+    margin: 0 auto;
+    left: 40px;  /* Adjust to position it to the right of the sidebar */
+    top: 150px;      /* Align dropdown on the same level as the category */
+    width: 100px;
+    max-height: 200px;
+    z-index: 100;
+    text-align: center;
+}
+
+  .sidebar.minimized .dropdown-menu li {
+      padding: 0px;
+  }
+
+  .sidebar.minimized .dropdown-menu li a {
+      color: #fff;
+      text-decoration: none;
+      font-size:90%;
+  }
+
+  .sidebar.minimized .dropdown-menu li a:hover {
+      text-decoration: underline;
+  }
+
+.dropdown-menu {
+    display: none;
+    list-style: none;
+    padding-left: 20px;
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.4s ease-out;
+}
+.dropdown-menu.show {
+    display: block;
+    max-height: 200px;
+}
+
+.dropdown-arrow{
+    font-size: 80%;
+    margin-left:4%;
+}
+
+.dropdown-menu-item{
+    color:white;
+    text-decoration: none;
+
 }
 
 /* Main Content Area */

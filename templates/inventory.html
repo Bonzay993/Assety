@@ -5,12 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Asset Management System</title>
     <link rel="stylesheet" href="./static/css/styles.css">
-    <!-- Add Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
     <div class="container">
-        <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
             <button class="toggle-btn" id="toggle-btn">
                 <i class="fas fa-bars"></i>
@@ -18,7 +16,20 @@
             <ul class="sidebar-menu" id="menu">
                 <li><a href="{{ url_for('inventory_app') }}" class="menu-item"><i class="fas fa-tachometer-alt"></i><span class="text">Dashboard</span></a></li>
                 <li><a href="{{ url_for('assets') }}" class="menu-item"><i class="fas fa-box"></i><span class="text">Assets</span></a></li>
-                <li><a href="#" class="menu-item"><i class="fas fa-box"></i><span class="text">Categories</span></a></li>
+
+                <!-- Categories Dropdown -->
+                <li class="dropdown">
+                    <a href="#" class="menu-item" id="categories-btn">
+                        <i class="fas fa-box"></i>
+                        <span class="text">Categories</span>
+                        <i class="fas fa-chevron-left dropdown-arrow" id="dropdown-arrow"></i>
+                    </a>
+                    <ul class="dropdown-menu" id="categories-menu">
+                        <li><a class="dropdown-menu-item" href="#">Categories</a></li>
+                        <li><a class="dropdown-menu-item" href="#">Locations</a></li>
+                    </ul>
+                </li>
+
                 <li><a href="#" class="menu-item"><i class="fas fa-chart-line"></i><span class="text">Reports</span></a></li>
                 <li><a href="#" class="menu-item"><i class="fas fa-cogs"></i><span class="text">Settings</span></a></li>
             </ul>
@@ -26,8 +37,6 @@
                 <a class="version-number"><span>v</span> 0.0.1</a>
             </div>
         </aside>
-
-        <!-- Main Content -->
         <main class="main-content">
             <header class="header">
                 <h1>Asset Dashboard</h1>
@@ -41,43 +50,48 @@
                     </a>
                 </div>
             </header>
- {% block content %}
-            <!-- Asset Cards -->
+            {% block content %}
             <section class="asset-cards">
-                <div class="card">
-                    <h3>Asset 1</h3>
-                    <p>Details about Asset 1</p>
-                </div>
-                <div class="card">
-                    <h3>Asset 2</h3>
-                    <p>Details about Asset 2</p>
-                </div>
-                <div class="card">
-                    <h3>Asset 3</h3>
-                    <p>Details about Asset 3</p>
-                </div>
-                <div class="card">
-                    <h3>Asset 4</h3>
-                    <p>Details about Asset 4</p>
-                </div>
+                <div class="card"><h3>Asset 1</h3><p>Details about Asset 1</p></div>
+                <div class="card"><h3>Asset 2</h3><p>Details about Asset 2</p></div>
+                <div class="card"><h3>Asset 3</h3><p>Details about Asset 3</p></div>
+                <div class="card"><h3>Asset 4</h3><p>Details about Asset 4</p></div>
             </section>
+            {% endblock %}
         </main>
     </div>
-
-{% endblock %}
+    
     <script>
-        // Toggle sidebar visibility
         const toggleBtn = document.getElementById('toggle-btn');
         const sidebar = document.getElementById('sidebar');
         const menuItems = document.querySelectorAll('.sidebar-menu .menu-item');
-        const logoText = document.querySelector('.logo-text');
-        
+        const categoriesBtn = document.getElementById('categories-btn');
+        const dropdown = document.getElementById('categories-menu');
+        const arrow = document.getElementById('dropdown-arrow');
+
         toggleBtn.addEventListener('click', () => {
             sidebar.classList.toggle('minimized');
-            menuItems.forEach(item => {
-                item.classList.toggle('minimized-item');
-            });
-            logoText.classList.toggle('hidden');
+            
+            // When sidebar is minimized, close the dropdown and reset the arrow
+            if (sidebar.classList.contains('minimized')) {
+                if (dropdown.classList.contains('show')) {
+                    dropdown.classList.remove('show');
+                    arrow.classList.replace('fa-chevron-down', 'fa-chevron-left');
+                }
+            }
+        });
+
+        categoriesBtn.addEventListener('click', function(event) {
+            event.preventDefault();
+            if (!sidebar.classList.contains('minimized')) {
+                if (dropdown.classList.contains('show')) {
+                    dropdown.classList.remove('show');
+                    arrow.classList.replace('fa-chevron-down', 'fa-chevron-left');
+                } else {
+                    dropdown.classList.add('show');
+                    arrow.classList.replace('fa-chevron-left', 'fa-chevron-down');
+                }
+            }
         });
     </script>
 </body>
