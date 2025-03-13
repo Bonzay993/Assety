@@ -486,3 +486,46 @@ input {
     font-size: 16px;
     color: #555;
 }
+
+/* Assets Page Top Heading */
+
+.assets-list-top-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.new-asset-btn{
+    cursor: pointer;
+    padding: 8px 16px;
+    background-color: #3c4561;
+    border:none;
+    color:white;
+}
+
+.new-asset-btn:hover{
+    background-color:#5e6d99; ;
+}
+
+
+/* New Asset Page */
+
+.new-asset-form-container {
+    margin:0 auto;
+    display:flex;
+    flex-direction: row;
+    gap:10%;
+}
+
+.new-asset-form{
+    width:50%;
+    height:50%;
+    margin-top:10%;
+    background-color:white;
+    padding:2%;
+}
+
+.form-group textarea {
+    resize: none; /* Disable resizing */
+    width:50%;
+}

@@ -1,0 +1,79 @@
+{% extends "inventory.html" %}
+{% block content %}
+
+    
+    <div class="new-asset-form-container">
+        <div class="new-asset-form-header">
+            <h1>Add New Asset</h1>
+        </div>
+        <form class="new-asset-form" action="{{ url_for('save_asset') }}" method="POST" id="asset-form">
+            <div class="form-group">
+                <label for="asset-tag">Asset Tag</label>
+                <input type="text" id="asset-tag" name="asset-tag" placeholder="Enter Asset Tag" required>
+            </div>
+
+            <div class="form-group">
+                <label for="serial">Serial Number</label>
+                <input type="text" id="serial" name="serial" placeholder="Enter Serial Number" required>
+            </div>
+
+            <div class="form-group">
+                <label for="model">Model</label>
+                <input type="text" id="model" name="model" placeholder="Enter Model" required>
+            </div>
+
+            <div class="form-group">
+                <label for="notes">Notes</label>
+                <textarea id="notes" name="notes" placeholder="Enter any notes here" rows="4"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="warranty">Warranty Expiry</label>
+                <input type="date" id="warranty" name="warranty" placeholder="Select Warranty Expiry" required>
+            </div>
+
+            <div class="form-group">
+                <label for="order-number">Order Number</label>
+                <input type="text" id="order-number" name="order-number" placeholder="Enter Order Number" required>
+            </div>
+
+            <div class="form-group">
+                <label for="purchase-cost">Purchase Cost</label>
+                <input type="number" id="purchase-cost" name="purchase-cost" placeholder="Enter Purchase Cost" required>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn save-btn">Save</button>
+                <button type="button" class="btn cancel-btn" onclick="window.history.back()">Cancel</button>
+            </div>
+        </form>
+    </div>
+
+
+<script>
+    // Optional: You can add JavaScript validation if needed
+    document.getElementById('asset-form').addEventListener('submit', function(event) {
+        // Example: prevent form submission if required fields are missing or invalid
+        const form = event.target;
+        const fields = form.querySelectorAll('[required]');
+        let valid = true;
+
+        fields.forEach(function(field) {
+            if (!field.value) {
+                valid = false;
+                field.classList.add('error');
+            } else {
+                field.classList.remove('error');
+            }
+        });
+
+        if (!valid) {
+            event.preventDefault();
+            alert("Please fill out all required fields.");
+        }
+    });
+</script>
+
+
+
+{% endblock %}

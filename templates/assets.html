@@ -2,7 +2,15 @@
 {% block content %}
 
 <section class="assets">
-    <h1>Assets List</h1>
+    <div class="assets-list-top-container">
+        <h1>Assets List</h1>
+        <div class="create-new-asset-btn">
+            <a href="{{ url_for('new_asset') }}">
+                <button class="new-asset-btn">Create New</button>
+            </a>
+        </div>
+    </div>
+    
     
     <div class="assets-list">
         {% for asset in assets %}
