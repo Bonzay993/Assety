@@ -1,0 +1,19 @@
+{% extends "inventory.html" %}
+{% block content %}
+
+<section class="assets">
+    <h1>Assets List</h1>
+    
+    <div class="assets-list">
+        {% for asset in assets %}
+            <div class="asset-item">
+                <h3>{{ asset.name }}</h3>
+                <p><strong>Category:</strong> {{ asset.category }}</p>
+                <p><strong>Quantity:</strong> {{ asset.quantity }}</p>
+                <p><strong>Location:</strong> {{ asset.location }}</p>
+            </div>
+        {% endfor %}
+    </div>
+</section>
+
+{% endblock %}

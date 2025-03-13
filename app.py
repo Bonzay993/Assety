@@ -14,6 +14,9 @@ app = Flask(__name__)
 app.config["MONGO_DBNAME"] = os.environ.get("MONGO_DBNAME")
 app.config["MONGO_URI"] = os.environ.get("MONGO_URI")
 app.secret_key = os.environ.get("SECRET_KEY")
+app.config['SESSION_COOKIE_NAME'] = 'session'  # Customize the cookie name (optional)
+app.config['SESSION_PERMANENT'] = False  # Session will not last beyond the browser session
+app.config['SESSION_TYPE'] = 'filesystem'  # Store session in the filesystem, can also be 'redis' or 'mongodb
 
 
 mongo = PyMongo(app)
@@ -43,6 +46,9 @@ def sign_up():
             email = request.form.get('email')
             password = request.form.get('password')
 
+            # Sanitize the company name (remove spaces and special characters)
+            company = company.replace(" ", "_")  # Replace spaces with underscores
+
             # Check if the email already exists in the database
             existing_user = users_collection.find_one({'email': email})
 
@@ -59,14 +65,27 @@ def sign_up():
                 'last_name': last_name,
                 'company': company,
                 'email': email,
-                'password': hashed_password 
+                'password': hashed_password
             }
 
-            # Try to insert the user and handle possible exceptions
             try:
-                users_collection.insert_one(user_data)
+                # Insert user into the 'users' collection first
+                user_insert = users_collection.insert_one(user_data)
+
+                # Create a new collection named after the company (linked to the user)
+                company_collection = db[company]  # Use the sanitized company name for collection
+                company_data = {
+                    'user_id': user_insert.inserted_id,  # Link the company collection to the user ID
+                    'company_name': company
+                }
+
+                # Insert an initial document into the company's collection (optional)
+                company_collection.insert_one(company_data)
+
+                # Successfully created user and company collection
                 flash("Account created successfully! Please log in.", "success")
                 return redirect(url_for('login'))  # Redirect to login after successful signup
+
             except Exception as e:
                 flash(f"An error occurred: {str(e)}", "error")
                 return redirect(url_for('sign_up'))
@@ -77,7 +96,6 @@ def sign_up():
         print(f"Error: {e}")
         flash("MongoDB connection failed. Please try again later.", "error")
         return render_template('sign-up.html')
-
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -94,10 +112,12 @@ def login():
         if user and check_password_hash(user['password'], password):
             session['user_id'] = str(user['_id'])  # Store user ID in session
             session['first_name'] = user.get('first_name', 'User').capitalize()  # Store first name in session
+            session['company'] = user['company']
+            print(f"Session after login: {session}")  # Debugging session data
             flash('Login successful!', 'success')
             return redirect(url_for('inventory_app'))  # Redirect to inventory page
         else:
-            flash('Invalid credentials. Please try again.', 'danger')
+            flash('Invalid credentials. Please try again.', 'danger')  # Category 'danger' for login error
 
     return render_template('login.html')
 
@@ -105,14 +125,28 @@ def login():
 @app.route('/logout')
 def logout():
     session.clear()  # Clears all session data
-    flash('You are now logged out!', 'success')
+    flash('You have been logged out!', 'info')
     return redirect(url_for('login'))  # Redirects to login page
 
 
 @app.route('/inventory')
 def inventory_app():
-    user_first_name = session.get('first_name', 'User')  # Retrieve first name from session or default to 'User'
-    return render_template('inventory.html', first_name=user_first_name)
+    # Get the first name and company name from the session
+    user_first_name = session.get('first_name', 'User')  # Default to 'User' if no first name is found in session
+    company_name = session.get('company', 'No Company')  # Default to 'No Company' if no company is found in session
+    
+    # Replace underscores with spaces in the company name
+    company_name = company_name.replace("_", " ")
+    
+    # Debugging: print session data and modified company name
+    print(f"Session data: {session}")
+    print(f"User First Name: {user_first_name}")
+    print(f"Modified Company Name: {company_name}")
+    
+    # Render the template with first name and company name
+    return render_template('inventory.html', first_name=user_first_name, company=company_name)
+
+
 
 @app.route('/test-mongo')
 def test_mongo():
@@ -123,6 +157,35 @@ def test_mongo():
         return f"Connected to MongoDB! Collections: {collections}", 200
     except Exception as e:
         return f"Error connecting to MongoDB: {str(e)}", 500
+
+
+@app.route("/assets")
+def assets():
+    # Debugging: Check the session data
+    print(f"Session at assets page: {session}")
+
+    # Get the first name from the session, if available
+    user_first_name = session.get('first_name', 'User')
+    company_name = session.get('company', 'No Company')
+
+    company_name = company_name.replace("_", " ")
+
+    # Fetch assets from the database as before
+    client = MongoClient(app.config["MONGO_URI"])
+    db = client[app.config["MONGO_DBNAME"]]
+    
+    laptops_collection = db['laptops']
+    computers_collection = db['computers']
+    
+    all_laptops = list(laptops_collection.find({}))
+    all_computers = list(computers_collection.find({}))
+
+    all_assets = all_laptops + all_computers
+    
+    # Pass the assets and first name to the template
+    return render_template("assets.html", assets=all_assets, first_name=user_first_name, company=company_name)
+
+
 
 if __name__ == "__main__":
     app.run(host=os.environ.get("IP", "0.0.0.0"),

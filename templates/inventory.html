@@ -16,8 +16,8 @@
                 <i class="fas fa-bars"></i>
             </button>
             <ul class="sidebar-menu" id="menu">
-                <li><a href="#" class="menu-item"><i class="fas fa-tachometer-alt"></i><span class="text">Dashboard</span></a></li>
-                <li><a href="#" class="menu-item"><i class="fas fa-cogs"></i><span class="text">Assets</span></a></li>
+                <li><a href="{{ url_for('inventory_app') }}" class="menu-item"><i class="fas fa-tachometer-alt"></i><span class="text">Dashboard</span></a></li>
+                <li><a href="{{ url_for('assets') }}" class="menu-item"><i class="fas fa-box"></i><span class="text">Assets</span></a></li>
                 <li><a href="#" class="menu-item"><i class="fas fa-box"></i><span class="text">Categories</span></a></li>
                 <li><a href="#" class="menu-item"><i class="fas fa-chart-line"></i><span class="text">Reports</span></a></li>
                 <li><a href="#" class="menu-item"><i class="fas fa-cogs"></i><span class="text">Settings</span></a></li>
@@ -31,6 +31,9 @@
         <main class="main-content">
             <header class="header">
                 <h1>Asset Dashboard</h1>
+                <div class="company-info">
+                    <span>{{ company }}</span>
+                </div>
                 <div class="user-info">
                     <span>Welcome, {{ first_name }}</span>
                     <a href="{{ url_for('logout') }}">
@@ -38,7 +41,7 @@
                     </a>
                 </div>
             </header>
-
+ {% block content %}
             <!-- Asset Cards -->
             <section class="asset-cards">
                 <div class="card">
@@ -61,6 +64,7 @@
         </main>
     </div>
 
+{% endblock %}
     <script>
         // Toggle sidebar visibility
         const toggleBtn = document.getElementById('toggle-btn');
