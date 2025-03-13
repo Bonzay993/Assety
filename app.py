@@ -85,7 +85,7 @@ def login():
         email = request.form.get('email')
         password = request.form.get('password')
 
-        users_collection = mongo.db.users
+        users_collection = db['users']
         user = users_collection.find_one({'email': email})  # Find user by email
 
         if user and check_password_hash(user['password'], password):
