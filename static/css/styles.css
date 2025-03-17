@@ -304,17 +304,16 @@ input {
 
 /* Sidebar Styles */
 .sidebar {
-    width: 250px;
+    width: 200px;
     background-color: #2d3e50;
     color: white;
-    padding: 20px;
     font-family: Arial, sans-serif;
     position: relative;
     transition: width 0.3s;
 }
 
 .sidebar.minimized {
-    width: 60px;
+    width: 80px;
 }
 
 .sidebar-logo {
@@ -350,7 +349,7 @@ input {
 .sidebar-menu {
     list-style-type: none;
     padding: 0;
-    margin-top: 60px; /* Push down the items below the button */
+    margin-top: 160px; /* Push down the items below the button */
 }
 
 .sidebar-menu li {
@@ -364,8 +363,14 @@ input {
     color: white;
     font-size: 18px;
     position: relative; /* To position the blue bar */
-    padding: 10px 0;
+    padding-left:30px;
+    padding-right:30px;
+    padding-top:5px;
+    padding-bottom:5px;
+    
 }
+
+
 
 
 .menu-item .text {
@@ -374,6 +379,7 @@ input {
 
 .menu-item:hover {
     background-color: #3e5363;
+    
 }
 
 .menu-item::after {
@@ -426,15 +432,16 @@ input {
   .sidebar.minimized .dropdown:hover .dropdown-menu {
     display: block;
     position: absolute;
-    background: #2d3e50;
+    background: #264b72;
     padding: 0px;
     margin: 0 auto;
-    left: 40px;  /* Adjust to position it to the right of the sidebar */
-    top: 150px;      /* Align dropdown on the same level as the category */
+    left: 80px;  /* Adjust to position it to the right of the sidebar */
+    top: 250px;      /* Align dropdown on the same level as the category */
     width: 100px;
     max-height: 200px;
     z-index: 100;
     text-align: center;
+    font-weight: bold;
 }
 
   .sidebar.minimized .dropdown-menu li {
@@ -448,20 +455,30 @@ input {
   }
 
   .sidebar.minimized .dropdown-menu li a:hover {
-      text-decoration: underline;
+      text-decoration: none;
+      
+  }
+
+  .sidebar.minimized .dropdown-menu li a:hover{
+    background-color:#007bff;
+    padding:7px;
+    border-radius: 3px;
   }
 
 .dropdown-menu {
     display: none;
     list-style: none;
-    padding-left: 20px;
+    padding-left: 60px;
     overflow: hidden;
     max-height: 0;
     transition: max-height 0.4s ease-out;
 }
+
 .dropdown-menu.show {
     display: block;
     max-height: 200px;
+    
+    
 }
 
 .dropdown-arrow{
@@ -472,7 +489,6 @@ input {
 .dropdown-menu-item{
     color:white;
     text-decoration: none;
-
 }
 
 /* Main Content Area */
