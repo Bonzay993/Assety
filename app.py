@@ -248,24 +248,23 @@ def save_asset():
 
 @app.route('/locations')
 def locations():
-     company_name = session.get('company', None)
-     user_first_name = session.get('first_name', 'User') 
-     return render_template("locations.html",first_name=user_first_name, company=company_name )
+    company_name = session.get('company', None)
+    user_first_name = session.get('first_name', 'User')
+    return render_template("locations.html",first_name=user_first_name, company=company_name )
+
 
 @app.route('/new-location')
 def new_location():
-     company_name = session.get('company', None)
-     user_first_name = session.get('first_name', 'User') 
-     return render_template("new-location.html", first_name=user_first_name, company=company_name)
+    company_name = session.get('company', None)
+    user_first_name = session.get('first_name', 'User')
+    return render_template("new-location.html",first_name=user_first_name, company=company_name )
+
+
 
 @app.route('/save-location', methods=['POST'])
 def save_location():
-    # Get the company name from the session (assuming it's stored as 'company')
-    company_name = session.get('company', None)
-     # Default to 'User' if no first name is found in session
-    
+    company_name = session.get('company', None)  # Ensure correct indentation
 
-    # Check if the company is in the session, if not, redirect or show an error
     if not company_name:
         flash("No company found in session. Please log in again.", "error")
         return redirect(url_for('login'))
@@ -277,39 +276,37 @@ def save_location():
     client = MongoClient(app.config["MONGO_URI"])
     db = client[app.config["MONGO_DBNAME"]]
 
-    # Ensure the collection name corresponds to the company name (create dynamically)
+    # Ensure the collection name corresponds to the company name
     company_collection = db[company_name]  # Using company name as collection name
 
     # Get form data from the POST request
-    asset_tag = request.form['asset-tag']
-    serial = request.form['serial']
-    model = request.form['model']
-    notes = request.form['notes']
-    warranty = request.form['warranty']
-    order_number = request.form['order-number']
-    purchase_cost = request.form['purchase-cost']
+    location_tag = request.form['location-tag']
+    phone = request.form['phone']  # Changed from 'phone' to 'serial' (match your form)
+    address = request.form['address']  # Changed from 'address' to 'model' (match your form)
+    city = request.form['city']
+    state = request.form['state']
+    post_code = request.form['post-code']
 
-    # Create the asset data dictionary
-    asset_data = {
-        'asset_tag': asset_tag,
-        'serial': serial,
-        'model': model,
-        'notes': notes,
-        'warranty': warranty,
-        'order_number': order_number,
-        'purchase_cost': purchase_cost,
+    # Create the location data dictionary
+    location_data = {
+        'location_tag': location_tag,
+        'phone': phone,
+        'address': address,
+        'city': city,
+        'state': state,
+        'post_code': post_code
     }
 
     try:
-        # Insert the asset data into the company-specific collection
-        company_collection.insert_one(asset_data)
+        # Insert the data into the company-specific collection
+        company_collection.insert_one(location_data)
 
-        flash("Asset saved successfully!", "success")
-        return redirect(url_for('inventory_app'))  # Redirect to the inventory page
+        flash("Location saved successfully!", "success")
+        return redirect(url_for('inventory_app'))  # Redirect to inventory page
 
     except Exception as e:
         flash(f"An error occurred: {str(e)}", "error")
-        return redirect(url_for('inventory_app'))  # Redirect to the inventory page
+        return redirect(url_for('inventory_app'))  # Redirect on error
 
 
 if __name__ == "__main__":
