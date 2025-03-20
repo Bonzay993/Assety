@@ -2,11 +2,11 @@
 {% block content %}
 
     
-    <div class="new-asset-form-container">
+    <div class="new-asset-form-container default-form-container">
         <div class="new-asset-form-header">
             <h1>Add New Asset</h1>
         </div>
-        <form class="new-asset-form" action="{{ url_for('save_asset') }}" method="POST" id="asset-form">
+        <form class="new-asset-form default-form" action="{{ url_for('save_asset') }}" method="POST" id="asset-form">
             <div class="form-group">
                 <label for="asset-tag">Asset Tag</label>
                 <input type="text" id="asset-tag" name="asset-tag" placeholder="Enter Asset Tag" required>
@@ -43,8 +43,8 @@
             </div>
 
             <div class="form-actions">
-                <button type="submit" class="btn save-btn">Save</button>
-                <button type="button" class="btn cancel-btn" onclick="window.history.back()">Cancel</button>
+                <a href="javascript:window.history.back()" class="form-cancel">Cancel</a>
+                <button type="submit" class="btn save-btn"><i class="fa-solid fa-check"></i> Save</button>
             </div>
         </form>
     </div>

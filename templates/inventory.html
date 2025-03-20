@@ -6,6 +6,7 @@
     <title>Asset Management System</title>
     <link rel="stylesheet" href="./static/css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://kit.fontawesome.com/00bb1ba651.js" crossorigin="anonymous"></script>
 </head>
 <body>
     <div class="container">
@@ -26,7 +27,7 @@
                     </a>
                     <ul class="dropdown-menu" id="categories-menu">
                         <li><a class="dropdown-menu-item" href="#">Categories</a></li>
-                        <li><a class="dropdown-menu-item" href="#">Locations</a></li>
+                        <li><a class="dropdown-menu-item" href="{{ url_for('locations') }}">Locations</a></li>
                     </ul>
                 </li>
 
@@ -94,5 +95,6 @@
             }
         });
     </script>
+    
 </body>
 </html>
