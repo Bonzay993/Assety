@@ -5,6 +5,7 @@ from pymongo import MongoClient
 from flask import render_template, session
 from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
+from bson.objectid import ObjectId 
 
 if os.path.exists("env.py"):
     import env
@@ -189,30 +190,19 @@ def new_asset():
      return render_template("new-asset.html",first_name=user_first_name, company=company_name )
 
 
-
 @app.route('/save_asset', methods=['POST'])
 def save_asset():
-    # Get the company name from the session (assuming it's stored as 'company')
     company_name = session.get('company', None)
-     # Default to 'User' if no first name is found in session
-    
-
-    # Check if the company is in the session, if not, redirect or show an error
     if not company_name:
         flash("No company found in session. Please log in again.", "error")
         return redirect(url_for('login'))
 
-    # Replace underscores with spaces in the company name if needed
     company_name = company_name.replace('_', ' ')
-
-    # Access MongoDB
     client = MongoClient(app.config["MONGO_URI"])
     db = client[app.config["MONGO_DBNAME"]]
+    company_collection = db[company_name]
 
-    # Ensure the collection name corresponds to the company name (create dynamically)
-    company_collection = db[company_name]  # Using company name as collection name
-
-    # Get form data from the POST request
+    asset_id = request.form.get('asset_id')  # Get the asset ID if editing
     asset_tag = request.form['asset-tag']
     serial = request.form['serial']
     model = request.form['model']
@@ -222,9 +212,8 @@ def save_asset():
     purchase_cost = request.form['purchase-cost']
     purchase_date = request.form['purchase-date']
 
-    # Create the asset data dictionary
     asset_data = {
-        'asset':True,
+        'asset': True,
         'asset_tag': asset_tag,
         'serial': serial,
         'model': model,
@@ -236,16 +225,40 @@ def save_asset():
     }
 
     try:
-        # Insert the asset data into the company-specific collection
-        company_collection.insert_one(asset_data)
+        if asset_id:  # If asset exists, UPDATE instead of inserting a new one
+            company_collection.update_one(
+                {"_id": ObjectId(asset_id)},
+                {"$set": asset_data}
+            )
+            flash("Asset updated successfully!", "success")
+        else:
+            company_collection.insert_one(asset_data)
+            flash("New asset created!", "success")
 
-        flash("Asset saved successfully!", "success")
-        return redirect(url_for('inventory_app'))  # Redirect to the inventory page
+        return redirect(url_for('assets'))  
 
     except Exception as e:
         flash(f"An error occurred: {str(e)}", "error")
-        return redirect(url_for('inventory_app'))  # Redirect to the inventory page
+        return redirect(url_for('inventory_app'))
 
+
+
+@app.route('/asset-properties')
+def asset_properties():
+    asset_id = request.args.get('asset_id')  # Get asset ID from URL
+    
+    if asset_id:
+        client = MongoClient(app.config["MONGO_URI"])
+        db = client[app.config["MONGO_DBNAME"]]
+        company_collection = db[session.get('company', 'default_company')]
+
+        asset = company_collection.find_one({"_id": ObjectId(asset_id)})  # Fetch asset
+
+        if asset:
+            return render_template("asset-properties.html", asset=asset)  
+
+    return render_template("asset-properties.html", asset=None)  # If no asset ID, load empty form
+        
 
 @app.route('/locations')
 def locations():

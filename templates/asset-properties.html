@@ -1,5 +1,90 @@
 {% extends "inventory.html" %}
 {% block content %}
 
+    
+    <div class="new-asset-form-container default-form-container">
+        <div class="new-asset-form-header">
+            <h1>Add New Asset</h1>
+        </div>
+        <form class="new-asset-form default-form" action="{{ url_for('save_asset') }}" method="POST">
+            <input type="hidden" name="asset_id" value="{{ asset._id if asset else '' }}">  <!-- Store ID -->
+            <div class="form-group">
+                <label for="asset-tag">Asset Tag</label>
+                <input type="text" id="asset-tag" name="asset-tag" value="{{ asset.asset_tag if asset else ''  }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="serial">Serial Number</label>
+                <input type="text" id="serial" name="serial" value="{{ asset.serial }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="model">Model</label>
+                <input type="text" id="model" name="model" value="{{ asset.model }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="notes">Notes</label>
+                <textarea id="notes" name="notes" {{ asset.notes }} rows="4"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="warranty">Warranty Expiry</label>
+                <input type="date" id="warranty" name="warranty" value="{{ asset.warranty }}">
+            </div>
+
+            <div class="form-group">
+                <label for="order-number">Order Number</label>
+                <input type="text" id="order-number" name="order-number" value="{{ asset.order_number }}" >
+            </div>
+
+            <div class="form-group">
+                <label for="purchase-cost">Purchase Cost</label>
+                <input type="number" id="purchase-cost" name="purchase-cost" value="{{ asset.purchase_cost }}">
+            </div>
+
+            <div class="form-group">
+                <label for="purchase-date">Purchase Date</label>
+                <input type="date" id="purchase-date" name="purchase-date" value="{{ asset.purchase_date }}">
+            </div>
+
+            <div class="form-group">
+                <label for="location">Location</label>
+                <input type="number" id="location" name="location" value="{{ asset.location }}">
+            </div>
+
+            <div class="form-actions">
+                <a href="javascript:window.history.back()" class="form-cancel">Cancel</a>
+                <button type="submit" class="btn save-btn"><i class="fa-solid fa-check"></i> Save</button>
+            </div>
+        </form>
+    </div>
+
+
+    <script>
+        // Optional: You can add JavaScript validation if needed
+        document.getElementById('asset-form').addEventListener('submit', function(event) {
+            // Example: prevent form submission if required fields are missing or invalid
+            const form = event.target;
+            const fields = form.querySelectorAll('[required]');
+            let valid = true;
+
+            fields.forEach(function(field) {
+                if (!field.value) {
+                    valid = false;
+                    field.classList.add('error');
+                } else {
+                    field.classList.remove('error');
+                }
+            });
+
+            if (!valid) {
+                event.preventDefault();
+                alert("Please fill out all required fields.");
+            }
+        });
+    </script>
+
+
 
 {% endblock %}

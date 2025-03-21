@@ -54,7 +54,11 @@
                 
                 <div class="inner-action-group">
                     <div class="assets-interactive-btn">
-                        <button class= "assets-edit-button"><i class="fa-solid fa-pencil"></i></button>
+                        <a href="{{ url_for('asset_properties', asset_id=asset._id) }}">
+                            <button class="assets-edit-button">
+                                <i class="fa-solid fa-pencil"></i>
+                            </button>
+                        </a>
                         <button class= "assets-delete-button"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 </div>
