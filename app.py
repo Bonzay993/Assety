@@ -6,6 +6,7 @@ from flask import render_template, session
 from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
 from bson.objectid import ObjectId 
+import datetime
 
 if os.path.exists("env.py"):
     import env
@@ -147,6 +148,45 @@ def inventory_app():
     return render_template('inventory.html', first_name=user_first_name, company=company_name)
 
 
+@app.route('/dashboard')
+def dashboard():
+    # Ensure user is logged in
+    company_name = session.get('company', None)
+    user_first_name = session.get('first_name', 'User')
+
+    if not company_name:
+        flash("Please log in to access the dashboard.", "error")
+        return redirect(url_for('login'))
+
+    company_name = company_name.replace('_', ' ')
+
+    # Connect to MongoDB
+    client = MongoClient(app.config["MONGO_URI"])
+    db = client[app.config["MONGO_DBNAME"]]
+    company_collection = db[company_name]
+
+    # Fetch total assets
+    total_assets = company_collection.count_documents({"asset": True})
+
+    # Fetch categories (assuming categories exist in asset records)
+    categories = company_collection.distinct("category")
+
+    # Fetch recent assets (last 5 added)
+    recent_assets = list(company_collection.find({"asset": True}).sort("_id", -1).limit(5))
+
+    # Fetch recent activities (last 5 activities)
+    recent_activities = list(db.activities.find().sort("date", -1).limit(5))
+
+    return render_template(
+        "dashboard.html",
+        first_name=user_first_name,
+        company=company_name,
+        total_assets=total_assets,
+        categories=categories,
+        recent_assets=recent_assets,
+        recent_activities=recent_activities  # Pass activities to the template
+    )
+
 
 @app.route('/test-mongo')
 def test_mongo():
@@ -230,6 +270,15 @@ def save_asset():
                 {"_id": ObjectId(asset_id)},
                 {"$set": asset_data}
             )
+            # Log the update activity
+            activity_data = {
+                'date': datetime.datetime.now(),
+                'user': session['first_name'],
+                'action': 'Update',
+                'asset': asset_tag
+            }
+            db.activities.insert_one(activity_data)
+
             flash("Asset updated successfully!", "success")
         else:
             company_collection.insert_one(asset_data)
@@ -281,6 +330,16 @@ def delete_asset(asset_id):
         result = company_collection.delete_one({"_id": ObjectId(asset_id)})
 
         if result.deleted_count > 0:
+            # Log the delete activity
+            asset = company_collection.find_one({"_id": ObjectId(asset_id)})  # Get the deleted asset's details
+            activity_data = {
+                'date': datetime.datetime.now(),
+                'user': session['first_name'],
+                'action': 'Delete',
+                'asset': asset.get('asset_tag', 'Unknown Asset')  # Use asset_tag or a fallback
+            }
+            db.activities.insert_one(activity_data)
+
             flash("Asset deleted successfully", "success")
         else:
             flash("Asset not found!", "danger")
@@ -289,6 +348,30 @@ def delete_asset(asset_id):
         flash(f"Error deleting asset: {str(e)}", "danger")
 
     return redirect(url_for('assets'))
+
+
+
+
+def log_activity(action, asset_id, asset_tag):
+    """Logs the activity to the 'activities' collection"""
+    user_id = session.get('user_id')
+    company_name = session.get('company')
+    timestamp = datetime.datetime.now()
+
+    client = MongoClient(app.config["MONGO_URI"])
+    db = client[app.config["MONGO_DBNAME"]]
+    activities_collection = db['activities']  # You should create this collection in MongoDB
+
+    activity_data = {
+        'user_id': user_id,
+        'action': action,
+        'asset_id': asset_id,
+        'asset_tag': asset_tag,
+        'timestamp': timestamp,
+        'company': company_name
+    }
+
+    activities_collection.insert_one(activity_data)
         
 
 @app.route('/locations')

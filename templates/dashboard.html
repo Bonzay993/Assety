@@ -1,0 +1,62 @@
+{% extends "inventory.html" %}
+
+{% block content %}
+<section class="dashboard">
+    <h2>Dashboard Overview</h2>
+    <div class="stats-container">
+        <div class="stat-card">
+            <h3>Total Assets</h3>
+            <p>{{ total_assets }}</p>
+        </div>
+        <div class="stat-card">
+            <h3>Categories</h3>
+            <p>{{ categories | length }}</p>
+        </div>
+    </div>
+
+    <h3>Recent Assets</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Asset Tag</th>
+                <th>Model</th>
+                <th>Serial</th>
+                <th>Purchase Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for asset in recent_assets %}
+            <tr>
+                <td>{{ asset.asset_tag }}</td>
+                <td>{{ asset.model }}</td>
+                <td>{{ asset.serial }}</td>
+                <td>{{ asset.purchase_date }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h3>Recent Activities</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>User</th>
+                <th>Action</th>
+                <th>Asset</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for activity in recent_activities %}
+            <tr>
+                <td>{{ activity.date.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                <td>{{ activity.user }}</td>
+                <td>{{ activity.action }}</td>
+                <td>{{ activity.asset }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+</section>
+{% endblock %}
