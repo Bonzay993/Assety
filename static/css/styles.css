@@ -608,6 +608,11 @@ input {
     justify-content: space-between;
 }
 
+.assets-interactive-btn{
+    display:flex;
+    flex-direction: row;
+}
+
 .assets-edit-button{
     width:30px;
     height:30px;
@@ -697,7 +702,7 @@ input {
 .default-form{
     width:50%;
     height:50%;
-    margin-top:10%;
+    margin-top:5%;
     background-color:white;
     padding:2%;
 }

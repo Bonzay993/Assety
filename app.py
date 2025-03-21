@@ -258,6 +258,37 @@ def asset_properties():
             return render_template("asset-properties.html", asset=asset)  
 
     return render_template("asset-properties.html", asset=None)  # If no asset ID, load empty form
+
+
+@app.route('/delete_asset/<asset_id>', methods=['POST'])
+def delete_asset(asset_id):
+    try:
+        # Get the company name from session
+        company_name = session.get('company', None)
+        if not company_name:
+            flash("No company found in session. Please log in again.", "error")
+            return redirect(url_for('login'))
+
+        # Replace underscores with spaces in company name (if needed)
+        company_name = company_name.replace("_", " ")
+
+        # Connect to MongoDB
+        client = MongoClient(app.config["MONGO_URI"])
+        db = client[app.config["MONGO_DBNAME"]]
+        company_collection = db[company_name]
+
+        # Attempt to find and delete the asset
+        result = company_collection.delete_one({"_id": ObjectId(asset_id)})
+
+        if result.deleted_count > 0:
+            flash("Asset deleted successfully", "success")
+        else:
+            flash("Asset not found!", "danger")
+
+    except Exception as e:
+        flash(f"Error deleting asset: {str(e)}", "danger")
+
+    return redirect(url_for('assets'))
         
 
 @app.route('/locations')
