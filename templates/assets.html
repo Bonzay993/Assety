@@ -10,18 +10,59 @@
             </a>
         </div>
     </div>
-    
-    
-    <div class="assets-list">
+</section>   
+
+<section class="assets-list">
+    <div class="assets-list-container">
+        <div class="assets-list-heading-container">
+            <p class="asset-list-title-item"><strong>Asset Name</strong></p>
+            <p class="asset-list-title-item"><strong>Serial</strong> </p>
+            <p class="asset-list-title-item"><strong>Location</strong> </p>
+            <p class="asset-list-title-item"><strong>Category</strong> </p>
+            <p class="asset-list-title-item"><strong>Purchase Date</strong> </p>
+            <p class="asset-list-title-item"><strong>Purchase Cost</strong> </p>
+            <p class="asset-list-title-item"><strong>Actions</strong> </p>
+        </div>
+
         {% for asset in assets %}
-            <div class="asset-item">
-                <h3>{{ asset.name }}</h3>
-                <p><strong>Category:</strong> {{ asset.category }}</p>
-                <p><strong>Quantity:</strong> {{ asset.quantity }}</p>
-                <p><strong>Location:</strong> {{ asset.location }}</p>
+        <div class="assets-list-items-container {% if loop.index0 % 2 == 0 %}blue-row{% else %}lightblue-row{% endif %}">
+            <div class="title-body-group">
+                
+                <p>{{ asset.asset_tag }}</p>
             </div>
-        {% endfor %}
+            <div class="title-body-group">
+                
+                <p>{{ asset.serial }}</p>
+            </div>
+            <div class="title-body-group">
+                
+                <p>{{ asset.location }}</p>
+            </div>
+            <div class="title-body-group">
+                
+                <p>{{ asset.category }}</p>
+            </div>
+            <div class="title-body-group">
+                
+                <p>{{ asset.purchase_date }}</p>
+            </div>
+            <div class="title-body-group ">
+                
+                <p>{{ asset.purchase_cost }}</p>
+            </div>
+            <div class="title-body-group">
+                
+                <div class="inner-action-group">
+                    <div class="assets-interactive-btn">
+                        <button class= "assets-edit-button"><i class="fa-solid fa-pencil"></i></button>
+                        <button class= "assets-delete-button"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div> 
+    {% endfor %}
     </div>
 </section>
+
 
 {% endblock %}

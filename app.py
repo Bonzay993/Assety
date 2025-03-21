@@ -173,13 +173,11 @@ def assets():
     client = MongoClient(app.config["MONGO_URI"])
     db = client[app.config["MONGO_DBNAME"]]
     
-    laptops_collection = db['laptops']
-    computers_collection = db['computers']
-    
-    all_laptops = list(laptops_collection.find({}))
-    all_computers = list(computers_collection.find({}))
+      # Access the company's asset collection
+    company_collection = db[company_name]
 
-    all_assets = all_laptops + all_computers
+    # Fetch only assets where "asset" is True
+    all_assets = list(company_collection.find({"asset": True}))
     
     # Pass the assets and first name to the template
     return render_template("assets.html", assets=all_assets, first_name=user_first_name, company=company_name)
@@ -222,9 +220,11 @@ def save_asset():
     warranty = request.form['warranty']
     order_number = request.form['order-number']
     purchase_cost = request.form['purchase-cost']
+    purchase_date = request.form['purchase-date']
 
     # Create the asset data dictionary
     asset_data = {
+        'asset':True,
         'asset_tag': asset_tag,
         'serial': serial,
         'model': model,
@@ -232,6 +232,7 @@ def save_asset():
         'warranty': warranty,
         'order_number': order_number,
         'purchase_cost': purchase_cost,
+        'purchase_date': purchase_date,
     }
 
     try:

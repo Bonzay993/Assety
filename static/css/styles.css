@@ -495,7 +495,7 @@ input {
 /* Main Content Area */
 .main-content {
     flex-grow: 1;
-    background-color: #f4f4f4;
+    background-color: #477cdf0a;
     padding: 20px;
     font-family: Arial, sans-serif;
 }
@@ -566,10 +566,83 @@ input {
     margin-bottom: 20px;
 }
 
-.assets-list {
+.assets-list{
+   align-items: center;
+   margin: 0 auto;
+   background-color: rgb(255, 255, 255);
+   padding:1%;
+   border:2px solid rgba(26, 87, 199, 0.137);
+}
+
+.assets-list-heading-container {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    font-size: 80%;
+    justify-content: space-between;
+    padding:0.5%;
+    margin-bottom:1%;
+}
+
+.assets-list-items-container{
+    display: flex;
+    flex-direction: row;
+    font-size: 80%;
+    justify-content: space-between;
+    padding:0.5%;
+}
+
+.asset-list-title-item{
+    width:100px;
+    height:10px;
+}
+
+.title-body-group{
+    width:100px;
+    height:30px;
+}
+
+
+.inner-action-group{
+    display:flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.assets-edit-button{
+    width:30px;
+    height:30px;
+    background-color:orange;
+    cursor: pointer;
+    border: 1px solid rgb(202, 133, 4);
+    color:white;
+}
+
+.assets-delete-button{
+    width:30px;
+    height:30px;
+    background-color: rgb(204, 80, 80);
+    cursor: pointer;
+    border: 1px solid rgb(202, 47, 47);
+    color:white;
+}
+
+.blue-row {
+    background-color: #9fb4c21c; /* Blue */
+}
+
+.lightblue-row {
+    background-color: #ffffff; /* Light Blue */
+    color: black; /* Text color */
+}
+
+
+.assets-list-body-container {
+    display: flex;
+    flex-direction: row;
     gap: 15px;
+    justify-content: space-between;
+    width:80%;
+    font-size: 80%;
 }
 
 .asset-item {
