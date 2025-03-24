@@ -228,9 +228,18 @@ def assets():
 
 @app.route("/new-asset")
 def new_asset():
-     company_name = session.get('company', None)
      user_first_name = session.get('first_name', 'User') 
-     return render_template("new-asset.html",first_name=user_first_name, company=company_name )
+     company_name = session.get('company', None)
+     company_name = company_name.replace("_", " ")
+
+     client = MongoClient(app.config["MONGO_URI"])
+     db = client[app.config["MONGO_DBNAME"]]
+
+     company_collection = db[company_name]
+     
+     locations = list(company_collection.find({"location": True}))
+     
+     return render_template("new-asset.html",first_name=user_first_name, company=company_name, locations=locations )
 
 
 @app.route('/save_asset', methods=['POST'])
@@ -254,6 +263,7 @@ def save_asset():
     order_number = request.form['order-number']
     purchase_cost = request.form['purchase-cost']
     purchase_date = request.form['purchase-date']
+    location = request.form['location']  # Capture selected location
 
     asset_data = {
         'asset': True,
@@ -265,6 +275,7 @@ def save_asset():
         'order_number': order_number,
         'purchase_cost': purchase_cost,
         'purchase_date': purchase_date,
+        'location': location
     }
 
     try:
@@ -295,6 +306,10 @@ def save_asset():
             flash("New asset created!", "success")
 
         return redirect(url_for('assets'))  
+
+    except Exception as e:
+        flash(f"An error occurred: {str(e)}", "error")
+        return redirect(url_for('dashboard'))
 
     except Exception as e:
         flash(f"An error occurred: {str(e)}", "error")
@@ -363,7 +378,6 @@ def delete_asset(asset_id):
         flash(f"Error deleting asset: {str(e)}", "danger")
 
     return redirect(url_for('assets'))
-
 
 
 
@@ -439,6 +453,7 @@ def save_location():
 
     # Ensure the collection name corresponds to the company name
     company_collection = db[company_name]  # Using company name as collection name
+    
 
     # Get form data from the POST request
     location_id = request.form.get('location_id')
