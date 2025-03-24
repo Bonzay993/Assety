@@ -4,59 +4,68 @@
 <section class="dashboard">
     <h2>Dashboard Overview</h2>
     <div class="stats-container">
-        <div class="stat-card">
-            <h3>Total Assets</h3>
-            <p>{{ total_assets }}</p>
+        <div class="stat-card asset-stat-card">
+            <div class="stat-card-container">
+                <h3 class="stat-card-heading">{{ total_assets }}</h3>
+                <p class="stat-card-paragraph">Assets</p>
+            </div>
+             <i class="fa-solid fa-barcode stat-card-span"></i>
         </div>
-        <div class="stat-card">
-            <h3>Categories</h3>
-            <p>{{ categories | length }}</p>
+        <div class="stat-card categories-stat-card">
+            <div class="stat-card-container">
+                <h3 class="stat-card-heading">{{ categories | length }}</h3>
+                <p class="stat-card-paragraph">Categories</p>
+            </div>
+            <i class="fa-solid fa-table-list stat-card-span"></i>
+        </div>
+        <div class="stat-card locations-stat-card">
+            <div class="stat-card-container">
+                <h3 class="stat-card-heading">{{ locations | length }}</h3>
+                <p class="stat-card-paragraph">Locations</p>
+            </div>
+            <i class="fa-solid fa-location-dot stat-card-span"></i>
         </div>
     </div>
 
-    <h3>Recent Assets</h3>
-    <table>
-        <thead>
-            <tr>
-                <th>Asset Tag</th>
-                <th>Model</th>
-                <th>Serial</th>
-                <th>Purchase Date</th>
-            </tr>
-        </thead>
-        <tbody>
+    <div class="recent-assets-master-container">
+        <h3 class="recent-assets-heading">Recent Assets</h3>
+        <div class="recent-assets-list">
+            <div class="recent-assets-header">
+                <span class="recent-assets-title asset-tag">Asset Tag</span>
+                <span class="recent-assets-title asset-model">Model</span>
+                <span class="recent-assets-title asset-serial">Serial</span>
+                <span class="recent-assets-title asset-date">Purchase Date</span>
+                <span class="recent-assets-title asset-date">Purchase Cost</span>
+            </div>
             {% for asset in recent_assets %}
-            <tr>
-                <td>{{ asset.asset_tag }}</td>
-                <td>{{ asset.model }}</td>
-                <td>{{ asset.serial }}</td>
-                <td>{{ asset.purchase_date }}</td>
-            </tr>
+            <div class="recent-assets-container {% if loop.index0 % 2 == 0 %}blue-row{% else %}lightblue-row{% endif %}">
+                <span class="recent-assets-item asset-tag">{{ asset.asset_tag }}</span>
+                <span class="recent-assets-item asset-model">{{ asset.model }}</span>
+                <span class="recent-assets-item asset-serial">{{ asset.serial }}</span>
+                <span class="recent-assets-item asset-date">{{ asset.purchase_date }}</span>
+                <span class="recent-assets-item asset-date">{{ asset.purchase_cost }}</span>
+            </div>
             {% endfor %}
-        </tbody>
-    </table>
-
-    <h3>Recent Activities</h3>
-    <table>
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>User</th>
-                <th>Action</th>
-                <th>Asset</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for activity in recent_activities %}
-            <tr>
-                <td>{{ activity.date.strftime('%Y-%m-%d %H:%M:%S') }}</td>
-                <td>{{ activity.user }}</td>
-                <td>{{ activity.action }}</td>
-                <td>{{ activity.asset }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+        </div>
+    </div>
     
+    
+    <div class="recent-activities-list">
+        <h3 class="recent-activities-header">Recent Activities</h3>
+        <div class="recent-activities-container">
+            <span class="activity-title activity-date">Date</span>
+            <span class="activity-title activity-user">User</span>
+            <span class="activity-title activity-action">Action</span>
+            <span class="activity-title activity-asset">Asset</span>
+        </div>
+        {% for activity in recent_activities %}
+        <div class="activity-items-container ">
+            <span class="activity-item activity-date">{{ activity.date.strftime('%Y-%m-%d %H:%M:%S') }}</span>
+            <span class="activity-item activity-user">{{ activity.user }}</span>
+            <span class="activity-item activity-action">{{ activity.action }}</span>
+            <span class="activity-item activity-asset">{{ activity.asset }}</span>
+        </div>
+        {% endfor %}
+    </div>
 </section>
 {% endblock %}

@@ -116,7 +116,7 @@ def login():
             session['company'] = user['company']
             print(f"Session after login: {session}")  # Debugging session data
             flash('Login successful!', 'success')
-            return redirect(url_for('inventory_app'))  # Redirect to inventory page
+            return redirect(url_for('dashboard'))  # Redirect to inventory page
         else:
             flash('Invalid credentials. Please try again.', 'danger')  # Category 'danger' for login error
 
@@ -282,6 +282,13 @@ def save_asset():
             flash("Asset updated successfully!", "success")
         else:
             company_collection.insert_one(asset_data)
+            activity_data = {
+                'date': datetime.datetime.now(),
+                'user': session['first_name'],
+                'action': 'Create',  # Log the creation action
+                'asset': asset_tag
+            }
+            db.activities.insert_one(activity_data)
             flash("New asset created!", "success")
 
         return redirect(url_for('assets'))  
