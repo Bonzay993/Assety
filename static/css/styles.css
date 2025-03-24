@@ -799,6 +799,31 @@ input {
     background-color:rgb(255, 133, 27)
 }
 
+.card-view-all{
+    background-color: rgb(48, 173, 173);
+    height:30px;
+    display:flex;
+    flex-direction: row;
+    text-decoration: none;
+    color:white;
+    font-size: 80%;
+    align-items: center;
+    gap:8px;
+    justify-content: center;
+}
+
+.categories-card-view-all{
+    background-color: rgb(183, 22, 81);
+}
+
+.locations-card-view-all{
+    background-color: rgb(217, 113, 22);
+}
+
+.fa-arrow-right{
+    font-size:78%;
+}
+
 .recent-assets-master-container{
     margin-bottom:2.5%;
     background-color:white;
