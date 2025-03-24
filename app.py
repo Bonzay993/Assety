@@ -295,7 +295,7 @@ def save_asset():
 
     except Exception as e:
         flash(f"An error occurred: {str(e)}", "error")
-        return redirect(url_for('inventory_app'))
+        return redirect(url_for('dashboard'))
 
 
 
@@ -383,9 +383,27 @@ def log_activity(action, asset_id, asset_tag):
 
 @app.route('/locations')
 def locations():
-    company_name = session.get('company', None)
+    # Debugging: Check the session data
+    print(f"Session at assets page: {session}")
+
+    # Get the first name from the session, if available
     user_first_name = session.get('first_name', 'User')
-    return render_template("locations.html",first_name=user_first_name, company=company_name )
+    company_name = session.get('company', 'No Company')
+
+    company_name = company_name.replace("_", " ")
+
+    # Fetch assets from the database as before
+    client = MongoClient(app.config["MONGO_URI"])
+    db = client[app.config["MONGO_DBNAME"]]
+    
+      # Access the company's asset collection
+    company_collection = db[company_name]
+
+    # Fetch only assets where "asset" is True
+    all_locations = list(company_collection.find({"location": True}))
+    
+    # Pass the assets and first name to the template
+    return render_template("locations.html", locations=all_locations, first_name=user_first_name, company=company_name)
 
 
 @app.route('/new-location')
@@ -415,6 +433,7 @@ def save_location():
     company_collection = db[company_name]  # Using company name as collection name
 
     # Get form data from the POST request
+    location_id = request.form.get('location_id')
     location_tag = request.form['location-tag']
     phone = request.form['phone']  # Changed from 'phone' to 'serial' (match your form)
     address = request.form['address']  # Changed from 'address' to 'model' (match your form)
@@ -424,6 +443,7 @@ def save_location():
 
     # Create the location data dictionary
     location_data = {
+        'location':True,
         'location_tag': location_tag,
         'phone': phone,
         'address': address,
@@ -433,15 +453,97 @@ def save_location():
     }
 
     try:
-        # Insert the data into the company-specific collection
-        company_collection.insert_one(location_data)
+        if location_id:
+            # Insert the data into the company-specific collection
+            company_collection.update_one(
+                {"_id": ObjectId(location_id)},
+                {"$set": location_data}
+            )
 
-        flash("Location saved successfully!", "success")
-        return redirect(url_for('inventory_app'))  # Redirect to inventory page
+            activity_data={
+                'date':datetime.datetime.now(),
+                'user': session['first_name'],
+                'action': 'Update',
+                'location': location_tag
+            }
+            db.activities.insert_one(activity_data)
+            flash("Location updated succesfully!","success")
+        else:
+            company_collection.insert_one(location_data)
+            activity_data = {
+                'date': datetime.datetime.now(),
+                'user': session['first_name'],
+                'action': 'Create',  # Log the creation action
+                'location': location_tag
+            }
+            db.activities.insert_one(activity_data)
+            flash("New location created!", "success")
+            
+
+        
+        return redirect(url_for('locations'))  # Redirect to inventory page
 
     except Exception as e:
         flash(f"An error occurred: {str(e)}", "error")
-        return redirect(url_for('inventory_app'))  # Redirect on error
+        return redirect(url_for('dashboard'))  # Redirect on error
+
+@app.route('/location-properties')
+def location_properties():
+    location_id = request.args.get('location_id')  # Get asset ID from URL
+    
+    if location_id:
+        client = MongoClient(app.config["MONGO_URI"])
+        db = client[app.config["MONGO_DBNAME"]]
+        company_collection = db[session.get('company', 'default_company')]
+
+        location = company_collection.find_one({"_id": ObjectId(location_id)})  # Fetch asset
+
+        if location:
+            return render_template("location-properties.html", location=location)  
+
+    return render_template("location-properties.html", asset=None)  # If no asset ID, load empty form
+
+
+@app.route('/delete_location/<location_id>', methods=['POST'])
+def delete_location(location_id):
+    try:
+        # Get the company name from session
+        company_name = session.get('company', None)
+        if not company_name:
+            flash("No company found in session. Please log in again.", "error")
+            return redirect(url_for('login'))
+
+        # Replace underscores with spaces in company name (if needed)
+        company_name = company_name.replace("_", " ")
+
+        # Connect to MongoDB
+        client = MongoClient(app.config["MONGO_URI"])
+        db = client[app.config["MONGO_DBNAME"]]
+        company_collection = db[company_name]
+
+        # Attempt to find and delete the asset
+        result = company_collection.delete_one({"_id": ObjectId(location_id)})
+
+        if result.deleted_count > 0:
+            # Log the delete activity
+            asset = company_collection.find_one({"_id": ObjectId(location_id)})  # Get the deleted asset's details
+            activity_data = {
+                'date': datetime.datetime.now(),
+                'user': session['first_name'],
+                'action': 'Delete',
+                'location': location.get('location_tag', 'Unknown location')  # Use asset_tag or a fallback
+            }
+            db.activities.insert_one(activity_data)
+
+            flash("Location deleted successfully", "success")
+        else:
+            flash("Location not found!", "danger")
+
+    except Exception as e:
+        flash(f"Error deleting location: {str(e)}", "danger")
+
+    return redirect(url_for('locations'))
+
 
 @app.route("/categories")
 def categories():
