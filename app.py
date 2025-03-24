@@ -443,6 +443,10 @@ def save_location():
         flash(f"An error occurred: {str(e)}", "error")
         return redirect(url_for('inventory_app'))  # Redirect on error
 
+@app.route("/categories")
+def categories():
+    return render_template("categories.html")
+
 
 if __name__ == "__main__":
     app.run(host=os.environ.get("IP", "0.0.0.0"),

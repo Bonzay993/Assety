@@ -740,14 +740,16 @@ input {
     background-color:white;
     padding:1%;
     border:2px solid rgba(60, 60, 228, 0.096);
-  
-    
+}
+
+.stats-container-link-wrapper{
+    text-decoration: none;
 }
 
 .stat-card{
-    width:240px;
+    width:260px;
     height:100px;
-   padding:0.5%;
+   padding:4%;
    flex-direction: row;
     display:flex;
     color:white;
@@ -761,6 +763,8 @@ input {
     align-self:center;
     margin-left: auto;
 }
+
+
 
 .stat-card-span:hover{
     font-size: 430%;

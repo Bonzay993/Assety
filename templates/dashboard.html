@@ -4,27 +4,35 @@
 <section class="dashboard">
     <h2>Dashboard Overview</h2>
     <div class="stats-container">
-        <div class="stat-card asset-stat-card">
-            <div class="stat-card-container">
-                <h3 class="stat-card-heading">{{ total_assets }}</h3>
-                <p class="stat-card-paragraph">Assets</p>
+        <a class="stats-container-link-wrapper" href="{{ url_for('assets') }}">
+            <div class="stat-card asset-stat-card">
+                <div class="stat-card-container">
+                    <h3 class="stat-card-heading">{{ total_assets }}</h3>
+                    <p class="stat-card-paragraph">Assets</p>
+                </div>
+                <i class="fa-solid fa-barcode stat-card-span"></i>
             </div>
-             <i class="fa-solid fa-barcode stat-card-span"></i>
-        </div>
-        <div class="stat-card categories-stat-card">
-            <div class="stat-card-container">
-                <h3 class="stat-card-heading">{{ categories | length }}</h3>
-                <p class="stat-card-paragraph">Categories</p>
+        </a>
+        
+        <a class="stats-container-link-wrapper" href="{{ url_for('categories') }}">
+            <div class="stat-card categories-stat-card">
+                <div class="stat-card-container">
+                    <h3 class="stat-card-heading">{{ categories | length }}</h3>
+                    <p class="stat-card-paragraph">Categories</p>
+                </div>
+                <i class="fa-solid fa-table-list stat-card-span"></i>
             </div>
-            <i class="fa-solid fa-table-list stat-card-span"></i>
-        </div>
-        <div class="stat-card locations-stat-card">
-            <div class="stat-card-container">
-                <h3 class="stat-card-heading">{{ locations | length }}</h3>
-                <p class="stat-card-paragraph">Locations</p>
+        </a>
+        
+        <a class="stats-container-link-wrapper" href="{{ url_for('locations') }}"> 
+            <div class="stat-card locations-stat-card">
+                <div class="stat-card-container">
+                    <h3 class="stat-card-heading">{{ locations | length }}</h3>
+                    <p class="stat-card-paragraph">Locations</p>
+                </div>
+                <i class="fa-solid fa-location-dot stat-card-span"></i>
             </div>
-            <i class="fa-solid fa-location-dot stat-card-span"></i>
-        </div>
+        </a>
     </div>
 
     <div class="recent-assets-master-container">
