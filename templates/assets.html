@@ -16,13 +16,13 @@
     <div class="assets-list-container">
         <div class="assets-list-heading-container">
             <p class="asset-list-title-item"><strong>Asset Name</strong></p>
-            <p class="asset-list-title-item"><strong>Model</strong></p>
+            <p class="asset-list-title-item asset-list-title-item-model"><strong>Model</strong></p>
             <p class="asset-list-title-item"><strong>Serial</strong> </p>
             <p class="asset-list-title-item"><strong>Location</strong> </p>
             <p class="asset-list-title-item"><strong>Category</strong> </p>
             <p class="asset-list-title-item"><strong>Purchase Date</strong> </p>
             <p class="asset-list-title-item"><strong>Purchase Cost</strong> </p>
-            <p class="asset-list-title-item"><strong>Actions</strong> </p>
+            <p class="asset-list-title-item-action"><strong>Actions</strong> </p>
         </div>
 
         {% for asset in assets %}
@@ -31,7 +31,7 @@
                 
                 <p>{{ asset.asset_tag }}</p>
             </div>
-            <div class="title-body-group">
+            <div class="title-body-group title-body-group-model">
                 
                 <p>{{ asset.model}}</p>
             </div>
@@ -55,7 +55,7 @@
                 
                 <p>{{ asset.purchase_cost }}</p>
             </div>
-            <div class="title-body-group">
+            <div class="title-body-group title-body-group-actions">
                 
                 <div class="inner-action-group">
                     <div class="assets-interactive-btn">

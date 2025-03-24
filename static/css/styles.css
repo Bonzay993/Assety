@@ -306,7 +306,7 @@ input {
 /* Sidebar Styles */
 .sidebar {
     width: 200px;
-    background-color: #2d3e50;
+    background-color: rgb(34, 45, 50);
     color: white;
     font-family: Arial, sans-serif;
     position: relative;
@@ -433,7 +433,7 @@ input {
   .sidebar.minimized .dropdown:hover .dropdown-menu {
     display: block;
     position: absolute;
-    background: #264b72;
+    background: rgb(34, 45, 50);
     padding: 0px;
     margin: 0 auto;
     left: 80px;  /* Adjust to position it to the right of the sidebar */
@@ -496,7 +496,6 @@ input {
 .main-content {
     flex-grow: 1;
     background-color: #477cdf0a;
-    padding: 20px;
     font-family: Arial, sans-serif;
 }
 
@@ -505,6 +504,8 @@ input {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 30px;
+    background-color:rgb(39, 77, 97);
+    height:50px;
 }
 
 .header h1 {
@@ -592,15 +593,35 @@ input {
 }
 
 .asset-list-title-item{
-    width:100px;
+    width:160px;
     height:10px;
 }
 
 .title-body-group{
-    width:100px;
+    width:160px;
     height:30px;
+    align-items: center;
+    display:flex;
+
 }
 
+
+
+.title-body-group-actions{
+    width:60px;
+}
+
+.asset-list-title-item-action{
+    width:60px;
+}
+
+.asset-list-title-item-model{
+    width:200px;
+}
+
+.title-body-group-model{
+    width:200px;
+}
 
 .inner-action-group{
     display:flex;
@@ -632,7 +653,7 @@ input {
 }
 
 .blue-row {
-    background-color: #9fb4c21c; /* Blue */
+    background-color: rgb(249, 249, 249) /* Blue */
 }
 
 .lightblue-row {
@@ -722,4 +743,181 @@ input {
     font-size: 90%;
     text-decoration: none;
 
+}
+
+/* DASHBOARD CSS */
+.dashboard{
+    padding-left:20px;
+    padding-right:20px;
+}
+
+.stats-container{
+    margin-top:1%;
+    display:flex;
+    flex-direction: row;
+    gap:20px;
+    margin-bottom:2.5%;
+    background-color:white;
+    padding:1%;
+    border:2px solid rgba(60, 60, 228, 0.096);
+}
+
+.stats-container-link-wrapper{
+    text-decoration: none;
+}
+
+.stat-card{
+    width:260px;
+    height:100px;
+   padding:4%;
+   flex-direction: row;
+    display:flex;
+    color:white;
+    font-weight: bold;
+    cursor:pointer;
+}
+
+.stat-card-span{
+    font-size: 400%;
+    display:flex;
+    align-self:center;
+    margin-left: auto;
+}
+
+
+
+.stat-card-span:hover{
+    font-size: 430%;
+    transition: ease-in-out 0.3s
+}
+
+.fa-barcode{
+    color:rgb(48, 173, 173)
+}
+
+.fa-table-list{
+    color:rgb(183, 22, 81);
+}
+
+.fa-location-dot{
+    color: rgb(217, 113, 22);
+}
+
+.stat-card-heading{
+    font-size:200%;
+}
+
+.asset-stat-card{
+    background-color: rgb(57, 204, 204)
+}
+
+.categories-stat-card{
+    background-color: rgb(216, 27, 96)
+}
+
+.locations-stat-card{
+    background-color:rgb(255, 133, 27)
+}
+
+.card-view-all{
+    background-color: rgb(48, 173, 173);
+    height:30px;
+    display:flex;
+    flex-direction: row;
+    text-decoration: none;
+    color:white;
+    font-size: 80%;
+    align-items: center;
+    gap:8px;
+    justify-content: center;
+}
+
+.categories-card-view-all{
+    background-color: rgb(183, 22, 81);
+}
+
+.locations-card-view-all{
+    background-color: rgb(217, 113, 22);
+}
+
+.fa-arrow-right{
+    font-size:78%;
+}
+
+.recent-assets-master-container{
+    margin-bottom:2.5%;
+    background-color:white;
+    padding:1%;
+    border:2px solid rgba(60, 60, 228, 0.096)
+}
+
+.recent-assets-heading{
+    margin-bottom:0.5%;
+}
+
+.recent-assets-header{
+    display:flex;
+    flex-direction: row;
+    font-weight: bold;
+}
+
+.recent-assets-title{
+    width:280px;
+    height:20px;
+    margin-bottom:1%;
+    font-size: 90%;
+}
+
+.recent-assets-container{
+    display:flex;
+    flex-direction:row;
+}
+
+.recent-assets-item{
+    width:280px;
+    height:30px;
+    font-size: 85%;
+}
+
+
+.recent-activities-header{
+    margin-bottom:1%;
+}
+
+
+.recent-activities-list{
+    display:flex;
+    flex-direction:column;
+    background-color:white;
+    padding:1%;
+    border:2px solid rgba(60, 60, 228, 0.096)
+}
+
+.recent-activities-container{
+    display:flex;
+    flex-direction: row;
+    margin-bottom:1%;
+}
+
+.activity-items-container{
+    display:flex;
+    flex-direction: row;
+}
+
+
+.activity-title {
+    width:200px;
+    height:20px;
+    font-weight: bold;
+    font-size: 90%;
+}
+
+.activity-item{
+    width:200px;
+    height:30px;
+    font-size:85%;
+}
+
+.activity-date{
+    width:200px;
 }
