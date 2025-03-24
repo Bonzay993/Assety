@@ -593,16 +593,34 @@ input {
 }
 
 .asset-list-title-item{
-    width:100px;
+    width:160px;
     height:10px;
 }
 
 .title-body-group{
-    width:100px;
+    width:160px;
     height:30px;
     align-items: center;
     display:flex;
 
+}
+
+
+
+.title-body-group-actions{
+    width:60px;
+}
+
+.asset-list-title-item-action{
+    width:60px;
+}
+
+.asset-list-title-item-model{
+    width:200px;
+}
+
+.title-body-group-model{
+    width:200px;
 }
 
 .inner-action-group{
