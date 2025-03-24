@@ -79,6 +79,7 @@
             <span class="activity-title activity-user">User</span>
             <span class="activity-title activity-action">Action</span>
             <span class="activity-title activity-asset">Asset</span>
+            <span class="activity-title activity-asset">Location</span>
         </div>
         {% for activity in recent_activities %}
         <div class="activity-items-container ">
@@ -86,6 +87,7 @@
             <span class="activity-item activity-user">{{ activity.user }}</span>
             <span class="activity-item activity-action">{{ activity.action }}</span>
             <span class="activity-item activity-asset">{{ activity.asset }}</span>
+            <span class="activity-item activity-asset">{{ activity.location }}</span>
         </div>
         {% endfor %}
     </div>

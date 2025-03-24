@@ -7,6 +7,7 @@ from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
 from bson.objectid import ObjectId 
 import datetime
+import gridfs
 
 if os.path.exists("env.py"):
     import env
@@ -20,8 +21,10 @@ app.config['SESSION_COOKIE_NAME'] = 'session'  # Customize the cookie name (opti
 app.config['SESSION_PERMANENT'] = False  # Session will not last beyond the browser session
 app.config['SESSION_TYPE'] = 'filesystem'  # Store session in the filesystem, can also be 'redis' or 'mongodb
 
-
 mongo = PyMongo(app)
+
+# Initialize GridFS
+fs = gridfs.GridFS(mongo.cx[app.config["MONGO_DBNAME"]])
 
 @app.route('/')
 def index():
@@ -333,12 +336,17 @@ def delete_asset(asset_id):
         db = client[app.config["MONGO_DBNAME"]]
         company_collection = db[company_name]
 
+        asset = company_collection.find_one({"_id": ObjectId(asset_id)})
+
+        if not asset:
+            flash("Asset not found!", "danger")
+            return redirect(url_for('assets'))
+
         # Attempt to find and delete the asset
         result = company_collection.delete_one({"_id": ObjectId(asset_id)})
 
         if result.deleted_count > 0:
             # Log the delete activity
-            asset = company_collection.find_one({"_id": ObjectId(asset_id)})  # Get the deleted asset's details
             activity_data = {
                 'date': datetime.datetime.now(),
                 'user': session['first_name'],
@@ -521,12 +529,17 @@ def delete_location(location_id):
         db = client[app.config["MONGO_DBNAME"]]
         company_collection = db[company_name]
 
+        location = company_collection.find_one({"_id": ObjectId(location_id)})
+
+        if not location:
+            flash("Location not found!", "danger")
+            return redirect(url_for('locations'))
+
         # Attempt to find and delete the asset
         result = company_collection.delete_one({"_id": ObjectId(location_id)})
 
         if result.deleted_count > 0:
             # Log the delete activity
-            asset = company_collection.find_one({"_id": ObjectId(location_id)})  # Get the deleted asset's details
             activity_data = {
                 'date': datetime.datetime.now(),
                 'user': session['first_name'],

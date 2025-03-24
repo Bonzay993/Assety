@@ -633,7 +633,7 @@ input {
 }
 
 .blue-row {
-    background-color: #9fb4c21c; /* Blue */
+    background-color: rgb(249, 249, 249) /* Blue */
 }
 
 .lightblue-row {
