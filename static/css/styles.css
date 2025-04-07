@@ -8,31 +8,55 @@
 body {
     font-family: 'Arial', sans-serif;
     line-height: 1.6;
-    background-color: #fafafa;
+    background-color: white;
     color: #020318;
+    height:100vh;
+  
 }
+
+/* FONTS */
+
+.montserrat-500 {
+    font-family: "Montserrat", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+}
+  
+  
 
 /* LANDING PAGE CSS */
 header {
     display:flex;
     flex-direction: row;
-    background-color: #2c3e50;
-    color: white;
+    background-color:rgb(39, 77, 97);
+    color: rgb(255, 255, 255);
     padding-left:20px;
     padding-right:20px;
     text-align: center;
     justify-content: space-between;
     align-items: center;
-   
+    box-shadow: 0px 0px 5px  rgba(0, 0, 0, 0.322);
+    z-index:999;
+    
+}
+
+.header-container{
+    display:flex;
+    justify-content: space-between;
+    align-items: center;
+    width:60%;
+    margin:0 auto;
+    flex-flow:row wrap;
 }
 
 header .logo h1 {
     font-size: 2.5rem;
-    margin-bottom: 10px;
+    
 }
 
 .logo-wrapper{
-    color:white;
+    color:rgb(255, 255, 255);
     text-decoration: none;
 
 }
@@ -46,10 +70,11 @@ nav ul {
 
 nav ul li {
     display: inline;
+    color:black;
 }
 
 nav ul li a {
-    color: white;
+    color: rgb(255, 255, 255);
     text-decoration: none;
     font-size: 1.1rem;
     font-weight: 500;
@@ -60,19 +85,29 @@ nav ul li a {
     justify-content: center;
     align-items: center;
     text-align: center;
-    height: 920px;
-    color: white;
-    background: linear-gradient(135deg, rgba(0, 0, 0, 0.8), rgba(200, 205, 206, 0.4)), 
-                url("../img/hero3.jpg");
-    background-size:cover;
-    background-position: contain;
+    color: rgb(0, 0, 0);
+    background-color:rgb(255, 255, 255);
+    margin-top:7%;
+
+    
+}
+
+.hero-image{
+    width:500px;
+}
+
+.hero-container{
+    display:flex;
+    flex-flow: row wrap;
     margin:0 auto;
+    justify-content: space-between;
+    width:90%;
 }
 
 @keyframes slideInFromRight {
     from {
         opacity: 0;
-        transform: translateX(100%);
+        transform: translateX(1200px); /* Small offset, not off-screen */
     }
     to {
         opacity: 1;
@@ -80,48 +115,90 @@ nav ul li a {
     }
 }
 
+/* Initial State: Invisible but at normal position */
 .hero-content {
-    animation: slideInFromRight 1s ease-out;
+    opacity: 0;
+    transform: translateX(100px);
+    transition: none; /* Prevents unintended animations on refresh */
+    width:60%;
+}
+
+.hero-subcontainer {
+    display:flex;
+    justify-content: space-between;
+    flex-direction: column;
+    width:50%;
+    height:60%;
+    align-items: center;
+    margin-top:10%;
+}
+
+.hero-subcontainer-p{
+    font-size: 1.4rem;
+    margin-bottom: 40px;
+   
+    
+    
+}
+
+/* Add this class via JS when the page loads */
+.hero-content.animate {
+    animation: slideInFromRight 1s ease-out forwards;
 }
 
 .hero h2 {
-    font-size: 4rem;
-    margin-bottom: 20px;
+    color:rgb(56, 45, 97);
+    font-size: 3rem;
+    margin-bottom:3%;
+    
+    
 }
 
-.hero p {
-    font-size: 1.2rem;
-    margin-bottom: 80px;
-}
 
 .cta-btn {
-    background-color: #f39c12;
+    background-color: #3e1466;
     color: white;
     padding: 12px 30px;
     font-size: 1.2rem;
     border: none;
     border-radius: 5px;
     text-decoration: none;
+    width:40%;
 }
 
 .cta-btn:hover {
-    background-color: #e67e22;
+    background-color: #7d22e6;
 }
+
+.free-trial-btn{
+    width:20%;
+    
+}
+
+.contact-support-btn{
+    width:20%;
+    text-align:center;
+}
+
+
+/* Features */
+
 
 .features {
     display: flex;
     flex-direction: column;
-    justify-content: space-around;
-    padding: 40px 20px;
-    background-color: #ecf0f1;
+    justify-content: center;
+    background-color: rgba(15, 15, 141, 0.068);
     text-align: center;
-    height:320px;
+    height:34%;
     align-items: center;
     row-gap:60px;
+    padding:0;
+    color:rgb(0, 0, 0);
 }
 
 .features-wrapper{
-    width:70%;
+    width:60%;
 }
 
 .feature-item {
@@ -152,8 +229,7 @@ nav ul li a {
     font-size:140%;
 }
 
-/* Features */
-.features, .how-it-works, .pricing, .testimonials, .faq, .contact {
+.how-it-works, .pricing, .testimonials, .faq, .contact {
     text-align: left;
     padding: 50px;
     margin: 0 auto;
@@ -164,6 +240,18 @@ nav ul li a {
     flex-direction: column;
 }
 
+.how-it-works{
+    height:50%;
+}
+
+.testimonials{
+    background-color: #22527e23;
+    height:30%;
+}
+
+.faq{
+    background-color:rgba(190, 171, 171, 0.185);
+}
 
 .feature-grid {
     display: flex;
@@ -178,8 +266,8 @@ nav ul li a {
     display:flex;
     flex-direction: column;
     justify-content: center;
-    background-color: #2c3e50;
-    color: white;
+    background-color: #ffffff;
+    color: rgb(0, 0, 0);
     text-align: center;
     padding: 50px 20px;
     height:300px;
@@ -211,7 +299,7 @@ footer p {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    height: 90vh;
 }
 
 .signup-container {
@@ -266,7 +354,7 @@ input {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    height: 90vh;
 }
 
 .login-container {
@@ -280,6 +368,16 @@ input {
 .login-form {
     display: flex;
     flex-direction: column;
+}
+
+.login-paragraph{
+    font-size: 90%;
+    margin-top:2%;
+    margin-bottom:2%;
+}
+
+.sign-up-paragraph{
+    margin-top:2%;
 }
 
 .alert {
@@ -506,6 +604,12 @@ input {
     margin-bottom: 30px;
     background-color:rgb(39, 77, 97);
     height:50px;
+  
+}
+
+.app-header{
+    color:white;
+    
 }
 
 .header h1 {
@@ -920,4 +1024,19 @@ input {
 
 .activity-date{
     width:200px;
+}
+
+
+/* View Asset CSS */
+
+.view-asset-container{
+    padding:1%;
+    background-color: white;
+    margin-left:20px;
+    margin-right:20px;
+   
+}
+
+.view-asset-heading{
+    margin-bottom:1%;
 }

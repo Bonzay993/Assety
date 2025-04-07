@@ -380,6 +380,20 @@ def delete_asset(asset_id):
     return redirect(url_for('assets'))
 
 
+@app.route('/asset/<asset_id>')
+def view_asset(asset_id):
+    
+    client = MongoClient(app.config["MONGO_URI"])
+    db = client[app.config["MONGO_DBNAME"]]
+    company_name = session.get('company', None)
+    company_name = company_name.replace("_", " ")
+    company_collection = db[company_name]
+
+    # Fetch asset details from the database using the provided asset_id
+    
+    asset = company_collection.find_one({"_id": ObjectId(asset_id)})
+    return render_template('view-asset.html', asset=asset)
+
 
 def log_activity(action, asset_id, asset_tag):
     """Logs the activity to the 'activities' collection"""

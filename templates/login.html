@@ -5,7 +5,7 @@
 <section class="login">
     <div class="login-container">
         <h1>Login to Your Account</h1>
-        <p>Access your inventory and asset management dashboard.</p>
+        <p class="login-paragraph">Access your inventory and asset management dashboard.</p>
 
         <!-- Display logout-related flash messages at the top -->
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -45,7 +45,7 @@
             <button type="submit" class="btn">Login</button>
         </form>
 
-        <p>Don't have an account? <a href="{{ url_for('sign_up') }}">Sign up</a></p>
+        <p class="sign-up-paragraph">Don't have an account? <a href="{{ url_for('sign_up') }}">Sign up</a></p>
     </div>
 </section>
 
