@@ -161,9 +161,6 @@ header .logo h1 {
     font-size: 3rem;
     text-align: left;
     width:60%;
-    
-    
-    
 }
 
 
@@ -202,13 +199,21 @@ header .logo h1 {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    background-color: rgba(15, 15, 141, 0.068);
+    background: linear-gradient(
+    135deg,
+    rgba(15, 23, 42, 0.08),     /* Deep navy - subtle and professional */
+    rgba(59, 130, 246, 0.12),   /* Soft blue - trustworthy and clean */
+    rgba(241, 245, 249, 0.15)   /* Light slate/gray - neutral and elegant */
+    );
     text-align: center;
-    height:54%;
+    height:64%;
     align-items: center;
     row-gap:60px;
     padding:0;
     color:rgb(0, 0, 0);
+    margin-top:4%;
+    margin-bottom:4%;
+    
     
 }
 
@@ -253,38 +258,85 @@ header .logo h1 {
     color: #373b3b;
 }
 
+.features-grid {
+    display: flex;
+    justify-content: space-between;
+}
+
+.feature-item,  .plan {
+    width: 30%;
+}
+
 /* HOW IT WORKS CSS */
-.how-it-works{
-    height:60%;
-}
-
-.how-it-works-wrapper{
-    margin-top:40px;
-}
-
-.how-it-works-sign-up{
-    text-decoration: none;
-    color:black;
-}
-
-.steps{
-    display:flex;
+.how-it-works {
+    height:70%;
+    padding: 5% 0;
+    display: flex;
     flex-direction: column;
-    gap:30px;
-    
-}
-
-.step{
-    font-size:140%;
-    box-shadow: 0px 4px 6px rgba(20, 20, 20, 0.226);
-    background-color: #cccccc17;
-    padding:4%;
-    border-radius: 5px;
-}
-
-.step-paragraph{
+    justify-content: center;
     text-align: center;
-    margin-top:2%;
+    box-sizing: border-box;
+}
+
+.how-it-works-wrapper {
+    margin-top: 40px;
+    width: 80%;
+    margin: 0 auto;
+}
+
+.page-headers{
+    font-size: 2.5em;
+    font-weight: 700;
+    color:rgb(56, 45, 97);
+    margin-bottom: 3%;
+}
+
+.how-it-works-sign-up {
+    text-decoration: none;
+    color: #1e3a8a;
+    transition: color 0.3s ease;
+    text-align: center;
+}
+
+.how-it-works-sign-up:hover {
+    color: #2563eb; /* Highlight blue */
+}
+
+.steps {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    justify-content: center;
+}
+
+.step {
+    font-size: 1.3em;
+    background-color: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    width:36%;
+    margin:0 auto;
+}
+
+.step:hover {
+    transform: translateY(-10px); /* Lift effect */
+    box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.15);
+}
+
+.step-header {
+    color: #1e3a8a; /* Blue for the step number and title */
+    margin-bottom: 1rem;
+    font-weight: bold;
+    text-align:center;
+}
+
+.step-paragraph {
+    color: #4a5568; /* Soft gray for description text */
+    text-align: center;
+    margin-top: 1rem;
+    font-size: 1.1em;
 }
 
 .how-it-works, .pricing, .testimonials, .faq, .contact {
@@ -298,51 +350,170 @@ header .logo h1 {
     flex-direction: column;
 }
 
+/* TESTIMONIALS CSS */
 
-.testimonials{
-    background-color: #22527e23;
-    height:30%;
-}
-
-.faq{
-    background-color:rgba(190, 171, 171, 0.185);
-}
-
-.features-grid {
+.testimonials {
+    background: linear-gradient(
+        135deg,
+        rgba(29, 78, 216, 0.1),      /* Soft, refined blue */
+        rgba(75, 85, 99, 0.15),      /* Subtle gray-blue */
+        rgba(241, 245, 249, 0.2)     /* Light gray */
+    );
+    padding: 5% 0;
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    box-sizing: border-box;
+    margin-top:3%;
+    margin-bottom:3%;
 }
 
-.feature-item,  .plan {
+.testimonials-header {
+    font-size: 2.5em;
+    font-weight: 600;
+    color: #1e3a8a; /* Darker blue for contrast */
+    margin-bottom: 3%;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.user-testimonials-wrapper {
+    width: 80%;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    gap: 2%;
+}
+
+.testimonial {
     width: 30%;
+    min-width: 250px;
+    font-size: 1.1em;
+    background-color: #ffffff;
+    text-align: center;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.testimonial p {
+    color: #333;
+    font-style: italic;
+    margin-bottom: 1.2rem;
+}
+
+.testimonial:hover {
+    transform: translateY(-10px);
+    box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.15); /* Slight lift effect on hover */
+}
+
+
+/* FAQ CSS */
+
+/* FAQ Section Container */
+/* FAQ Section Wrapper */
+.faq {
+    background-color: rgba(190, 171, 171, 0.062);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 5% auto; /* Adds vertical spacing and centers horizontally */
+    padding: 2rem;
+    width: 100%;
+    box-sizing: border-box;
+    justify-content: center;
+}
+
+/* FAQ Container inside the section */
+.faq-container {
+    width: 50%;
+    height:200px;
+    margin:0 auto;
+    
+}
+
+/* <details> element styling */
+.faq-container details {
+    margin-bottom: 1rem;
+    width: 100%;
+    padding: 0;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+/* Summary (question) line */
+.faq-container summary {
+    display: flex;
+    align-items: center;
+    list-style: none;
+    cursor: pointer;
+    padding: 0.5em 0;
+    border: none;
+    outline: none;
+    margin: 0;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+/* Remove default disclosure triangle */
+.faq-container summary::-webkit-details-marker {
+    display: none;
+}
+
+/* Custom arrow icon */
+.faq-container summary::before {
+    content: "➤";
+    display: inline-block;
+    width: 1em;
+    margin-right: 0.5em;
+    transform: rotate(0deg);
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+}
+
+/* Rotate arrow when open */
+.faq-container details[open] summary::before {
+    transform: rotate(90deg);
+}
+
+/* Answer text */
+.faq-container details > p {
+    margin: 0.5em 1.5em 0;
+    line-height: 1.5;
+    color: #333;
 }
 
 .cta {
     display:flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: space-between;
     background-color: #ffffff;
     color: rgb(0, 0, 0);
     text-align: center;
     padding: 50px 20px;
     height:300px;
     align-items: center;
+    margin-top: 5%;
+    margin-bottom:5%;
 }
 
 .cta h2 {
-    font-size: 2rem;
     margin-bottom: 20px;
 }
 
 footer {
-    background-color: #ffff;
-    color:black;
+    background-color: black;
+    color:white;
     text-align: center;
     padding: 10px;
     position: relative;
     bottom: 0;
     width: 100%;
     height:50px;
+    
 }
 
 footer p {
