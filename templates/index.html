@@ -20,12 +20,12 @@
                 <a class="logo-wrapper" href="{{ url_for('index') }}"><h1>Assety</h1></a>
             </div>
             <nav>
-                <ul>
-                    <li><a href="{{ url_for('index') }}">Home</a></li>
-                    <li><a href="#">Features</a></li>
-                    <li><a href="#">Pricing</a></li>
-                    <li><a href="{{ url_for('login') }}">Login</a></li>
-                    <li><a href="{{ url_for('sign_up') }}">Sign Up</a></li>
+                <ul class="nav-container">
+                    <li class="nav-item"><a class="nav-item-url" href="{{ url_for('index') }}">Home</a></li>
+                    <li class="nav-item"><a class="nav-item-url" href="#">Features</a></li>
+                    <li class="nav-item"><a class="nav-item-url" href="#">Pricing</a></li>
+                    <li class="nav-item"><a class="nav-item-url" href="{{ url_for('login') }}">Login</a></li>
+                    <li class="nav-item"><a class="nav-item-url" href="{{ url_for('sign_up') }}">Sign Up</a></li>
                 </ul>
             </nav>
         </div>
@@ -37,13 +37,17 @@
     <!-- Main Hero Section -->
     <section class="hero">
         <div class="hero-content">
-            <h2>Efficient Inventory Management Made Easy</h2>
+            
             <div class="hero-container">
-                <div class="hero-subcontainer">
-                    <p class="hero-subcontainer-p">Track your stock levels, manage products, and streamline your workflow with Assety.</p>
-                    <a href="{{ url_for('sign_up') }}" class="cta-btn">Get Started</a>
+                <h2 class="hero-header">Efficient Inventory Management Made Easy</h2>
+                <div class="hero-sub-header">
+                    <div class="hero-subcontainer">
+                        <p class="hero-subcontainer-p">Track your stock levels, manage products, and streamline your workflow with Assety.</p>
+                        <a href="{{ url_for('sign_up') }}" class="cta-btn get-started-btn">GET STARTED</a>
+                    </div>
+                    <img class="hero-image" src="/static/img/hero5.jpg">
                 </div>
-                <img class="hero-image" src="/static/img/hero5.jpg">
+              
             
             </div>
         </div>
@@ -53,17 +57,20 @@
    <section id="features" class="features">
     <h2>Why Choose Assety?</h2>
     <div class="features-wrapper">
-        <div class="feature-grid">
+        <div class="features-grid">
             <div class="feature-item">
-                <h3>🔄 Real-Time Tracking</h3>
+                <h3 class="feature-item-header feature-item-first-header">Real-Time Tracking</h3>
+                <img class="feature-item-first-image feature-item-image" src="/static/img/features1.svg">
                 <p>Monitor inventory levels, orders, and updates in real time.</p>
             </div>
             <div class="feature-item">
-                <h3>📊 Smart Analytics</h3>
+                <h3 class="feature-item-header feature-item-second-header"> Smart Analytics</h3>
+                <img class="feature-item-first-image feature-item-image" src="/static/img/features2.svg">
                 <p>Get detailed reports and insights to optimize your inventory.</p>
             </div>
             <div class="feature-item">
-                <h3>📦 Easy Product Management</h3>
+                <h3 class="feature-item-header"> Easy Product Management</h3>
+                <img class="feature-item-first-image feature-item-image" src="/static/img/features3.svg">
                 <p>Add, update, and organize products effortlessly.</p>
             </div>
         </div>
@@ -76,16 +83,16 @@
     <div class="how-it-works-wrapper">
         <div class="steps">
             <div class="step">
-                <h3>1️⃣ Sign Up</h3>
-                <p>Create your free account in minutes.</p>
+                <a class="how-it-works-sign-up" href="{{ url_for('sign_up') }}"> <h3>1️⃣ Sign Up</h3></a>
+                <p class="step-paragraph">Create your free account in minutes.</p>
             </div>
             <div class="step">
                 <h3>2️⃣ Add Your Inventory</h3>
-                <p>Upload products and stock details easily.</p>
+                <p class="step-paragraph">Upload products and stock details easily.</p>
             </div>
             <div class="step">
                 <h3>3️⃣ Track & Optimize</h3>
-                <p>Monitor stock levels and optimize efficiency.</p>
+                <p class="step-paragraph">Monitor stock levels and optimize efficiency.</p>
             </div>
         </div>
     </div>
