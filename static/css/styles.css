@@ -5,6 +5,10 @@
     box-sizing: border-box;
 }
 
+html{
+    scroll-behavior: smooth;
+}
+
 body {
     font-family: 'Arial', sans-serif;
     line-height: 1.6;
@@ -71,6 +75,7 @@ header .logo h1 {
 .nav-item {
     display: inline;
     color:black;
+
 }
 
 
