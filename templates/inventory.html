@@ -9,6 +9,15 @@
     <script src="https://kit.fontawesome.com/00bb1ba651.js" crossorigin="anonymous"></script>
 </head>
 <body>
+    <!-- 🔒 Inactivity Timer Modal -->
+    <div id="inactivity-modal" style="display: none; position: fixed; z-index: 9999; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center;">
+        <div id="modal-content" style="background: white; padding: 2rem; border-radius: 10px; text-align: center;">
+            <h2>You will be logged out soon</h2>
+            <p>You've been inactive. You'll be logged out in <span id="countdown">30</span> seconds.</p>
+            <button id="stay-logged-in" style="padding: 0.5rem 1rem; margin-top: 1rem;">Stay Logged In</button>
+        </div>
+    </div>
+    </div>
     <div class="container">
         <aside class="sidebar" id="sidebar">
             <button class="toggle-btn" id="toggle-btn">
@@ -52,12 +61,7 @@
                 </div>
             </header>
             {% block content %}
-            <section class="asset-cards">
-                <div class="card"><h3>Asset 1</h3><p>Details about Asset 1</p></div>
-                <div class="card"><h3>Asset 2</h3><p>Details about Asset 2</p></div>
-                <div class="card"><h3>Asset 3</h3><p>Details about Asset 3</p></div>
-                <div class="card"><h3>Asset 4</h3><p>Details about Asset 4</p></div>
-            </section>
+              
             {% endblock %}
         </main>
     </div>
@@ -95,6 +99,83 @@
             }
         });
     </script>
+
+<script>
+    let idleTime = 0;
+    const idleLimitSeconds = 10;   // ⏱ Set to 10s for testing
+    const warningSeconds = 30;     // ⏱ 30s countdown before logout
+
+    let countdown = warningSeconds;
+    let countdownInterval;
+
+    const modal = document.getElementById('inactivity-modal');
+    const modalContent = document.getElementById('modal-content');
+    const countdownEl = document.getElementById('countdown');
+    const stayLoggedInBtn = document.getElementById('stay-logged-in');
+
+    // Reset the inactivity timer, but only if the modal is NOT visible
+    function resetInactivityTimer() {
+        if (modal.style.display !== 'flex') {  // Only reset if modal is NOT visible
+            idleTime = 0;
+        }
+    }
+
+    // Show the modal and start the countdown
+    function showModal() {
+        modal.style.display = 'flex';
+        countdown = warningSeconds;
+        countdownEl.textContent = countdown;
+
+        // Start countdown and check every second
+        countdownInterval = setInterval(() => {
+            countdown--;
+            countdownEl.textContent = countdown;
+            if (countdown <= 0) {
+                clearInterval(countdownInterval);
+
+                // 🔥 Call logout route (clear session)
+                fetch('/logout', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(() => {
+                    // 🧱 Show logout message
+                    modalContent.innerHTML = `
+                        <h2>You have been logged out</h2>
+                        <p>Session expired due to inactivity.</p>
+                        <a href="/login"><button style="padding: 0.5rem 1rem; margin-top: 1rem;">Go to Login</button></a>
+                    `;
+                });
+            }
+        }, 1000);
+    }
+
+    // Close the modal (optional, if you want to manually dismiss it)
+    function closeModal() {
+        modal.style.display = 'none';
+        clearInterval(countdownInterval);
+    }
+
+    // When the "Stay Logged In" button is clicked, reset the inactivity timer
+    stayLoggedInBtn.addEventListener('click', () => {
+        resetInactivityTimer();
+        closeModal();  // Close the modal if the user decides to stay logged in
+    });
+
+    // Event listeners to reset inactivity timer
+    ['mousemove', 'keydown', 'scroll', 'click'].forEach(event => {
+        window.addEventListener(event, resetInactivityTimer);
+    });
+
+    // ⏲ Check inactivity every second
+    setInterval(() => {
+        idleTime++;
+        if (idleTime >= idleLimitSeconds && modal.style.display !== 'flex') {
+            showModal();  // Show modal if idle for long enough
+        }
+    }, 1000);
+</script>
     
 </body>
 </html>

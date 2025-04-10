@@ -2,12 +2,12 @@ import os
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_pymongo import PyMongo
 from pymongo import MongoClient
+from datetime import datetime, timedelta
 from flask import render_template, session
 from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
 from bson.objectid import ObjectId 
 from send_emails import EmailService
-import datetime
 import gridfs
 
 if os.path.exists("env.py"):
@@ -36,6 +36,9 @@ mongo = PyMongo(app)
 
 # Initialize GridFS
 fs = gridfs.GridFS(mongo.cx[app.config["MONGO_DBNAME"]])
+
+
+
 
 @app.route('/')
 def index():
@@ -143,11 +146,14 @@ def login():
     return render_template('login.html')
 
 
-@app.route('/logout')
+@app.route('/logout', methods=['GET', 'POST'])
 def logout():
-    session.clear()  # Clears all session data
-    flash('You have been logged out!', 'logout')
-    return redirect(url_for('login'))  # Redirects to login page
+    session.clear()
+    if request.method == 'POST':
+        return '', 204  # JS handles message
+    return redirect(url_for('login'))
+
+
 
 
 @app.route("/forgot-password", methods=["GET", "POST"])
