@@ -200,11 +200,11 @@ header .logo h1 {
     flex-direction: column;
     justify-content: center;
     background: linear-gradient(
-    135deg,
-    rgba(15, 23, 42, 0.08),     /* Deep navy - subtle and professional */
-    rgba(59, 130, 246, 0.12),   /* Soft blue - trustworthy and clean */
-    rgba(241, 245, 249, 0.15)   /* Light slate/gray - neutral and elegant */
-    );
+  135deg,
+  rgba(15, 23, 42, 0.08),      /* Deep navy — professional base */
+  rgba(59, 130, 246, 0.06),    /* Soft blue — subtle trust element */
+  rgba(241, 245, 249, 0.05)    /* Light slate — neutral and polished */
+);
     text-align: center;
     height:64%;
     align-items: center;
@@ -525,14 +525,20 @@ footer p {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 90vh;
+    height: 91.1vh;
+    background: linear-gradient(
+        135deg,
+        rgba(15, 23, 42, 0.08),      /* Deep navy — professional base */
+        rgba(59, 130, 246, 0.04),    /* Soft blue — subtle trust element */
+        rgba(241, 245, 249, 0.05)    /* Light slate — neutral and polished */
+      );
 }
 
 .signup-container {
     background: #fff;
     padding: 40px;
     border-radius: 10px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.1);
     width: 400px;
 }
 
@@ -589,7 +595,13 @@ input {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 90vh;
+    height: 91.1vh;
+    background: linear-gradient(
+        135deg,
+        rgba(15, 23, 42, 0.08),      /* Deep navy — professional base */
+        rgba(59, 130, 246, 0.04),    /* Soft blue — subtle trust element */
+        rgba(241, 245, 249, 0.05)    /* Light slate — neutral and polished */
+      );
 }
 
 .login-container {
