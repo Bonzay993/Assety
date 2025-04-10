@@ -190,8 +190,8 @@ def forgot_password():
 def reset_password(token):
     email = email_service.verify_token(token)
     if not email:
-        flash("The password reset link is invalid or has expired.", 'error')
-        return redirect(url_for('forgot_password'))
+        flash("The password reset link is invalid or has expired.", 'password-update-expired')
+        return redirect(url_for('login'))
 
     if request.method == "POST":
         new_password = request.form.get("password")
@@ -203,9 +203,11 @@ def reset_password(token):
         users_collection = db['users']
         user = users_collection.update_one({"email": email}, {"$set": {"password": hashed_password}})
         
-        flash("Your password has been updated successfully.", 'success')
-        return redirect(url_for('sign_in'))
-
+        flash("Your password has been updated successfully.", 'password-update-success')
+        return redirect(url_for('login'))
+    else:
+        flash("There was something wrong while updating the password. Please try again later,'password-update-fail")
+    
     return render_template("reset-password.html", token=token)
 
 
