@@ -5,6 +5,18 @@
     <div class="signup-container">
         <h1>Create Your Account</h1>
         <p class="signup-paragraph">Sign up to manage your inventory and assets efficiently.</p>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+               {% for category, msg in messages %}
+                   {% if category == 'signup-company-error' %}
+                       <div class="alert alert-danger">{{ msg }}</div>
+                   {% elif category == 'signup-email-error' %}
+                       <div class="alert alert-danger">{{ msg }}</div>
+                    
+                   {% endif %}
+               {% endfor %}
+            {% endif %}
+        {% endwith %}
         <form action="{{ url_for('sign_up') }}" method="post" class="signup-form" id="signup-form">
             <div class="form-group">
                 <label for="first-name">First Name</label>

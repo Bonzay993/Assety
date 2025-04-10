@@ -56,11 +56,11 @@ def sign_up():
             # Check if the company name already exists in the database
             existing_company = db.list_collection_names()  # List of all collections in the DB
             if company in existing_company:
-                flash("Company name in use. Please ask your admin to provide credentials or contact support.", "error")
+                flash("Company name in use. Please ask your admin to provide credentials or contact support.", "signup-company-error")
                 return redirect(url_for('sign_up'))
 
             if existing_user:
-                flash("An account with this email already exists. Please use a different email.", "error")
+                flash("An account with this email already exists. Please use a different email.", "signup-email-error")
                 return redirect(url_for('sign_up'))
 
             # Hash the password after POST request
@@ -91,7 +91,7 @@ def sign_up():
                 company_collection.insert_one(company_data)
 
                 # Successfully created user and company collection
-                flash("Account created successfully! Please log in.", "success")
+                flash("Account created successfully! Please log in.", "signup-success")
                 return redirect(url_for('login'))  # Redirect to login after successful signup
 
             except Exception as e:
