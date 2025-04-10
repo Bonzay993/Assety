@@ -208,7 +208,7 @@ def reset_password(token):
     else:
         flash("There was something wrong while updating the password. Please try again later,'password-update-fail")
     
-    return render_template("reset-password.html", token=token)
+    return render_template("login.html", token=token)
 
 
 
