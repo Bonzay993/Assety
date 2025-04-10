@@ -6,6 +6,7 @@ from flask import render_template, session
 from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
 from bson.objectid import ObjectId 
+from send_emails import EmailService
 import datetime
 import gridfs
 
@@ -20,6 +21,15 @@ app.secret_key = os.environ.get("SECRET_KEY")
 app.config['SESSION_COOKIE_NAME'] = 'session'  # Customize the cookie name (optional)
 app.config['SESSION_PERMANENT'] = False  # Session will not last beyond the browser session
 app.config['SESSION_TYPE'] = 'filesystem'  # Store session in the filesystem, can also be 'redis' or 'mongodb
+
+app.config['SECRET_KEY'] = 'top-secret!'
+app.config['MAIL_SERVER'] = 'smtp.sendgrid.net'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = 'apikey'
+app.config['MAIL_PASSWORD'] = os.environ.get('SENDGRID_API_KEY')
+app.config['MAIL_DEFAULT_SENDER'] = os.environ.get('MAIL_DEFAULT_SENDER')
+app.config['SENDGRID_API_KEY'] = os.environ.get('SENDGRID_API_KEY') 
 
 mongo = PyMongo(app)
 
@@ -137,6 +147,58 @@ def logout():
     session.clear()  # Clears all session data
     flash('You have been logged out!', 'logout')
     return redirect(url_for('login'))  # Redirects to login page
+
+
+@app.route('/forgot-password')
+def forgot_password():
+    if request.method == "POST":
+        email = request.form.get("email").lower()
+        user = mongo.db.users.find_one({"email": email})
+        
+        if user:
+            # Generate a token for password reset
+            token = email_service.generate_token(email)
+            reset_url = url_for('reset_password', token=token, _external=True)
+
+            # Send the password reset email
+            subject = "Assety Password Reset Request"
+            html_content = f"<p>Click the following link to reset your password:</p> <a href='{reset_url}'>{reset_url}</a>"
+            response = email_service.send_email(email, subject, html_content)
+
+            if response:
+                flash("If this email is valid, you will receive a password reset link shortly.", 'info')
+            else:
+                flash("An error occurred while sending the reset email. Please try again later.", 'error')
+
+        else:
+            flash("No account found with that email address.", 'error')
+        
+        # Render the same page to display the flash message
+        return render_template("forgot-password.html")
+
+    return render_template("forgot-password.html")
+
+
+
+@app.route("/reset_password/<token>", methods=["GET", "POST"])
+def reset_password(token):
+    email = email_service.verify_token(token)
+    if not email:
+        flash("The password reset link is invalid or has expired.", 'error')
+        return redirect(url_for('forgot_password'))
+
+    if request.method == "POST":
+        new_password = request.form.get("password")
+        hashed_password = generate_password_hash(new_password)
+        
+        # Update the password in the database
+        mongo.db.users.update_one({"email": email}, {"$set": {"password": hashed_password}})
+        
+        flash("Your password has been updated successfully.", 'success')
+        return redirect(url_for('sign_in'))
+
+    return render_template("reset-password.html", token=token)
+
 
 
 @app.route('/inventory')
