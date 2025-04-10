@@ -736,15 +736,7 @@ input {
     gap: 5px;
 }
 
-.forgot-form-group {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    padding: 10px;
-    margin-bottom: 10px;
-}
+
 
 .forgot-form-group input {
     border: none;
@@ -785,6 +777,13 @@ input {
     margin-top: 2%;
 }
 
+.password-validation{
+    font-size:90%;
+    margin-top:2%;
+    margin-bottom:2%;
+}
+
+
 
 /* Reset Password CSS */
 
@@ -815,21 +814,6 @@ input {
     gap: 5px;
 }
 
-.reset-form-group {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    padding: 10px;
-    margin-bottom: 10px;
-}
-
-.reset-form-group input {
-    border: none;
-    outline: none;
-    flex: 1;
-}
 
 .reset-btn {
     background-color: #007bff;
@@ -1320,11 +1304,12 @@ input {
 
 .form-group i {
     position: absolute;
-    left: 12px;
+    left: 10px;
     top: 50%;
     transform: translateY(-50%);
-    color: #888;
+    color: #686767;
     pointer-events: none; /* allows clicking through the icon */
+    font-size:90%;
   }
 
   .form-group input {
