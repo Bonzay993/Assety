@@ -198,7 +198,10 @@ def reset_password(token):
         hashed_password = generate_password_hash(new_password)
         
         # Update the password in the database
-        mongo.db.users.update_one({"email": email}, {"$set": {"password": hashed_password}})
+        client = MongoClient(app.config["MONGO_URI"])
+        db = client[app.config["MONGO_DBNAME"]]
+        users_collection = db['users']
+        user = users_collection.update_one({"email": email}, {"$set": {"password": hashed_password}})
         
         flash("Your password has been updated successfully.", 'success')
         return redirect(url_for('sign_in'))
