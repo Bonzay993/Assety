@@ -541,9 +541,7 @@ footer p {
     flex-direction: column;
 }
 
-.form-group {
-    margin-bottom: 15px;
-}
+
 
 label {
     display: block;
@@ -587,13 +585,19 @@ input {
     background: #fff;
     padding: 40px;
     border-radius: 10px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.1);
     width: 400px;
 }
+
+
+
 
 .login-form {
     display: flex;
     flex-direction: column;
+    gap:5px;
+    
+    
 }
 
 .login-paragraph{
@@ -602,11 +606,29 @@ input {
     margin-bottom:2%;
 }
 
-.sign-up-paragraph{
-    margin-top:2%;
+
+.login-links-container{
+    display:flex;
+    flex-direction: column;
 }
 
-.alert {
+
+/* SIGN UP CSS */
+
+.sign-up-paragraph{
+    margin-top:2%;
+    font-size: 80%;
+    text-decoration: none;
+    color:#007bff;
+    
+}
+
+.alert{
+    margin-bottom:10px;
+}
+
+
+.alert-danger {
     color: red;
     background-color: #ffdddd;
     border: 1px solid red;
@@ -616,6 +638,15 @@ input {
     font-size: 14px;
 }
 
+.alert-success{
+    color: green;
+    background-color: rgba(137, 209, 137, 0.555);
+    border: 1px solid green;
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 5px;
+    font-size: 14px;
+}
 
 /* INVENTORY PAGE CSS */
 /* Overall container layout */
@@ -1058,10 +1089,33 @@ input {
     padding:2%;
 }
 
+.form-group {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+  }
+
 .form-group textarea {
     resize: none; /* Disable resizing */
     width:50%;
 }
+
+.form-group i {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #888;
+    pointer-events: none; /* allows clicking through the icon */
+  }
+
+  .form-group input {
+    width: 100%;
+    padding: 10px 12px 10px 36px; /* left padding for icon space */
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    
+  }
 
 .form-actions {
     display:flex;

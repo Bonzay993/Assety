@@ -6,46 +6,40 @@
     <div class="login-container">
         <h1>Login to Your Account</h1>
         <p class="login-paragraph">Access your inventory and asset management dashboard.</p>
-
-        <!-- Display logout-related flash messages at the top -->
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                <div class="flash-messages">
-                    {% for category, message in messages %}
-                        {% if category == 'success' %}
-                            <div class="alert alert-{{ category }}">{{ message }}</div>
-                        {% endif %}
-                    {% endfor %}
-                </div>
-            {% endif %}
-        {% endwith %}
+         <!-- Flash Messages for Errors (Only Under Password Field) -->
+         {% with messages = get_flashed_messages(with_categories=true) %}
+         {% if messages %}
+                {% for category, msg in messages %}
+                    {% if category == 'login' %}
+                        <div class="alert alert-danger">{{ msg }}</div>
+                    {% elif category == 'logout' %}
+                        <div class="alert alert-success">{{ msg }}</div>
+                    {% endif %}
+                {% endfor %}
+             {% endif %}
+         {% endwith %}
+    
 
         <form action="{{ url_for('login') }}" method="post" class="login-form">
             <div class="form-group">
-                <label for="email">Email</label>
+                <i class="fa-solid fa-envelope"></i>
                 <input type="email" id="email" name="email" placeholder="Enter your email" required>
             </div>
             
             <div class="form-group">
-                <label for="password">Password</label>
+                <i class="fa-solid fa-key"></i>
                 <input type="password" id="password" name="password" placeholder="Enter your password" required>
                 
-                <!-- Flash Messages for Errors (Only Under Password Field) -->
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                    {% if messages %}
-                        {% for category, message in messages %}
-                            {% if category != 'success' %}
-                                <div class="alert alert-{{ category }}">{{ message }}</div>
-                            {% endif %}
-                        {% endfor %}
-                    {% endif %}
-                {% endwith %}
+               
             </div>
 
             <button type="submit" class="btn">Login</button>
         </form>
-
-        <p class="sign-up-paragraph">Don't have an account? <a href="{{ url_for('sign_up') }}">Sign up</a></p>
+        <div class="login-links-container">
+            <a class="sign-up-paragraph" href="{{ url_for('sign_up') }}">No account? Sign up here.</a>
+             <a class="sign-up-paragraph" href="{{ url_for('sign_up') }}">Forgot Password?</a>
+        </div>
+         
     </div>
 </section>
 

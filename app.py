@@ -51,8 +51,13 @@ def sign_up():
             email = request.form.get('email')
             password = request.form.get('password')
 
-            # Check if the email already exists in the database
+            # Check if the email or company already exists in the database
             existing_user = users_collection.find_one({'email': email})
+            # Check if the company name already exists in the database
+            existing_company = db.list_collection_names()  # List of all collections in the DB
+            if company in existing_company:
+                flash("Company name in use. Please ask your admin to provide credentials or contact support.", "error")
+                return redirect(url_for('sign_up'))
 
             if existing_user:
                 flash("An account with this email already exists. Please use a different email.", "error")
@@ -76,6 +81,7 @@ def sign_up():
 
                 # Create a new collection named after the company (linked to the user)
                 company_collection = db[company]  # Use the sanitized company name for collection
+
                 company_data = {
                     'user_id': user_insert.inserted_id,  # Link the company collection to the user ID
                     'company_name': company
@@ -121,7 +127,7 @@ def login():
             flash('Login successful!', 'success')
             return redirect(url_for('dashboard'))  # Redirect to inventory page
         else:
-            flash('Invalid credentials. Please try again.', 'danger')  # Category 'danger' for login error
+            flash('Invalid credentials. Please try again.', 'login')  # Category 'danger' for login error
 
     return render_template('login.html')
 
@@ -129,7 +135,7 @@ def login():
 @app.route('/logout')
 def logout():
     session.clear()  # Clears all session data
-    flash('You have been logged out!', 'info')
+    flash('You have been logged out!', 'logout')
     return redirect(url_for('login'))  # Redirects to login page
 
 
