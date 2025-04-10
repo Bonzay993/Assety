@@ -55,17 +55,18 @@
                 <p id="length-feedback" class="feedback-text">Password must be at least 6 characters long</p>
                 <p id="uppercase-feedback" class="feedback-text">Password must contain at least one uppercase letter</p>
                 <p id="match-feedback" class="feedback-text">Passwords must match</p>
-                <p id="company-feedback" class="feedback-text">Company name in use. Please ask your admin to provide credentials or contact support</p>
             </div>
 
             <button type="submit" class="btn signup-btn" id="submit-btn" disabled>Sign Up</button>
         </form>
-        <a class="login-link" href="{{ url_for('login') }}"> Already have an account? Log in</a>
+        <div class="login-links-container">
+            <a class="login-link" href="{{ url_for('login') }}"> Already have an account? Log in</a>
+        </div>
+       
     </div>
 </section>
 
 
-<p id="company-feedback-inline" class="feedback-text" style="display:none;"></p>
 
 
 

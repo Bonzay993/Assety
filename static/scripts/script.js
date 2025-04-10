@@ -7,7 +7,7 @@ function passwordValidator(){
         const passwordInput = document.getElementById("password");
         const confirmPasswordInput = document.getElementById("confirm-password");
         const submitButton = document.querySelector("button[type='submit']");
-        const companyFeedback = document.getElementById("company-feedback");
+        const confirmPasswordGroup = confirmPasswordInput.closest('.form-group');
         
         // Create validation message elements
         const validationContainer = document.createElement("div");
@@ -29,8 +29,8 @@ function passwordValidator(){
             validationContainer.appendChild(item);
         });
 
-        // Insert validation messages below the password field
-        passwordInput.parentNode.insertBefore(validationContainer, passwordInput.nextSibling);
+        
+        confirmPasswordGroup.parentNode.insertBefore(validationContainer, confirmPasswordGroup.nextSibling)
 
         function validatePassword() {
             const password = passwordInput.value;
