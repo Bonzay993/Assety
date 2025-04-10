@@ -172,12 +172,12 @@ def forgot_password():
             response = email_service.send_email(email, subject, html_content)
 
             if response:
-                flash("If this email is valid, you will receive a password reset link shortly.", 'info')
+                flash("If this email is valid, you will receive a password reset link shortly.", 'reset-password-message')
             else:
-                flash("An error occurred while sending the reset email. Please try again later.", 'error')
+                flash("An error occurred while sending the reset email. Please try again later.", 'reset-password-message-error')
 
         else:
-            flash("No account found with that email address.", 'error')
+            flash("If this email is valid, you will receive a password reset link shortly.", 'reset-password-message')
         
         # Render the same page to display the flash message
         return render_template("forgot-password.html")
