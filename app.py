@@ -31,6 +31,7 @@ app.config['MAIL_PASSWORD'] = os.environ.get('SENDGRID_API_KEY')
 app.config['MAIL_DEFAULT_SENDER'] = os.environ.get('MAIL_DEFAULT_SENDER')
 app.config['SENDGRID_API_KEY'] = os.environ.get('SENDGRID_API_KEY') 
 
+email_service = EmailService(app)
 mongo = PyMongo(app)
 
 # Initialize GridFS
@@ -149,11 +150,16 @@ def logout():
     return redirect(url_for('login'))  # Redirects to login page
 
 
-@app.route('/forgot-password')
+@app.route("/forgot-password", methods=["GET", "POST"])
 def forgot_password():
     if request.method == "POST":
+      
+        client = MongoClient(app.config["MONGO_URI"])
+        db = client[app.config["MONGO_DBNAME"]]
         email = request.form.get("email").lower()
-        user = mongo.db.users.find_one({"email": email})
+        users_collection = db['users']
+        user = users_collection.find_one({'email': email})  # Find user by email
+        
         
         if user:
             # Generate a token for password reset
