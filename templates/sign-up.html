@@ -4,7 +4,7 @@
 <section class="signup">
     <div class="signup-container">
         <h1>Create Your Account</h1>
-        <p>Sign up to manage your inventory and assets efficiently.</p>
+        <p class="signup-paragraph">Sign up to manage your inventory and assets efficiently.</p>
         <form action="{{ url_for('sign_up') }}" method="post" class="signup-form" id="signup-form">
             <div class="form-group">
                 <label for="first-name">First Name</label>
@@ -46,9 +46,9 @@
                 <p id="company-feedback" class="feedback-text">Company name in use. Please ask your admin to provide credentials or contact support</p>
             </div>
 
-            <button type="submit" class="btn" id="submit-btn" disabled>Sign Up</button>
+            <button type="submit" class="btn signup-btn" id="submit-btn" disabled>Sign Up</button>
         </form>
-        <p>Already have an account? <a href="{{ url_for('login') }}">Log in</a></p>
+        <a class="login-link" href="{{ url_for('login') }}"> Already have an account? Log in</a>
     </div>
 </section>
 

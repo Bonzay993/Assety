@@ -539,14 +539,25 @@ footer p {
 .signup-form {
     display: flex;
     flex-direction: column;
+    gap:5px;
 }
 
+.signup-paragraph{
+    font-size: 90%;
+    margin-top:2%;
+    margin-bottom:2%;
+}
+
+.signup-btn{
+    margin-top:5%;
+}
 
 
 label {
     display: block;
     margin-bottom: 5px;
     font-weight: bold;
+    font-size: 95%;
 }
 
 input {
@@ -613,9 +624,9 @@ input {
 }
 
 
-/* SIGN UP CSS */
+/* SIGN IN CSS */
 
-.sign-up-paragraph{
+.login-link{
     margin-top:2%;
     font-size: 80%;
     text-decoration: none;
