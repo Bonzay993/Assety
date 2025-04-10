@@ -16,6 +16,12 @@
                         <div class="alert alert-success">{{ msg }}</div>
                     {% elif category == 'signup-success' %}
                         <div class="alert alert-success">{{ msg }}</div>
+                    {% elif category == 'password-update-expired' %}
+                        <div class="alert alert-danger">{{ msg }}</div>
+                    {% elif category == 'password-update-fail' %}
+                        <div class="alert alert-danger">{{ msg }}</div>
+                    {% elif category == 'password-update-success' %}
+                        <div class="alert alert-success">{{ msg }}</div>
                     {% endif %}
                 {% endfor %}
              {% endif %}
