@@ -7,22 +7,31 @@
     <link rel="stylesheet" href="./static/css/styles.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://kit.fontawesome.com/00bb1ba651.js" crossorigin="anonymous"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    
+    
+
 </head>
-<body>
+<body class="montserrat-500">
     <!-- Header Section -->
     <header>
-        <div class="logo">
-            <a class="logo-wrapper" href="{{ url_for('index') }}"><h1>Assety</h1></a>
+        <div class="header-container">
+            <div class="logo">
+                <a class="logo-wrapper" href="{{ url_for('index') }}"><h1>Assety</h1></a>
+            </div>
+            <nav>
+                <ul class="nav-container">
+                    <li class="nav-item"><a class="nav-item-url" href="{{ url_for('index') }}">Home</a></li>
+                    <li class="nav-item"><a class="nav-item-url" href="#features">Features</a></li>
+                    <li class="nav-item"><a class="nav-item-url" href="#">Pricing</a></li>
+                    <li class="nav-item"><a class="nav-item-url" href="{{ url_for('login') }}">Login</a></li>
+                    <li class="nav-item"><a class="nav-item-url" href="{{ url_for('sign_up') }}">Sign Up</a></li>
+                </ul>
+            </nav>
         </div>
-        <nav>
-            <ul>
-                <li><a href="{{ url_for('index') }}">Home</a></li>
-                <li><a href="#">Features</a></li>
-                <li><a href="#">Pricing</a></li>
-                <li><a href="{{ url_for('login') }}">Login</a></li>
-                <li><a href="{{ url_for('sign_up') }}">Sign Up</a></li>
-            </ul>
-        </nav>
     </header>
    
 
@@ -31,27 +40,40 @@
     <!-- Main Hero Section -->
     <section class="hero">
         <div class="hero-content">
-            <h2>Efficient Inventory Management Made Easy</h2>
-            <p>Track your stock levels, manage products, and streamline your workflow with InventoryPro.</p>
-            <a href="{{ url_for('sign_up') }}" class="cta-btn">Get Started</a>
+            
+            <div class="hero-container">
+                <h2 class="hero-header">Efficient Inventory Management Made Easy</h2>
+                <div class="hero-sub-header">
+                    <div class="hero-subcontainer">
+                        <p class="hero-subcontainer-p">Track your stock levels, manage products, and streamline your workflow with Assety.</p>
+                        <a href="{{ url_for('sign_up') }}" class="cta-btn get-started-btn">GET STARTED</a>
+                    </div>
+                    <img class="hero-image" src="/static/img/hero5.jpg">
+                </div>
+              
+            
+            </div>
         </div>
     </section>
 
    <!-- Features Section -->
    <section id="features" class="features">
-    <h2>Why Choose InventoryPro?</h2>
+    <h2 class="page-headers">Why Choose Assety?</h2>
     <div class="features-wrapper">
-        <div class="feature-grid">
+        <div class="features-grid">
             <div class="feature-item">
-                <h3>🔄 Real-Time Tracking</h3>
+                <h3 class="feature-item-header feature-item-first-header">Real-Time Tracking</h3>
+                <img class="feature-item-first-image feature-item-image" src="/static/img/features1.svg">
                 <p>Monitor inventory levels, orders, and updates in real time.</p>
             </div>
             <div class="feature-item">
-                <h3>📊 Smart Analytics</h3>
+                <h3 class="feature-item-header feature-item-second-header"> Smart Analytics</h3>
+                <img class="feature-item-first-image feature-item-image" src="/static/img/features2.svg">
                 <p>Get detailed reports and insights to optimize your inventory.</p>
             </div>
             <div class="feature-item">
-                <h3>📦 Easy Product Management</h3>
+                <h3 class="feature-item-header"> Easy Product Management</h3>
+                <img class="feature-item-first-image feature-item-image" src="/static/img/features3.svg">
                 <p>Add, update, and organize products effortlessly.</p>
             </div>
         </div>
@@ -60,20 +82,20 @@
 
 <!-- How It Works Section -->
 <section id="how-it-works" class="how-it-works">
-    <h2>How It Works</h2>
+    <h2 class="page-headers">How It Works</h2>
     <div class="how-it-works-wrapper">
         <div class="steps">
             <div class="step">
-                <h3>1️⃣ Sign Up</h3>
-                <p>Create your free account in minutes.</p>
+                <a class="how-it-works-sign-up" href="{{ url_for('sign_up') }}"> <h3 class="step-header">1️⃣ Sign Up Here</h3></a>
+                <p class="step-paragraph">Create your free account in minutes.</p>
             </div>
             <div class="step">
-                <h3>2️⃣ Add Your Inventory</h3>
-                <p>Upload products and stock details easily.</p>
+                <h3 class="step-header">2️⃣ Add Your Inventory</h3>
+                <p class="step-paragraph">Upload products and stock details easily.</p>
             </div>
             <div class="step">
-                <h3>3️⃣ Track & Optimize</h3>
-                <p>Monitor stock levels and optimize efficiency.</p>
+                <h3 class="step-header">3️⃣ Track & Optimize</h3>
+                <p class="step-paragraph">Monitor stock levels and optimize efficiency.</p>
             </div>
         </div>
     </div>
@@ -81,80 +103,128 @@
 
 <!-- Testimonials Section -->
 <section class="testimonials">
-    <h2>What Our Users Say</h2>
-    <div class="testimonial">
-        <p>"InventoryPro has transformed our business! Managing stock has never been easier." – Sarah L.</p>
-    </div>
-    <div class="testimonial">
-        <p>"A must-have for any business handling inventory. Highly recommended!" – Mark R.</p>
-    </div>
+    <h2 class="page-headers">What Our Users Say</h2>
+    
+        <div class="user-testimonials-wrapper">
+            <div class="testimonial">
+                <p>"Assety has transformed our business! Managing stock has never been easier." – Sarah L.</p>
+            </div>
+            <div class="testimonial">
+                <p>"A must-have for any business handling inventory. Highly recommended!" – Mark R.</p>
+            </div>
+            <div class="testimonial">
+                <p>"Outstanding tool for streamlining operations. Saved us hours each week!" – Jenna L.</p>
+            </div>
+        </div>
+    
 </section>
 
     <!-- Call to Action Section -->
     <section class="cta">
-        <h2>Ready to take control of your inventory?</h2>
-        <a href="#" class="cta-btn">Start Your Free Trial</a>
+        <h2 class="page-headers">Ready to take control of your inventory?</h2>
+        <a href="#" class="cta-btn free-trial-btn">Start Your Free Trial</a>
     </section>
 
      <!-- FAQ Section -->
      <section class="faq">
-        <h2>Frequently Asked Questions</h2>
-        <details>
-            <summary>Is there a free trial?</summary>
-            <p>Yes! We offer a 14-day free trial for all new users.</p>
-        </details>
-        <details>
-            <summary>Can I cancel anytime?</summary>
-            <p>Yes, you can cancel your subscription at any time with no extra fees.</p>
-        </details>
+        <h2 class="page-headers">Frequently Asked Questions</h2>
+        <div class="faq-container">
+            <details>
+                <summary>Is there a free trial?</summary>
+                <p>Yes! We offer a 14-day free trial for all new users.</p>
+            </details>
+            <details>
+                <summary>Can I cancel anytime?</summary>
+                <p>Yes, you can cancel your subscription at any time with no extra fees.</p>
+            </details>
+            <details>
+                <summary>What types of assets can I manage?</summary>
+                <p>You can manage hardware, software, licenses, cloud resources, and peripheral devices from a centralized dashboard.</p>
+            </details>
+            <details>
+                <summary>Is the system cloud-based?</summary>
+                <p>Yes, our IT asset management system is fully cloud-based, allowing you to access your assets from anywhere with secure authentication.</p>
+            </details>
+            <details>
+                <summary>Does it support integrations with other tools?</summary>
+                <p>Absolutely. We support integrations with major platforms like Microsoft Intune, ServiceNow, Jira, and more.</p>
+            </details>
+            <details>
+                <summary>How secure is my data?</summary>
+                <p>We implement enterprise-grade security protocols, including encryption at rest and in transit, multi-factor authentication, and regular security audits.</p>
+            </details>
+            <details>
+                <summary>Can I assign assets to specific users or departments?</summary>
+                <p>Yes, assets can be assigned to individual users, departments, or even locations for better tracking and accountability.</p>
+            </details>
+            <details>
+                <summary>Is there a mobile app available?</summary>
+                <p>No, but we are planninh to offer a companion mobile app for both Android and iOS to manage assets on the go.</p>
+            </details>
+        </div>
     </section>
+    
 
     <!-- Contact Section -->
     <section id="contact" class="contact">
-        <h2>Get in Touch</h2>
-        <p>Have questions? We're here to help.</p>
-        <a href="mailto:support@inventorypro.com" class="cta-btn">Contact Support</a>
+        <div class="contact-container">
+            <h2>Get in Touch</h2>
+            <p>Have questions? We're here to help.</p>
+            <a href="mailto:support@Assety.com" class="cta-btn contact-support-btn">Contact Support</a>
+        </div>
+       
     </section>
 
 {% endblock %}
     <!-- Footer Section -->
     <footer>
-        <p>&copy; 2025 InventoryPro. All rights reserved.</p>
+        <p>&copy; 2025 Assety. All rights reserved.</p>
     </footer>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="./static/scripts/script.js"></script>
+    
+    
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            // Animate "Why Choose InventoryPro?" heading from the right
-            gsap.from("#features h2", { 
-                x: 100, 
-                opacity: 0, 
-                duration: 1, 
-                ease: "power3.out",
-                scrollTrigger: {
-                    trigger: ".features",
-                    start: "top 80%", // Animation starts when .features reaches 80% of the viewport
-                    once: true, // Ensures animation only happens once per page load
-                }
-            });
-    
-            // Animate feature items one by one
-            gsap.utils.toArray(".feature-item").forEach((item, index) => {
-                gsap.from(item, { 
-                    x: 100, 
-                    opacity: 0, 
-                    duration: 1, 
-                    ease: "power3.out",
-                    delay: index * 0.3, // Staggered animation
-                    scrollTrigger: {
-                        trigger: item,
-                        start: "top 85%", 
-                        once: true, // Ensures each item only animates once when scrolling
-                    }
-                });
-            });
+    // Animate "Why Choose Assety?" heading from the right
+    gsap.from("#features h2", { 
+        x: 100, 
+        opacity: 0, 
+        duration: 1, 
+        ease: "power3.out",
+        scrollTrigger: {
+            trigger: ".features",
+            start: "top 40%", 
+            toggleActions: "play none none none", // Ensures it plays only once
+            once: true,
+            immediateRender: false // Prevents animation from running on refresh
+        }
+    });
+
+    // Animate feature items one by one
+    gsap.utils.toArray(".feature-item").forEach((item, index) => {
+        gsap.from(item, { 
+            x: 100, 
+            opacity: 0, 
+            duration: 1, 
+            ease: "power3.out",
+            delay: index * 0.5, 
+            scrollTrigger: {
+                trigger: item,
+                start: "top 85%", 
+                toggleActions: "play none none none", // Ensures it plays only when it enters the viewport
+                once: true,
+                immediateRender: false
+            }
         });
+    });
+});
+document.addEventListener("DOMContentLoaded", function() {
+    const heroContent = document.querySelector(".hero-content");
+    heroContent.classList.add("animate"); // Only triggers animation on first load
+});
+
     </script>
 </body>
 </html>

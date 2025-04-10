@@ -4,7 +4,19 @@
 <section class="signup">
     <div class="signup-container">
         <h1>Create Your Account</h1>
-        <p>Sign up to manage your inventory and assets efficiently.</p>
+        <p class="signup-paragraph">Sign up to manage your inventory and assets efficiently.</p>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+               {% for category, msg in messages %}
+                   {% if category == 'signup-company-error' %}
+                       <div class="alert alert-danger">{{ msg }}</div>
+                   {% elif category == 'signup-email-error' %}
+                       <div class="alert alert-danger">{{ msg }}</div>
+                    
+                   {% endif %}
+               {% endfor %}
+            {% endif %}
+        {% endwith %}
         <form action="{{ url_for('sign_up') }}" method="post" class="signup-form" id="signup-form">
             <div class="form-group">
                 <label for="first-name">First Name</label>
@@ -36,96 +48,105 @@
                 <input type="password" id="confirm-password" name="confirm-password" placeholder="Confirm your password" required>
             </div>
 
+            
+
             <!-- Password Validation Feedback (Always visible once focused) -->
             <div id="password-feedback" class="password-feedback" style="display: none;">
                 <p id="length-feedback" class="feedback-text">Password must be at least 6 characters long</p>
                 <p id="uppercase-feedback" class="feedback-text">Password must contain at least one uppercase letter</p>
                 <p id="match-feedback" class="feedback-text">Passwords must match</p>
+                <p id="company-feedback" class="feedback-text">Company name in use. Please ask your admin to provide credentials or contact support</p>
             </div>
 
-            <button type="submit" class="btn" id="submit-btn" disabled>Sign Up</button>
+            <button type="submit" class="btn signup-btn" id="submit-btn" disabled>Sign Up</button>
         </form>
-        <p>Already have an account? <a href="{{ url_for('login') }}">Log in</a></p>
+        <a class="login-link" href="{{ url_for('login') }}"> Already have an account? Log in</a>
     </div>
 </section>
 
+<!-- Add this below your company input -->
+<p id="company-feedback" class="feedback-text" style="display:none;"></p>
+
 <script>
-   document.addEventListener("DOMContentLoaded", function () {
-    const passwordInput = document.getElementById("password");
-    const confirmPasswordInput = document.getElementById("confirm-password");
-    const submitButton = document.querySelector("button[type='submit']");
-    
-    // Create validation message elements
-    const validationContainer = document.createElement("div");
-    validationContainer.classList.add("password-validation");
+    document.addEventListener("DOMContentLoaded", function () {
+        const passwordInput = document.getElementById("password");
+        const confirmPasswordInput = document.getElementById("confirm-password");
+        const submitButton = document.querySelector("button[type='submit']");
+        const companyFeedback = document.getElementById("company-feedback");
+        
+        // Create validation message elements
+        const validationContainer = document.createElement("div");
+        validationContainer.classList.add("password-validation");
 
-    // Validation rules
-    const rules = [
-        { id: "length", text: "At least 6 characters long", check: (pw) => pw.length >= 6 },
-        { id: "uppercase", text: "At least one uppercase letter", check: (pw) => /[A-Z]/.test(pw) },
-        { id: "match", text: "Passwords must match", check: (pw) => pw === confirmPasswordInput.value }
-    ];
+        // Validation rules
+        const rules = [
+            { id: "length", text: "At least 6 characters long", check: (pw) => pw.length >= 6 },
+            { id: "uppercase", text: "At least one uppercase letter", check: (pw) => /[A-Z]/.test(pw) },
+            { id: "match", text: "Passwords must match", check: (pw) => pw === confirmPasswordInput.value }
+        ];
 
-    // Generate validation list dynamically
-    rules.forEach(rule => {
-        const item = document.createElement("p");
-        item.id = rule.id;
-        item.innerHTML = `❌ ${rule.text}`;
-        item.style.display = "none"; // Initially hidden
-        validationContainer.appendChild(item);
-    });
-
-    // Insert validation messages below the password field
-    passwordInput.parentNode.insertBefore(validationContainer, passwordInput.nextSibling);
-
-    function validatePassword() {
-        const password = passwordInput.value;
-        let isValid = true;
-
+        // Generate validation list dynamically
         rules.forEach(rule => {
-            const item = document.getElementById(rule.id);
-            if (password) {
-                item.style.display = "block"; // Show only after typing starts
+            const item = document.createElement("p");
+            item.id = rule.id;
+            item.innerHTML = `❌ ${rule.text}`;
+            item.style.display = "none"; // Initially hidden
+            validationContainer.appendChild(item);
+        });
+
+        // Insert validation messages below the password field
+        passwordInput.parentNode.insertBefore(validationContainer, passwordInput.nextSibling);
+
+        function validatePassword() {
+            const password = passwordInput.value;
+            let isValid = true;
+
+            rules.forEach(rule => {
+                const item = document.getElementById(rule.id);
+                if (password) {
+                    item.style.display = "block"; // Show only after typing starts
+                }
+                if (rule.check(password)) {
+                    item.innerHTML = `✅ ${rule.text}`;
+                    item.style.color = "green";
+                } else {
+                    item.innerHTML = `❌ ${rule.text}`;
+                    item.style.color = "red";
+                    isValid = false;
+                }
+            });
+
+            // Re-check password match separately
+            const matchRule = document.getElementById("match");
+            if (confirmPasswordInput.value) {
+                matchRule.style.display = "block"; // Show only after typing
             }
-            if (rule.check(password)) {
-                item.innerHTML = `✅ ${rule.text}`;
-                item.style.color = "green";
+            if (password === confirmPasswordInput.value) {
+                matchRule.innerHTML = `✅ Passwords must match`;
+                matchRule.style.color = "green";
             } else {
-                item.innerHTML = `❌ ${rule.text}`;
-                item.style.color = "red";
+                matchRule.innerHTML = `❌ Passwords must match`;
+                matchRule.style.color = "red";
                 isValid = false;
             }
-        });
 
-        // Re-check password match separately
-        const matchRule = document.getElementById("match");
-        if (confirmPasswordInput.value) {
-            matchRule.style.display = "block"; // Show only after typing
-        }
-        if (password === confirmPasswordInput.value) {
-            matchRule.innerHTML = `✅ Passwords must match`;
-            matchRule.style.color = "green";
-        } else {
-            matchRule.innerHTML = `❌ Passwords must match`;
-            matchRule.style.color = "red";
-            isValid = false;
+            submitButton.disabled = !isValid; // Enable only if all checks pass
         }
 
-        submitButton.disabled = !isValid; // Enable only if all checks pass
-    }
+        // Event listeners for real-time validation
+        passwordInput.addEventListener("input", validatePassword);
+        confirmPasswordInput.addEventListener("input", validatePassword);
 
-    // Event listeners for real-time validation
-    passwordInput.addEventListener("input", validatePassword);
-    confirmPasswordInput.addEventListener("input", validatePassword);
-
-    // Show validation on focus (but not before typing)
-    passwordInput.addEventListener("focus", () => {
-        rules.forEach(rule => {
-            document.getElementById(rule.id).style.display = "block";
+        // Show validation on focus (but not before typing)
+        passwordInput.addEventListener("focus", () => {
+            rules.forEach(rule => {
+                document.getElementById(rule.id).style.display = "block";
+            });
         });
+
+       
     });
-});
-
 </script>
+
 {% endblock %}
 

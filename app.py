@@ -6,6 +6,7 @@ from flask import render_template, session
 from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
 from bson.objectid import ObjectId 
+from send_emails import EmailService
 import datetime
 import gridfs
 
@@ -20,6 +21,15 @@ app.secret_key = os.environ.get("SECRET_KEY")
 app.config['SESSION_COOKIE_NAME'] = 'session'  # Customize the cookie name (optional)
 app.config['SESSION_PERMANENT'] = False  # Session will not last beyond the browser session
 app.config['SESSION_TYPE'] = 'filesystem'  # Store session in the filesystem, can also be 'redis' or 'mongodb
+
+app.config['SECRET_KEY'] = 'top-secret!'
+app.config['MAIL_SERVER'] = 'smtp.sendgrid.net'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = 'apikey'
+app.config['MAIL_PASSWORD'] = os.environ.get('SENDGRID_API_KEY')
+app.config['MAIL_DEFAULT_SENDER'] = os.environ.get('MAIL_DEFAULT_SENDER')
+app.config['SENDGRID_API_KEY'] = os.environ.get('SENDGRID_API_KEY') 
 
 mongo = PyMongo(app)
 
@@ -51,11 +61,16 @@ def sign_up():
             email = request.form.get('email')
             password = request.form.get('password')
 
-            # Check if the email already exists in the database
+            # Check if the email or company already exists in the database
             existing_user = users_collection.find_one({'email': email})
+            # Check if the company name already exists in the database
+            existing_company = db.list_collection_names()  # List of all collections in the DB
+            if company in existing_company:
+                flash("Company name in use. Please ask your admin to provide credentials or contact support.", "signup-company-error")
+                return redirect(url_for('sign_up'))
 
             if existing_user:
-                flash("An account with this email already exists. Please use a different email.", "error")
+                flash("An account with this email already exists. Please use a different email.", "signup-email-error")
                 return redirect(url_for('sign_up'))
 
             # Hash the password after POST request
@@ -76,6 +91,7 @@ def sign_up():
 
                 # Create a new collection named after the company (linked to the user)
                 company_collection = db[company]  # Use the sanitized company name for collection
+
                 company_data = {
                     'user_id': user_insert.inserted_id,  # Link the company collection to the user ID
                     'company_name': company
@@ -85,7 +101,7 @@ def sign_up():
                 company_collection.insert_one(company_data)
 
                 # Successfully created user and company collection
-                flash("Account created successfully! Please log in.", "success")
+                flash("Account created successfully! Please log in.", "signup-success")
                 return redirect(url_for('login'))  # Redirect to login after successful signup
 
             except Exception as e:
@@ -121,7 +137,7 @@ def login():
             flash('Login successful!', 'success')
             return redirect(url_for('dashboard'))  # Redirect to inventory page
         else:
-            flash('Invalid credentials. Please try again.', 'danger')  # Category 'danger' for login error
+            flash('Invalid credentials. Please try again.', 'login')  # Category 'danger' for login error
 
     return render_template('login.html')
 
@@ -129,8 +145,60 @@ def login():
 @app.route('/logout')
 def logout():
     session.clear()  # Clears all session data
-    flash('You have been logged out!', 'info')
+    flash('You have been logged out!', 'logout')
     return redirect(url_for('login'))  # Redirects to login page
+
+
+@app.route('/forgot-password')
+def forgot_password():
+    if request.method == "POST":
+        email = request.form.get("email").lower()
+        user = mongo.db.users.find_one({"email": email})
+        
+        if user:
+            # Generate a token for password reset
+            token = email_service.generate_token(email)
+            reset_url = url_for('reset_password', token=token, _external=True)
+
+            # Send the password reset email
+            subject = "Assety Password Reset Request"
+            html_content = f"<p>Click the following link to reset your password:</p> <a href='{reset_url}'>{reset_url}</a>"
+            response = email_service.send_email(email, subject, html_content)
+
+            if response:
+                flash("If this email is valid, you will receive a password reset link shortly.", 'info')
+            else:
+                flash("An error occurred while sending the reset email. Please try again later.", 'error')
+
+        else:
+            flash("No account found with that email address.", 'error')
+        
+        # Render the same page to display the flash message
+        return render_template("forgot-password.html")
+
+    return render_template("forgot-password.html")
+
+
+
+@app.route("/reset_password/<token>", methods=["GET", "POST"])
+def reset_password(token):
+    email = email_service.verify_token(token)
+    if not email:
+        flash("The password reset link is invalid or has expired.", 'error')
+        return redirect(url_for('forgot_password'))
+
+    if request.method == "POST":
+        new_password = request.form.get("password")
+        hashed_password = generate_password_hash(new_password)
+        
+        # Update the password in the database
+        mongo.db.users.update_one({"email": email}, {"$set": {"password": hashed_password}})
+        
+        flash("Your password has been updated successfully.", 'success')
+        return redirect(url_for('sign_in'))
+
+    return render_template("reset-password.html", token=token)
+
 
 
 @app.route('/inventory')
@@ -379,6 +447,20 @@ def delete_asset(asset_id):
 
     return redirect(url_for('assets'))
 
+
+@app.route('/asset/<asset_id>')
+def view_asset(asset_id):
+    
+    client = MongoClient(app.config["MONGO_URI"])
+    db = client[app.config["MONGO_DBNAME"]]
+    company_name = session.get('company', None)
+    company_name = company_name.replace("_", " ")
+    company_collection = db[company_name]
+
+    # Fetch asset details from the database using the provided asset_id
+    
+    asset = company_collection.find_one({"_id": ObjectId(asset_id)})
+    return render_template('view-asset.html', asset=asset)
 
 
 def log_activity(action, asset_id, asset_tag):
