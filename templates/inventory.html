@@ -10,13 +10,14 @@
 </head>
 <body>
     <!-- 🔒 Inactivity Timer Modal -->
-    <div id="inactivity-modal" style="display: none; position: fixed; z-index: 9999; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center;">
+    <div id="inactivity-modal" style="display: none; position: fixed; z-index: 9999; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.5); justify-content: center; align-items: center;">
         <div id="modal-content" style="background: white; padding: 2rem; border-radius: 10px; text-align: center;">
             <h2>You will be logged out soon</h2>
             <p>You've been inactive. You'll be logged out in <span id="countdown">30</span> seconds.</p>
             <button id="stay-logged-in" style="padding: 0.5rem 1rem; margin-top: 1rem;">Stay Logged In</button>
         </div>
     </div>
+    
     </div>
     <div class="container">
         <aside class="sidebar" id="sidebar">
@@ -102,20 +103,26 @@
 
 <script>
     let idleTime = 0;
-    const idleLimitSeconds = 10;   // ⏱ Set to 10s for testing
+    const idleLimitSeconds = 30;   // ⏱ Set to 10s for testing
     const warningSeconds = 30;     // ⏱ 30s countdown before logout
 
     let countdown = warningSeconds;
     let countdownInterval;
+    let isUserLoggedIn = false;    // Flag to track if the user is logged in
 
     const modal = document.getElementById('inactivity-modal');
     const modalContent = document.getElementById('modal-content');
     const countdownEl = document.getElementById('countdown');
     const stayLoggedInBtn = document.getElementById('stay-logged-in');
 
+    // Set the flag to true when the user logs in
+    function userLoggedIn() {
+        isUserLoggedIn = true;
+    }
+
     // Reset the inactivity timer, but only if the modal is NOT visible
     function resetInactivityTimer() {
-        if (modal.style.display !== 'flex') {  // Only reset if modal is NOT visible
+        if (modal.style.display !== 'flex' && isUserLoggedIn) {  // Only reset if modal is NOT visible and user is logged in
             idleTime = 0;
         }
     }
@@ -170,11 +177,16 @@
 
     // ⏲ Check inactivity every second
     setInterval(() => {
-        idleTime++;
-        if (idleTime >= idleLimitSeconds && modal.style.display !== 'flex') {
-            showModal();  // Show modal if idle for long enough
+        if (isUserLoggedIn) {
+            idleTime++;
+            if (idleTime >= idleLimitSeconds && modal.style.display !== 'flex') {
+                showModal();  // Show modal if idle for long enough
+            }
         }
     }, 1000);
+
+    // You can call this function after a successful login to start the inactivity timer
+    userLoggedIn();
 </script>
     
 </body>

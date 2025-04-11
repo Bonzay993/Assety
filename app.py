@@ -134,6 +134,7 @@ def login():
         user = users_collection.find_one({'email': email})  # Find user by email
 
         if user and check_password_hash(user['password'], password):
+            session['user_logged_in'] = True
             session['user_id'] = str(user['_id'])  # Store user ID in session
             session['first_name'] = user.get('first_name', 'User').capitalize()  # Store first name in session
             session['company'] = user['company']
