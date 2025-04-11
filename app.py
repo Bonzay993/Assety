@@ -389,6 +389,7 @@ def save_asset():
     purchase_cost = request.form['purchase-cost']
     purchase_date = request.form['purchase-date']
     location = request.form['location']  # Capture selected location
+    
 
     asset_data = {
         'asset': True,
@@ -454,13 +455,14 @@ def asset_properties():
         client = MongoClient(app.config["MONGO_URI"])
         db = client[app.config["MONGO_DBNAME"]]
         company_collection = db[session.get('company', 'default_company')]
+        locations = list(company_collection.find({"location": True}))
 
         asset = company_collection.find_one({"_id": ObjectId(asset_id)})  # Fetch asset
 
         if asset:
-            return render_template("asset-properties.html", asset=asset)  
+            return render_template("asset-properties.html", asset=asset, locations=locations)  
 
-    return render_template("asset-properties.html", asset=None)  # If no asset ID, load empty form
+    return render_template("asset-properties.html", asset=None,)  # If no asset ID, load empty form
 
 
 @app.route('/delete_asset/<asset_id>', methods=['POST'])
