@@ -526,9 +526,20 @@ def view_asset(asset_id):
     company_collection = db[company_name]
 
     # Fetch asset details from the database using the provided asset_id
-    
     asset = company_collection.find_one({"_id": ObjectId(asset_id)})
-    return render_template('view-asset.html', asset=asset, company=company_name)
+
+    # Pair labels and values
+    labels = [
+        'Asset Name', 'Model', 'Serial', 'Location', 'Category', 'Purchase Date', 'Purchase Cost'
+    ]
+    values = [
+        asset.get('asset_tag'), asset.get('model'), asset.get('serial'),
+        asset.get('location'), asset.get('category'), asset.get('purchase_date'),
+        asset.get('purchase_cost')
+    ]
+    labels_values = list(zip(labels, values))
+
+    return render_template('view-asset.html', asset=asset, company=company_name, labels_values=labels_values)
 
 
 

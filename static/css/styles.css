@@ -857,7 +857,9 @@ input {
     height: 100vh;
 }
 
-
+.inventory-app-body{
+    font-family: sans-serif;
+}
 
 
 /* Sidebar Styles */
@@ -1052,7 +1054,7 @@ input {
 /* Main Content Area */
 .main-content {
     flex-grow: 1;
-    background-color: #477cdf0a;
+    background-color:rgb(236, 240, 245);
     font-family: Arial, sans-serif;
 }
 
@@ -1135,7 +1137,10 @@ input {
    margin: 0 auto;
    background-color: rgb(255, 255, 255);
    padding:1%;
-   border:2px solid rgba(26, 87, 199, 0.137);
+   box-shadow: 0px 0px 8px  rgb(214, 217, 222);
+   margin-left:20px;
+   margin-right:20px;
+
 }
 
 .assets-list-heading-container {
@@ -1216,7 +1221,7 @@ input {
 }
 
 .blue-row {
-    background-color: rgb(249, 249, 249) /* Blue */
+    background-color: rgb(249, 249, 249);
 }
 
 .lightblue-row {
@@ -1346,7 +1351,7 @@ input {
     margin-bottom:2.5%;
     background-color:white;
     padding:1%;
-    border:2px solid rgba(60, 60, 228, 0.096);
+    box-shadow: 0px 0px 8px  rgb(214, 217, 222)
 }
 
 .stats-container-link-wrapper{
@@ -1435,7 +1440,7 @@ input {
     margin-bottom:2.5%;
     background-color:white;
     padding:1%;
-    border:2px solid rgba(60, 60, 228, 0.096)
+    box-shadow: 0px 0px 8px  rgb(214, 217, 222)
 }
 
 .recent-assets-heading{
@@ -1477,7 +1482,7 @@ input {
     flex-direction:column;
     background-color:white;
     padding:1%;
-    border:2px solid rgba(60, 60, 228, 0.096)
+    box-shadow: 0px 0px 8px  rgb(214, 217, 222)
 }
 
 .recent-activities-container{
@@ -1517,9 +1522,44 @@ input {
     background-color: white;
     margin-left:20px;
     margin-right:20px;
+    box-shadow: 0px 0px 8px  rgb(214, 217, 222)
    
 }
 
 .view-asset-heading{
-    margin-bottom:1%;
+    margin-bottom: 2%;
+}
+
+.view-asset-row {
+    width:30%;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    font-size: 90%;
+}
+
+.view-asset-row p {
+    margin: 0;
+    padding: 0;
+    flex: 1;
+}
+
+.view-asset-actions-container{
+    margin-top:1%;
+    display:flex;
+    flex-direction: column;
+    gap:5px;
+}
+
+.view-asset-btn{
+    width:30%;
+    padding:0.5%;
+    background-color: rgb(48, 112, 149);
+    color:white;
+    cursor:pointer;
+    border:1px solid rgb(77, 68, 68);
+}
+
+.delete-asset-btn{
+    background-color: rgb(215, 57, 37);
 }
