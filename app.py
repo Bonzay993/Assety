@@ -521,6 +521,7 @@ def view_asset(asset_id):
     
     client = MongoClient(app.config["MONGO_URI"])
     db = client[app.config["MONGO_DBNAME"]]
+    user_first_name = session.get('first_name', 'User') 
     company_name = session.get('company', None)
     company_name = company_name.replace("_", " ")
     company_collection = db[company_name]
@@ -539,7 +540,7 @@ def view_asset(asset_id):
     ]
     labels_values = list(zip(labels, values))
 
-    return render_template('view-asset.html', asset=asset, company=company_name, labels_values=labels_values)
+    return render_template('view-asset.html', asset=asset, company=company_name, labels_values=labels_values, first_name=user_first_name)
 
 
 
