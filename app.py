@@ -450,6 +450,9 @@ def save_asset():
 @app.route('/asset-properties')
 def asset_properties():
     asset_id = request.args.get('asset_id')  # Get asset ID from URL
+    user_first_name = session.get('first_name', 'User') 
+    company_name = session.get('company', None)
+    company_name = company_name.replace("_", " ")
     
     if asset_id:
         client = MongoClient(app.config["MONGO_URI"])
@@ -460,9 +463,9 @@ def asset_properties():
         asset = company_collection.find_one({"_id": ObjectId(asset_id)})  # Fetch asset
 
         if asset:
-            return render_template("asset-properties.html", asset=asset, locations=locations)  
+            return render_template("asset-properties.html", asset=asset, locations=locations, company=company_name)  
 
-    return render_template("asset-properties.html", asset=None,)  # If no asset ID, load empty form
+    return render_template("asset-properties.html", asset=None, )  # If no asset ID, load empty form
 
 
 @app.route('/delete_asset/<asset_id>', methods=['POST'])
@@ -525,7 +528,7 @@ def view_asset(asset_id):
     # Fetch asset details from the database using the provided asset_id
     
     asset = company_collection.find_one({"_id": ObjectId(asset_id)})
-    return render_template('view-asset.html', asset=asset)
+    return render_template('view-asset.html', asset=asset, company=company_name)
 
 
 
