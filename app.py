@@ -53,7 +53,6 @@ def sign_up():
         client = MongoClient(app.config["MONGO_URI"])
         db = client[app.config["MONGO_DBNAME"]]
         users_collection = db['users']  # Access 'users' collection directly
-
         # Check if connection was successful by listing collection names
         collections = db.list_collection_names()
         print(f"Collections available: {collections}")
@@ -247,6 +246,7 @@ def dashboard():
         flash("Please log in to access the dashboard.", "error")
         return redirect(url_for('login'))
 
+    # Normalize company name
     company_name = company_name.replace('_', ' ')
 
     # Connect to MongoDB
@@ -263,9 +263,24 @@ def dashboard():
     # Fetch recent assets (last 5 added)
     recent_assets = list(company_collection.find({"asset": True}).sort("_id", -1).limit(5))
 
-    # Fetch recent activities (last 5 activities)
-    recent_activities = list(db.activities.find().sort("date", -1).limit(5))
+    # ✅ Fetch recent activities (filtered by user's company only)
+    recent_activities_cursor = db.activities.find(
+        {"company": company_name}
+    ).sort("timestamp", -1).limit(5)
 
+    # ✅ Format activity data for the template
+    formatted_activities = []
+    for act in recent_activities_cursor:
+        formatted_activities.append({
+            "date": act.get("timestamp"),
+            "user": act.get("user"),            
+            "action": act.get("action"),
+            "asset": act.get("asset"),          
+            "location": act.get("location", "N/A")
+    })
+
+
+    # Render dashboard template
     return render_template(
         "dashboard.html",
         first_name=user_first_name,
@@ -273,8 +288,32 @@ def dashboard():
         total_assets=total_assets,
         categories=categories,
         recent_assets=recent_assets,
-        recent_activities=recent_activities  # Pass activities to the template
+        recent_activities=formatted_activities  # Use formatted activities
     )
+
+
+def log_activity(action, asset_id, asset_tag, location=None):
+    """Logs the activity to the 'activities' collection"""
+    user_name = session.get('first_name', 'Unknown User')
+    company_name = session.get('company')
+    timestamp = datetime.now()
+
+    client = MongoClient(app.config["MONGO_URI"])
+    db = client[app.config["MONGO_DBNAME"]]
+    activities_collection = db['activities']
+
+    activity_data = {
+        'user': user_name,
+        'action': action,
+        'asset_id': asset_id,
+        'asset_tag': asset_tag,
+        'timestamp': timestamp,
+        'location': location or 'N/A',
+        'company': company_name
+    }
+
+    print(f"LOGGED ACTIVITY: {activity_data}")  # Optional debugging log
+    activities_collection.insert_one(activity_data)
 
 
 @app.route('/test-mongo')
@@ -372,10 +411,12 @@ def save_asset():
             )
             # Log the update activity
             activity_data = {
-                'date': datetime.datetime.now(),
-                'user': session['first_name'],
+                'timestamp': datetime.now(),
+                'user': session.get('first_name'),
                 'action': 'Update',
-                'asset': asset_tag
+                'asset': asset_tag,
+                'location': location,
+                'company':company_name
             }
             db.activities.insert_one(activity_data)
 
@@ -383,10 +424,12 @@ def save_asset():
         else:
             company_collection.insert_one(asset_data)
             activity_data = {
-                'date': datetime.datetime.now(),
-                'user': session['first_name'],
+                'timestamp': datetime.now(),
+                'user': session.get('first_name'),
                 'action': 'Create',  # Log the creation action
-                'asset': asset_tag
+                'asset': asset_tag,
+                'location': location,
+                'company':company_name
             }
             db.activities.insert_one(activity_data)
             flash("New asset created!", "success")
@@ -449,10 +492,12 @@ def delete_asset(asset_id):
         if result.deleted_count > 0:
             # Log the delete activity
             activity_data = {
-                'date': datetime.datetime.now(),
-                'user': session['first_name'],
-                'action': 'Delete',
-                'asset': asset.get('asset_tag', 'Unknown Asset')  # Use asset_tag or a fallback
+                'timestamp': datetime.now(),
+                'user': session.get('first_name'),
+                'action': 'Delete',  # Correct action
+                'asset': asset.get('asset_tag'),  # Use asset_tag from the asset document
+                'location': asset.get('location', 'N/A'),  # Use location from the asset document
+                'company': company_name
             }
             db.activities.insert_one(activity_data)
 
@@ -481,26 +526,7 @@ def view_asset(asset_id):
     return render_template('view-asset.html', asset=asset)
 
 
-def log_activity(action, asset_id, asset_tag):
-    """Logs the activity to the 'activities' collection"""
-    user_id = session.get('user_id')
-    company_name = session.get('company')
-    timestamp = datetime.datetime.now()
 
-    client = MongoClient(app.config["MONGO_URI"])
-    db = client[app.config["MONGO_DBNAME"]]
-    activities_collection = db['activities']  # You should create this collection in MongoDB
-
-    activity_data = {
-        'user_id': user_id,
-        'action': action,
-        'asset_id': asset_id,
-        'asset_tag': asset_tag,
-        'timestamp': timestamp,
-        'company': company_name
-    }
-
-    activities_collection.insert_one(activity_data)
         
 
 @app.route('/locations')
