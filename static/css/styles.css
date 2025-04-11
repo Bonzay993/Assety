@@ -82,7 +82,6 @@ header .logo h1 {
 .nav-item-url {
     color: rgb(255, 255, 255);
     text-decoration: none;
-    font-size: 1.1rem;
     font-weight: 500;
 }
 
@@ -146,7 +145,7 @@ header .logo h1 {
 }
 
 .hero-subcontainer-p{
-    font-size: 1.4rem;
+    font-size:130%;
     margin-bottom: 40px;
     text-align: left;
    
@@ -270,7 +269,7 @@ header .logo h1 {
 
 /* HOW IT WORKS CSS */
 .how-it-works {
-    height:70%;
+    height:60%;
     padding: 5% 0;
     display: flex;
     flex-direction: column;
@@ -286,7 +285,7 @@ header .logo h1 {
 }
 
 .page-headers{
-    font-size: 2.5em;
+    font-size: 180%;
     font-weight: 700;
     color:rgb(56, 45, 97);
     margin-bottom: 3%;
