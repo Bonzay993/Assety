@@ -50,7 +50,12 @@
 
             <div class="form-group">
                 <label for="location">Location</label>
-                <input type="number" id="location" name="location" value="{{ asset.location }}">
+                <select id="location" name="location" required>
+                    <option value="">Select a location</option>
+                    {% for location in locations %}
+                        <option value="{{ location.location_tag }}">{{ location.location_tag }}</option>
+                    {% endfor %}
+                </select>
             </div>
 
             <div class="form-actions">
@@ -62,9 +67,9 @@
 
 
     <script>
-        // Optional: You can add JavaScript validation if needed
+      
         document.getElementById('asset-form').addEventListener('submit', function(event) {
-            // Example: prevent form submission if required fields are missing or invalid
+            //  prevent form submission if required fields are missing or invalid
             const form = event.target;
             const fields = form.querySelectorAll('[required]');
             let valid = true;
