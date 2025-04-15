@@ -3,7 +3,7 @@
 
     <div class="new-location-form-container default-form-container">
         <div class="new-location-form-header">
-            <h1>Add New Location</h1>
+            <h1 class="assets-heading">Add New Location</h1>
         </div>
         <form class="new-location-form default-form" action="{{ url_for('save_location') }}" method="POST" id="location-form">
             <input type="hidden" name="location_id" value="{{ location._id if location else '' }}">  <!-- Store ID -->
