@@ -3,6 +3,15 @@
 <section class="heading-section">
     <div class="default-list-top-container">
         <h1 class="assets-heading">Categories</h1>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                    {% for category, msg in messages %}
+                        {% if category == 'category-success' %}
+                            <div class="alert alert-success">{{ msg }}</div>
+                        {% endif %}
+                    {% endfor %}
+            {% endif %}
+         {% endwith %}
         <div class="create-new-asset-btn create-new-category">
             <a href="{{ url_for('new_category') }}">
                 <button class="new-asset-btn">Create New</button>
