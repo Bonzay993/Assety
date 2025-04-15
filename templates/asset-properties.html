@@ -2,67 +2,95 @@
 {% block content %}
 
     
-    <div class="new-asset-form-container default-form-container">
+    <div class="new-asset-form-container default-form-container ">
         <div class="new-asset-form-header">
-            <h1>Edit Asset</h1>
+            <h1 class="assets-heading">Edit Asset</h1>
         </div>
         <form class="new-asset-form default-form" action="{{ url_for('save_asset') }}" method="POST">
-            <input type="hidden" name="asset_id" value="{{ asset._id if asset else '' }}">  <!-- Store ID -->
-            <div class="form-group">
-                <label for="asset-tag">Asset Tag</label>
-                <input type="text" id="asset-tag" name="asset-tag" value="{{ asset.asset_tag if asset else ''  }}" required>
-            </div>
+            <div class="edit-asset-form-main-container">
+                <div class="edit-asset-form-data-container">
+                    <input type="hidden" name="asset_id" value="{{ asset._id if asset else '' }}">  <!-- Store ID -->
+                    <div class="form-group">
+                        <label for="asset-tag">Asset Tag</label>
+                        <input type="text" id="asset-tag" name="asset-tag" value="{{ asset.asset_tag if asset else ''  }}" required>
+                    </div>
 
-            <div class="form-group">
-                <label for="serial">Serial Number</label>
-                <input type="text" id="serial" name="serial" value="{{ asset.serial }}" required>
-            </div>
+                    <div class="form-group">
+                        <label for="serial">Serial Number</label>
+                        <input type="text" id="serial" name="serial" value="{{ asset.serial }}" required>
+                    </div>
 
-            <div class="form-group">
-                <label for="model">Model</label>
-                <input type="text" id="model" name="model" value="{{ asset.model }}" required>
-            </div>
+                    <div class="form-group">
+                        <label for="model">Model</label>
+                        <input type="text" id="model" name="model" value="{{ asset.model }}" required>
+                    </div>
 
-            <div class="form-group">
-                <label for="notes">Notes</label>
-                <textarea id="notes" name="notes" {{ asset.notes }} rows="4"></textarea>
-            </div>
+                    <div class="form-group">
+                        <label for="notes">Notes</label>
+                        <textarea id="notes" name="notes" placeholder="Enter any notes here" {{ asset.notes }} rows="4"></textarea>
+                    </div>
 
-            <div class="form-group">
-                <label for="warranty">Warranty Expiry</label>
-                <input type="date" id="warranty" name="warranty" value="{{ asset.warranty }}">
-            </div>
+                    <div class="form-group">
+                        <label for="warranty">Warranty Expiry</label>
+                        <input type="date" id="warranty" name="warranty" value="{{ asset.warranty }}">
+                    </div>
 
-            <div class="form-group">
-                <label for="order-number">Order Number</label>
-                <input type="text" id="order-number" name="order-number" value="{{ asset.order_number }}" >
-            </div>
+                    <div class="form-group">
+                        <label for="order-number">Order Number</label>
+                        <input type="text" id="order-number" name="order-number" value="{{ asset.order_number }}" >
+                    </div>
 
-            <div class="form-group">
-                <label for="purchase-cost">Purchase Cost</label>
-                <input type="number" id="purchase-cost" name="purchase-cost" value="{{ asset.purchase_cost }}">
-            </div>
+                    <div class="form-group">
+                        <label for="purchase-cost">Purchase Cost</label>
+                        <input type="number" id="purchase-cost" name="purchase-cost" value="{{ asset.purchase_cost }}">
+                    </div>
 
-            <div class="form-group">
-                <label for="purchase-date">Purchase Date</label>
-                <input type="date" id="purchase-date" name="purchase-date" value="{{ asset.purchase_date }}">
-            </div>
+                    <div class="form-group">
+                        <label for="purchase-date">Purchase Date</label>
+                        <input type="date" id="purchase-date" name="purchase-date" value="{{ asset.purchase_date }}">
+                    </div>
 
-            <div class="form-group">
-                <label for="location">Location</label>
-                <select id="location" name="location" required>
-                    <option value="">Select a location</option>
-                    {% for location in locations %}
-                        <option value="{{ location.location_tag }}">{{ location.location_tag }}</option>
-                    {% endfor %}
-                </select>
-            </div>
+                    <div class="form-group">
+                        <label for="location">Location</label>
+                        <select id="location" name="location" required>
+                            <option value="">Select a location</option>
+                            {% for location in locations %}
+                                <option value="{{ location.location_tag }}">{{ location.location_tag }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
 
-            <div class="form-actions">
+                    <div class="form-group">
+                        <label for="asset-image">Upload Asset Image</label>
+                        <input type="file" id="asset-image" name="image" accept="image/*">
+                    </div>
+                </div>
+                <div class="edit-asset-thumbnail-wrapper">
+                    <div class="edit-asset-thumbnail-container">
+                        <div class="edit-asset-thumbnail-container">
+                            {% if asset.image_id %}
+                                <img src="{{ url_for('get_image', image_id=asset.image_id) }}"
+                                    alt="Asset Image"
+                                    class="edit-asset-thumbnail">
+                            {% else %}
+                                <img src="{{ url_for('static', filename='img/default.png') }}"
+                                    alt="No Image"
+                                    class="asset-thumbnail">
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+               
+             </div>
+             <div class="form-actions">
                 <a href="javascript:window.history.back()" class="form-cancel">Cancel</a>
                 <button type="submit" class="btn save-btn"><i class="fa-solid fa-check"></i> Save</button>
             </div>
+           
+            
         </form>
+      
+    
     </div>
 
 
