@@ -1,11 +1,12 @@
 import os
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, send_file
 from flask_pymongo import PyMongo
 from pymongo import MongoClient
 from datetime import datetime, timedelta
 from flask import render_template, session
 from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
+from werkzeug.utils import secure_filename
 from bson.objectid import ObjectId 
 from send_emails import EmailService
 import gridfs
@@ -369,7 +370,7 @@ def new_asset():
 
 @app.route('/save_asset', methods=['POST'])
 def save_asset():
-    company_name = session.get('company', None)
+    company_name = session.get('company')
     if not company_name:
         flash("No company found in session. Please log in again.", "error")
         return redirect(url_for('login'))
@@ -378,8 +379,9 @@ def save_asset():
     client = MongoClient(app.config["MONGO_URI"])
     db = client[app.config["MONGO_DBNAME"]]
     company_collection = db[company_name]
+    fs = gridfs.GridFS(db)
 
-    asset_id = request.form.get('asset_id')  # Get the asset ID if editing
+    asset_id = request.form.get('asset_id')
     asset_tag = request.form['asset-tag']
     serial = request.form['serial']
     model = request.form['model']
@@ -388,8 +390,27 @@ def save_asset():
     order_number = request.form['order-number']
     purchase_cost = request.form['purchase-cost']
     purchase_date = request.form['purchase-date']
-    location = request.form['location']  # Capture selected location
-    
+    location = request.form['location']
+
+    # Handle image upload (if present)
+    image_file = request.files.get('image')
+    image_id = None
+
+    if image_file and image_file.filename != "":
+        try:
+            filename = secure_filename(image_file.filename)
+            image_id = fs.put(
+                image_file,
+                filename=filename,
+                content_type=image_file.content_type,
+                company=company_name,
+                uploaded_by=session.get('first_name'),
+                asset_tag=asset_tag,
+                timestamp=datetime.utcnow()
+            )
+        except Exception as e:
+            flash(f"Image upload failed: {str(e)}", "error")
+            return redirect(url_for('dashboard'))
 
     asset_data = {
         'asset': True,
@@ -401,49 +422,55 @@ def save_asset():
         'order_number': order_number,
         'purchase_cost': purchase_cost,
         'purchase_date': purchase_date,
-        'location': location
+        'location': location,
+        'image_id': image_id  # Save reference to the image in the asset document
     }
 
     try:
-        if asset_id:  # If asset exists, UPDATE instead of inserting a new one
+        if asset_id:
             company_collection.update_one(
                 {"_id": ObjectId(asset_id)},
                 {"$set": asset_data}
             )
-            # Log the update activity
-            activity_data = {
-                'timestamp': datetime.now(),
-                'user': session.get('first_name'),
-                'action': 'Update',
-                'asset': asset_tag,
-                'location': location,
-                'company':company_name
-            }
-            db.activities.insert_one(activity_data)
-
+            action = 'Update'
             flash("Asset updated successfully!", "success")
         else:
             company_collection.insert_one(asset_data)
-            activity_data = {
-                'timestamp': datetime.now(),
-                'user': session.get('first_name'),
-                'action': 'Create',  # Log the creation action
-                'asset': asset_tag,
-                'location': location,
-                'company':company_name
-            }
-            db.activities.insert_one(activity_data)
+            action = 'Create'
             flash("New asset created!", "success")
 
-        return redirect(url_for('assets'))  
+        db.activities.insert_one({
+            'timestamp': datetime.now(),
+            'user': session.get('first_name'),
+            'action': action,
+            'asset': asset_tag,
+            'location': location,
+            'company': company_name
+        })
+
+        return redirect(url_for('assets'))
 
     except Exception as e:
         flash(f"An error occurred: {str(e)}", "error")
         return redirect(url_for('dashboard'))
 
+
+@app.route('/image/<image_id>')
+def get_image(image_id):
+    company = session.get('company')
+    if not company:
+        return "Unauthorized", 403
+
+    try:
+        image_file = fs.get(ObjectId(image_id))
+        # Check if image belongs to the correct company
+        if image_file.company != company:
+            return "Forbidden", 403
+
+        return send_file(image_file, mimetype=image_file.content_type)
+
     except Exception as e:
-        flash(f"An error occurred: {str(e)}", "error")
-        return redirect(url_for('dashboard'))
+        return f"Image not found: {str(e)}", 404
 
 
 

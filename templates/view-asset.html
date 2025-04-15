@@ -2,10 +2,10 @@
 
 {% block content %}
 <section class="view-asset-container"> 
-    <h1 class="view-asset-heading">View Asset {{ asset.asset_tag }}</h1>
+   
     <div class="view-asset-details-container">  
-
-        <div class="view-asset-title-container">
+        <h1 class="view-asset-heading">View Asset {{ asset.asset_tag }}</h1>
+        <div class="view-asset-details-wrapper">
             {% for label, value in labels_values %}
                 <div class="view-asset-row {% if loop.index is odd %}blue-row{% else %}lightblue-row{% endif %}">
                     <p><strong>{{ label }}</strong></p>
@@ -13,17 +13,32 @@
                 </div>
             {% endfor %}
         </div>
+        <div class="view-asset-actions-container">
+            <a href="{{ url_for('asset_properties', asset_id=asset._id) }}">
+                <button class="view-asset-btn edit-asset-btn">Edit Asset</button>
+            </a>
+            <form action="{{ url_for('delete_asset', asset_id=asset._id) }}" method="POST" 
+            onsubmit="return confirm('Are you sure you want to delete this asset?');">
+                <button class="view-asset-btn delete-asset-btn">Delete Asset</button>
+            </form>
+        </div>
 
     </div>
 
-    <div class="view-asset-actions-container">
-        <a href="{{ url_for('asset_properties', asset_id=asset._id) }}">
-            <button class="view-asset-btn edit-asset-btn">Edit Asset</button>
-        </a>
-        <form action="{{ url_for('delete_asset', asset_id=asset._id) }}" method="POST" 
-        onsubmit="return confirm('Are you sure you want to delete this asset?');">
-            <button class="view-asset-btn delete-asset-btn">Delete Asset</button>
-        </form>
+    <div class="view-asset-thumbnail-container">
+        <div class="view-asset-thumbnail-container">
+            {% if asset.image_id %}
+                <img src="{{ url_for('get_image', image_id=asset.image_id) }}"
+                     alt="Asset Image"
+                     class="view-asset-thumbnail">
+            {% else %}
+                <img src="{{ url_for('static', filename='img/default.png') }}"
+                     alt="No Image"
+                     class="asset-thumbnail">
+            {% endif %}
+        </div>
     </div>
+
+   
 </section>
 {% endblock %}
