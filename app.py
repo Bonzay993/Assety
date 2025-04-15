@@ -480,6 +480,25 @@ def asset_properties():
     user_first_name = session.get('first_name', 'User') 
     company_name = session.get('company', None)
     company_name = company_name.replace("_", " ")
+
+    image_file = request.files.get('image')
+    image_id = None
+
+    if image_file and image_file.filename != "":
+        try:
+            filename = secure_filename(image_file.filename)
+            image_id = fs.put(
+                image_file,
+                filename=filename,
+                content_type=image_file.content_type,
+                company=company_name,
+                uploaded_by=session.get('first_name'),
+                asset_tag=asset_tag,
+                timestamp=datetime.utcnow()
+            )
+        except Exception as e:
+            flash(f"Image upload failed: {str(e)}", "error")
+            return redirect(url_for('dashboard'))
     
     if asset_id:
         client = MongoClient(app.config["MONGO_URI"])
