@@ -1294,7 +1294,7 @@ input {
 
 
 .default-form{
-    width:50%;
+    width:80%;
     height:50%;
     margin-top:5%;
     background-color:white;
@@ -1304,6 +1304,7 @@ input {
     flex-direction: column;
     margin:0 auto;
 }
+
 
 .edit-asset-form-main-container{
     display:flex;
@@ -1323,10 +1324,35 @@ input {
 }
 
 .form-group {
-    position: relative;
-    width: 100%;
-    max-width: 400px;
-  }
+    display: flex;
+    align-items: center;
+    width: 85%;
+    gap:25px;
+    
+}
+
+
+.save-btn{
+   background-color: rgb(48, 112, 149)
+}
+
+.form-group label {
+    flex: 0 0 200px; /* fixed width for label, adjust as needed */
+    font-weight: 600;
+    font-size: 12px;
+    text-align: right;
+    
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    flex: 1; /* input grows to fill remaining space */
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
 
 .form-group textarea {
     resize: none; /* Disable resizing */
@@ -1350,6 +1376,7 @@ input {
     border-radius: 5px;
     
   }
+
 
 .form-actions {
     display:flex;
@@ -1607,3 +1634,4 @@ input {
 .delete-asset-btn{
     background-color: rgb(215, 57, 37);
 }
+
