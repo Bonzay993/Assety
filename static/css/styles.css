@@ -15,7 +15,7 @@ body {
     line-height: 1.6;
     background-color: white;
     color: #020318;
-    min-height:100vh;
+    height:100vh;
   
 }
 
@@ -207,7 +207,7 @@ header .logo h1 {
   rgba(241, 245, 249, 0.05)    /* Light slate — neutral and polished */
 );
     text-align: center;
-    height:64%;
+    height:72%;
     align-items: center;
     row-gap:60px;
     padding:0;
