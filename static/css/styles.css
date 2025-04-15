@@ -576,7 +576,13 @@ input {
     border: 1px solid #ccc;
     border-radius: 5px;
 }
+input[type="date"]{
+    cursor:pointer;
+}
 
+input[type="file"]{
+    cursor:pointer;
+}
 
 .btn {
     background: #007bff;
