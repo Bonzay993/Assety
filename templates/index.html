@@ -25,7 +25,7 @@
             <nav>
                 <ul class="nav-container">
                     <li class="nav-item"><a class="nav-item-url" href="{{ url_for('index') }}">Home</a></li>
-                    <li class="nav-item"><a class="nav-item-url" href="#features">Features</a></li>
+                    <li class="nav-item"><a class="nav-item-url" href="{{ url_for('index') }}#features">Features</a></li>
                     <li class="nav-item"><a class="nav-item-url" href="#">Pricing</a></li>
                     <li class="nav-item"><a class="nav-item-url" href="{{ url_for('login') }}">Login</a></li>
                     <li class="nav-item"><a class="nav-item-url" href="{{ url_for('sign_up') }}">Sign Up</a></li>
@@ -122,7 +122,7 @@
     <!-- Call to Action Section -->
     <section class="cta">
         <h2 class="page-headers">Ready to take control of your inventory?</h2>
-        <a href="#" class="cta-btn free-trial-btn">Start Your Free Trial</a>
+        <a href="{{ url_for('sign_up') }}" class="cta-btn free-trial-btn">Start Your Free Trial</a>
     </section>
 
      <!-- FAQ Section -->
