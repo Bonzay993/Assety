@@ -823,10 +823,31 @@ def save_category():
     company_collection = db[company_name]
     fs = gridfs.GridFS(db)
 
-    category_name = request.form['category-name']  # This is the category name
-    category_type = request.form['category-type']       # Type of the category
+    category_id = request.form.get('category_id')
+    category_name = request.form['category-name']
+    category_type = request.form['category-type']
 
-    # Handle image upload (optional)
+    # Prevent duplicate category names (case-insensitive)
+    query = {"category": True, "name": {"$regex": f"^{category_name}$", "$options": "i"}}
+    if category_id:
+        query["_id"] = {"$ne": ObjectId(category_id)}
+
+    existing = company_collection.find_one(query)
+    if existing:
+        flash("A category with this name already exists.", "category-error")
+
+        if category_id:
+            return redirect(url_for('category_properties', category_id=category_id))
+        else:
+            # Return the form with the data filled in
+            return render_template(
+                "new-category.html",
+                category={"name": category_name, "type": category_type},
+                first_name=session.get('first_name', 'User'),
+                company=company_name
+            )
+
+    # Image upload handling
     image_file = request.files.get('image')
     image_id = None
 
@@ -845,6 +866,10 @@ def save_category():
         except Exception as e:
             flash(f"Image upload failed: {str(e)}", "error")
             return redirect(url_for('dashboard'))
+    elif category_id:
+        existing_category = company_collection.find_one({"_id": ObjectId(category_id)})
+        if existing_category and 'image_id' in existing_category:
+            image_id = existing_category['image_id']
 
     category_data = {
         'category': True,
@@ -854,24 +879,33 @@ def save_category():
     }
 
     try:
-        # Save new category
-        company_collection.insert_one(category_data)
+        if category_id:
+            company_collection.update_one(
+                {"_id": ObjectId(category_id)},
+                {"$set": category_data}
+            )
+            action = 'Update Category'
+            flash("Category updated successfully!", "category-success")
+        else:
+            company_collection.insert_one(category_data)
+            action = 'Create Category'
+            flash("New category created successfully!", "category-success")
 
-        # Log activity
         db.activities.insert_one({
             'timestamp': datetime.now(),
             'user': session.get('first_name'),
-            'action': 'Create Category',
+            'action': action,
             'category': category_name,
             'company': company_name
         })
 
-        flash("New category created successfully!", "success")
-        return redirect(url_for('categories'))  # Adjust this if you have a specific category page
+        return redirect(url_for('categories'))
 
     except Exception as e:
-        flash(f"An error occurred while saving category: {str(e)}", "error")
+        flash(f"An error occurred while saving category: {str(e)}", "category-error")
         return redirect(url_for('dashboard'))
+
+
 
 
 @app.route('/category-properties')

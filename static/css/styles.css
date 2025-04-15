@@ -700,6 +700,12 @@ input[type="file"]{
     font-size: 14px;
 }
 
+.danger-categories{
+    text-align: center;
+    width:20%;
+    align-self:center;
+}
+
 .alert-info {
     color: #0c5460;
     background-color: #d1ecf1;

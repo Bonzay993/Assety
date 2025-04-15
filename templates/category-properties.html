@@ -5,6 +5,7 @@
     <div class="new-location-form-header">
         <h1 class="assets-heading">Edit Category</h1>
     </div>
+    
     <form class="new-location-form default-form" action="{{ url_for('save_category') }}" method="POST" id="category-form" enctype="multipart/form-data">
         <input type="hidden" name="category_id" value="{{ category._id if category else '' }}">  <!-- Store ID -->
 
