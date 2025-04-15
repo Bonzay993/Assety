@@ -7,7 +7,7 @@ function passwordValidator(){
         const passwordInput = document.getElementById("password");
         const confirmPasswordInput = document.getElementById("confirm-password");
         const submitButton = document.querySelector("button[type='submit']");
-        const confirmPasswordGroup = confirmPasswordInput.closest('.form-group');
+        const confirmPasswordGroup = confirmPasswordInput.closest('.sign-up-form-group');
         
         // Create validation message elements
         const validationContainer = document.createElement("div");
