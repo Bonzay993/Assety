@@ -29,7 +29,9 @@
 
             <div class="form-group">
                 <label for="warranty">Warranty Expiry</label>
-                <input type="date" id="warranty" name="warranty" placeholder="Select Warranty Expiry">
+                <div class="date-wrapper" onclick="document.getElementById('warranty').showPicker()">
+                    <input type="date" id="warranty" name="warranty">
+                </div>
             </div>
 
             <div class="form-group">
@@ -39,12 +41,14 @@
 
             <div class="form-group">
                 <label for="purchase-cost">Purchase Cost</label>
-                <input type="number" id="purchase-cost" name="purchase-cost" placeholder="Enter Purchase Cost">
+                <input type="text" id="purchase-cost" name="purchase-cost" placeholder="Enter Purchase Cost">
             </div>
 
             <div class="form-group">
                 <label for="purchase-date">Purchase Date</label>
-                <input type="date" id="purchase-date" name="purchase-date">
+                <div class="date-wrapper" onclick="document.getElementById('purchase-date').showPicker()">
+                    <input type="date" id="purchase-date" name="purchase-date">
+                </div>
             </div>
 
             <div class="form-group">
