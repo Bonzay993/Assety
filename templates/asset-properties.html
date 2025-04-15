@@ -6,7 +6,8 @@
         <div class="new-asset-form-header">
             <h1 class="assets-heading">Edit Asset</h1>
         </div>
-        <form class="new-asset-form default-form" action="{{ url_for('save_asset') }}" method="POST">
+        <form class="new-asset-form default-form" action="{{ url_for('save_asset') }}" method="POST"  enctype="multipart/form-data"
+        id="asset-form">
             <div class="edit-asset-form-main-container">
                 <div class="edit-asset-form-data-container">
                     <input type="hidden" name="asset_id" value="{{ asset._id if asset else '' }}">  <!-- Store ID -->
