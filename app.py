@@ -394,7 +394,6 @@ def save_asset():
     location = request.form['location']
     category = request.form['category']
 
-    # Handle image upload (if present)
     image_file = request.files.get('image')
     image_id = None
 
@@ -413,6 +412,11 @@ def save_asset():
         except Exception as e:
             flash(f"Image upload failed: {str(e)}", "error")
             return redirect(url_for('dashboard'))
+    elif asset_id:
+        # 🛠 Preserve current image_id if no new image uploaded
+        existing_asset = company_collection.find_one({"_id": ObjectId(asset_id)})
+        if existing_asset and 'image_id' in existing_asset:
+            image_id = existing_asset['image_id']
 
     asset_data = {
         'asset': True,
@@ -426,7 +430,7 @@ def save_asset():
         'purchase_date': purchase_date,
         'location': location,
         'image_id': image_id,
-        'category': category,  
+        'category': category,
     }
 
     try:
@@ -449,7 +453,7 @@ def save_asset():
             'asset': asset_tag,
             'location': location,
             'company': company_name,
-            'category':category
+            'category': category
         })
 
         return redirect(url_for('assets'))
@@ -457,6 +461,7 @@ def save_asset():
     except Exception as e:
         flash(f"An error occurred: {str(e)}", "error")
         return redirect(url_for('dashboard'))
+
 
 
 @app.route('/image/<image_id>')
