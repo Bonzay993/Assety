@@ -13,6 +13,16 @@
             </div>
 
             <div class="form-group">
+                <label for="location">Category</label>
+                <select id="location" name="location" required>
+                    <option value="">Select a Category</option>
+                    {% for category in categories %}
+                        <option value="{{ category.name }}">{{ category.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
                 <label for="serial">Serial Number</label>
                 <input type="text" id="serial" name="serial" placeholder="Enter Serial Number" required>
             </div>

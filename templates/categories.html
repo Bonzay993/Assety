@@ -1,4 +1,71 @@
 {% extends "inventory.html" %}
 {% block content %}
-    SOON
+<section class="heading-section">
+    <div class="default-list-top-container">
+        <h1 class="assets-heading">Categories</h1>
+        <div class="create-new-asset-btn create-new-category">
+            <a href="{{ url_for('new_category') }}">
+                <button class="new-asset-btn">Create New</button>
+            </a>
+        </div>
+    </div>
+</section>
+
+<section class="assets-list">
+    <div class="assets-list-container">
+        <div class="assets-list-heading-container">
+            <p class="asset-list-title-item"><strong>Name</strong></p>
+            <p class="asset-list-title-item"><strong>Image</strong></p>
+            <p class="asset-list-title-item"><strong>Type</strong> </p>
+            <p class="asset-list-title-item"><strong>Quantity</strong> </p>
+            <p class="asset-list-title-item"><strong>Actions</strong> </p>
+        </div>
+
+        {% for category in categories %}
+        <div class="assets-list-items-container {% if loop.index0 % 2 == 0 %}blue-row{% else %}lightblue-row{% endif %}">
+            <div class="title-body-group">
+                
+                <p>{{ category.name}}</p>
+            </div>
+            <div class="title-body-group title-body-group-image-name">
+                {% if category.image_id %}
+                    <img src="{{ url_for('get_image', image_id=category.image_id) }}"
+                         alt="Category Image"
+                         class="asset-thumbnail">
+                {% else %}
+                    <img src="{{ url_for('static', filename='img/default.png') }}"
+                         alt="No Image"
+                         class="asset-thumbnail">
+                {% endif %}
+                
+            </div>
+            <div class="title-body-group">
+                <p>{{ category.type }}</p>
+            </div>
+            <div class="title-body-group">
+                
+                <p>{{ category.quantity}}</p>
+            </div>
+           
+           
+                
+                <div class="inner-action-group">
+                    <div class="assets-interactive-btn">
+                        <a href="{{ url_for('category_properties', category_id=category._id) }}">
+                            <button class="assets-edit-button">
+                                <i class="fa-solid fa-pencil"></i>
+                            </button>
+                        </a>
+                        <form action="{{ url_for('delete_category', category_id=category._id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this category?');">
+                            <button class="assets-delete-button">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div> 
+    {% endfor %}
+    </div>
+</section>
 {% endblock %}
