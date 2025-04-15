@@ -28,19 +28,21 @@
          {% endwith %}
     
 
-        <form action="{{ url_for('login') }}" method="post" class="login-form">
-            <div class="form-group">
-                <i class="fa-solid fa-envelope"></i>
-                <input type="email" id="email" name="email" placeholder="Enter your email" required>
+         <form action="{{ url_for('login') }}" method="post" class="login-form">
+            <div class="login-form-group">
+                <div class="login-input-wrapper">
+                    <i class="fa-solid fa-envelope"></i>
+                    <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                </div>
             </div>
             
-            <div class="form-group">
-                <i class="fa-solid fa-key"></i>
-                <input type="password" id="password" name="password" placeholder="Enter your password" required>
-                
-               
+            <div class="login-form-group">
+                <div class="login-input-wrapper">
+                    <i class="fa-solid fa-key"></i>
+                    <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                </div>
             </div>
-
+        
             <button type="submit" class="btn">Login</button>
         </form>
         <div class="login-links-container">
