@@ -21,7 +21,10 @@
                         <select id="category" name="category" required>
                             <option value="">Select a Category</option>
                             {% for category in categories %}
-                                <option value="{{ category.name }}">{{ category.name }}</option>
+                                <option value="{{ category.name }}" 
+                                    {% if asset and asset.category == category.name %}selected{% endif %}>
+                                    {{ category.name }}
+                                </option>
                             {% endfor %}
                         </select>
                     </div>
@@ -71,7 +74,10 @@
                         <select id="location" name="location" required>
                             <option value="">Select a location</option>
                             {% for location in locations %}
-                                <option value="{{ location.location_tag }}">{{ location.location_tag }}</option>
+                                <option value="{{ location.location_tag }}" 
+                                    {% if asset and asset.location == location.location_tag %}selected{% endif %}>
+                                    {{ location.location_tag }}
+                                </option>
                             {% endfor %}
                         </select>
                     </div>
