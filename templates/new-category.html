@@ -1,0 +1,59 @@
+{% extends "inventory.html" %}
+{% block content %}
+
+    <div class="new-location-form-container default-form-container">
+        <div class="new-location-form-header">
+            <h1 class="assets-heading" >Add New Category</h1>
+        </div>
+        <form class="new-location-form default-form" action="{{ url_for('save_category') }}" method="POST" id="location-form">
+            <div class="form-group">
+                <label for="category-name">Name</label>
+                <input type="text" id="category-name" name="category-name" placeholder="Enter Category Type" required>
+            </div>
+
+            
+
+            <div class="form-group">
+                <label for="category-type">Type</label>
+                <input type="text" id="category-type" name="category-type" placeholder="Enter Type">
+            </div>
+
+            <div class="form-group">
+                <label for="asset-image">Upload Category Image</label>
+                <input type="file" id="asset-image" name="image" accept="image/*">
+            </div>
+
+
+            <div class="form-actions">
+                <a href="javascript:window.history.back()" class="form-cancel">Cancel</a>
+                <button type="submit" class="btn save-btn"><i class="fa-solid fa-check"></i> Save</button>
+            </div>
+        </form>
+    </div>
+
+
+<script>
+    // Optional: You can add JavaScript validation if needed
+    document.getElementById('location-form').addEventListener('submit', function(event) {
+        // Example: prevent form submission if required fields are missing or invalid
+        const form = event.target;
+        const fields = form.querySelectorAll('[required]');
+        let valid = true;
+
+        fields.forEach(function(field) {
+            if (!field.value) {
+                valid = false;
+                field.classList.add('error');
+            } else {
+                field.classList.remove('error');
+            }
+        });
+
+        if (!valid) {
+            event.preventDefault();
+            alert("Please fill out all required fields.");
+        }
+    });
+</script>
+
+{% endblock %}

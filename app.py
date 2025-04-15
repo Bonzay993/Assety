@@ -364,8 +364,9 @@ def new_asset():
      company_collection = db[company_name]
      
      locations = list(company_collection.find({"location": True}))
+     categories = list(company_collection.find({"category": True}))
      
-     return render_template("new-asset.html",first_name=user_first_name, company=company_name, locations=locations )
+     return render_template("new-asset.html",first_name=user_first_name, company=company_name, locations=locations, categories=categories )
 
 
 @app.route('/save_asset', methods=['POST'])
@@ -391,6 +392,7 @@ def save_asset():
     purchase_cost = request.form['purchase-cost']
     purchase_date = request.form['purchase-date']
     location = request.form['location']
+    category = request.form['category']
 
     # Handle image upload (if present)
     image_file = request.files.get('image')
@@ -423,7 +425,8 @@ def save_asset():
         'purchase_cost': purchase_cost,
         'purchase_date': purchase_date,
         'location': location,
-        'image_id': image_id  # Save reference to the image in the asset document
+        'image_id': image_id,
+        'category': category,  
     }
 
     try:
@@ -445,7 +448,8 @@ def save_asset():
             'action': action,
             'asset': asset_tag,
             'location': location,
-            'company': company_name
+            'company': company_name,
+            'category':category
         })
 
         return redirect(url_for('assets'))
@@ -505,11 +509,12 @@ def asset_properties():
         db = client[app.config["MONGO_DBNAME"]]
         company_collection = db[session.get('company', 'default_company')]
         locations = list(company_collection.find({"location": True}))
+        categories = list(company_collection.find({"category": True}))
 
         asset = company_collection.find_one({"_id": ObjectId(asset_id)})  # Fetch asset
 
         if asset:
-            return render_template("asset-properties.html", asset=asset, locations=locations, company=company_name)  
+            return render_template("asset-properties.html", asset=asset, locations=locations, company=company_name ,categories=categories)  
 
     return render_template("asset-properties.html", asset=None, )  # If no asset ID, load empty form
 
@@ -762,9 +767,174 @@ def delete_location(location_id):
     return redirect(url_for('locations'))
 
 
-@app.route("/categories")
+@app.route('/categories')
 def categories():
-    return render_template("categories.html")
+    # Debugging: Check the session data
+    print(f"Session at categories page: {session}")
+
+    # Get user and company info
+    user_first_name = session.get('first_name', 'User')
+    company_name = session.get('company', 'No Company')
+    company_name = company_name.replace("_", " ")
+
+    # Connect to MongoDB
+    client = MongoClient(app.config["MONGO_URI"])
+    db = client[app.config["MONGO_DBNAME"]]
+
+    # Access the company's collection
+    company_collection = db[company_name]
+
+    # Fetch only documents where "category": True
+    all_categories = list(company_collection.find({"category": True}))
+
+    # Render the categories page
+    return render_template(
+        "categories.html",
+        categories=all_categories,
+        first_name=user_first_name,
+        company=company_name
+    )
+
+
+
+@app.route('/new-category')
+def new_category():
+    company_name = session.get('company', None)
+    user_first_name = session.get('first_name', 'User')
+    return render_template("new-category.html",first_name=user_first_name, company=company_name )
+
+
+
+@app.route('/save_category', methods=['POST'])
+def save_category():
+    company_name = session.get('company')
+    if not company_name:
+        flash("No company found in session. Please log in again.", "error")
+        return redirect(url_for('login'))
+
+    company_name = company_name.replace('_', ' ')
+    client = MongoClient(app.config["MONGO_URI"])
+    db = client[app.config["MONGO_DBNAME"]]
+    company_collection = db[company_name]
+    fs = gridfs.GridFS(db)
+
+    category_name = request.form['category-name']  # This is the category name
+    category_type = request.form['category-type']       # Type of the category
+
+    # Handle image upload (optional)
+    image_file = request.files.get('image')
+    image_id = None
+
+    if image_file and image_file.filename != "":
+        try:
+            filename = secure_filename(image_file.filename)
+            image_id = fs.put(
+                image_file,
+                filename=filename,
+                content_type=image_file.content_type,
+                company=company_name,
+                uploaded_by=session.get('first_name'),
+                category_name=category_name,
+                timestamp=datetime.utcnow()
+            )
+        except Exception as e:
+            flash(f"Image upload failed: {str(e)}", "error")
+            return redirect(url_for('dashboard'))
+
+    category_data = {
+        'category': True,
+        'name': category_name,
+        'type': category_type,
+        'image_id': image_id
+    }
+
+    try:
+        # Save new category
+        company_collection.insert_one(category_data)
+
+        # Log activity
+        db.activities.insert_one({
+            'timestamp': datetime.now(),
+            'user': session.get('first_name'),
+            'action': 'Create Category',
+            'category': category_name,
+            'company': company_name
+        })
+
+        flash("New category created successfully!", "success")
+        return redirect(url_for('categories'))  # Adjust this if you have a specific category page
+
+    except Exception as e:
+        flash(f"An error occurred while saving category: {str(e)}", "error")
+        return redirect(url_for('dashboard'))
+
+
+@app.route('/category-properties')
+def category_properties():
+    category_id = request.args.get('category_id')  # Get category ID from URL
+    
+    if category_id:
+        client = MongoClient(app.config["MONGO_URI"])
+        db = client[app.config["MONGO_DBNAME"]]
+        company_collection = db[session.get('company', 'default_company')]
+
+        category = company_collection.find_one({
+            "_id": ObjectId(category_id),
+            "category": True
+        })  # Ensure it's actually a category
+
+        if category:
+            return render_template("category-properties.html", category=category)
+
+    # If no valid ID or not found, load empty template
+    return render_template("category-properties.html", category=None)
+
+
+@app.route('/delete_category/<category_id>', methods=['POST'])
+def delete_category(category_id):
+    try:
+        # Get the company name from session
+        company_name = session.get('company', None)
+        if not company_name:
+            flash("No company found in session. Please log in again.", "error")
+            return redirect(url_for('login'))
+
+        company_name = company_name.replace("_", " ")
+
+        # Connect to MongoDB
+        client = MongoClient(app.config["MONGO_URI"])
+        db = client[app.config["MONGO_DBNAME"]]
+        company_collection = db[company_name]
+
+        # Find the category
+        category = company_collection.find_one({"_id": ObjectId(category_id), "category": True})
+
+        if not category:
+            flash("Category not found!", "danger")
+            return redirect(url_for('categories'))
+
+        # Delete the category
+        result = company_collection.delete_one({"_id": ObjectId(category_id)})
+
+        if result.deleted_count > 0:
+            # Log the delete activity
+            activity_data = {
+                'date': datetime.datetime.now(),
+                'user': session['first_name'],
+                'action': 'Delete Category',
+                'category': category.get('name', 'Unknown category'),
+                'company': company_name
+            }
+            db.activities.insert_one(activity_data)
+
+            flash("Category deleted successfully", "success")
+        else:
+            flash("Failed to delete category.", "danger")
+
+    except Exception as e:
+        flash(f"Error deleting category: {str(e)}", "danger")
+
+    return redirect(url_for('categories'))
 
 
 if __name__ == "__main__":

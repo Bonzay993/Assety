@@ -1,0 +1,56 @@
+{% extends "inventory.html" %}
+{% block content %}
+
+<div class="new-location-form-container default-form-container">
+    <div class="new-location-form-header">
+        <h1 class="assets-heading">Edit Category</h1>
+    </div>
+    <form class="new-location-form default-form" action="{{ url_for('save_category') }}" method="POST" id="category-form" enctype="multipart/form-data">
+        <input type="hidden" name="category_id" value="{{ category._id if category else '' }}">  <!-- Store ID -->
+
+        <div class="form-group">
+            <label for="category-name">Category Name</label>
+            <input type="text" id="category-name" name="category-name" value="{{ category.name if category else '' }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="category-type">Type</label>
+            <input type="text" id="category-type" name="category-type" value="{{ category.type if category else '' }}">
+        </div>
+
+        <div class="form-group">
+            <label for="asset-image">Upload Category Image</label>
+            <input type="file" id="asset-image" name="image" accept="image/*">
+        </div>
+
+        <div class="form-actions">
+            <a href="javascript:window.history.back()" class="form-cancel">Cancel</a>
+            <button type="submit" class="btn save-btn"><i class="fa-solid fa-check"></i> Save</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    // Optional: You can add JavaScript validation if needed
+    document.getElementById('category-form').addEventListener('submit', function(event) {
+        const form = event.target;
+        const fields = form.querySelectorAll('[required]');
+        let valid = true;
+
+        fields.forEach(function(field) {
+            if (!field.value) {
+                valid = false;
+                field.classList.add('error');
+            } else {
+                field.classList.remove('error');
+            }
+        });
+
+        if (!valid) {
+            event.preventDefault();
+            alert("Please fill out all required fields.");
+        }
+    });
+</script>
+
+{% endblock %}

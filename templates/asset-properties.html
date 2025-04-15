@@ -17,6 +17,16 @@
                     </div>
 
                     <div class="form-group">
+                        <label for="category">Category</label>
+                        <select id="category" name="category" required>
+                            <option value="">Select a Category</option>
+                            {% for category in categories %}
+                                <option value="{{ category.name }}">{{ category.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
                         <label for="serial">Serial Number</label>
                         <input type="text" id="serial" name="serial" value="{{ asset.serial }}" required>
                     </div>
