@@ -633,6 +633,25 @@ input[type="file"]{
     
 }
 
+.login-input-wrapper {
+    position: relative;
+}
+
+.login-input-wrapper i {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #999;
+    pointer-events: none;
+}
+
+.login-input-wrapper input {
+    width: 100%;
+    padding: 10px 10px 10px 35px; /* extra left padding for the icon */
+    box-sizing: border-box;
+}
+
 .login-paragraph{
     font-size: 90%;
     margin-top:2%;
@@ -1336,6 +1355,8 @@ input[type="file"]{
     gap:25px;
     
 }
+
+
 
 
 .save-btn{
