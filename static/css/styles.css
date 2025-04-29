@@ -1189,10 +1189,10 @@ input[type="file"]{
     font-size: 80%;
     justify-content: space-between;
     padding:0.9%;
+    align-items: center;
 }
 
 .asset-list-title-item{
-    width:160px;
     height:10px;
 }
 
@@ -1204,8 +1204,12 @@ input[type="file"]{
 
 }
 
+.title-body-group-image-name{
+    height:50px;
+}
+
 .asset-thumbnail{
-    width:42%;
+    height:100%;
 }
 
 .title-body-group-actions{
