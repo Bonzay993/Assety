@@ -20,7 +20,7 @@
             <p class="asset-list-title-item"><strong>City</strong> </p>
             <p class="asset-list-title-item"><strong>State</strong> </p>
             <p class="asset-list-title-item"><strong>Postal Code</strong> </p>
-            <p class="asset-list-title-item"><strong>Actions</strong> </p>
+            <p class="asset-list-title-item-action"><strong>Actions</strong> </p>
         </div>
 
         {% for location in locations %}
@@ -49,7 +49,7 @@
                 
                 <p>{{ location.post_code }}</p>
             </div>
-            <div class="title-body-group">
+            <div class="title-body-group title-body-group-actions">
                 
                 <div class="inner-action-group">
                     <div class="assets-interactive-btn">

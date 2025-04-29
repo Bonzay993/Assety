@@ -12,15 +12,21 @@
                 <input type="text" id="asset-tag" name="asset-tag" placeholder="Enter Asset Tag" required>
             </div>
 
-            <div class="form-group">
-                <label for="location">Category</label>
-                <select id="location" name="location" required>
+            <div class="form-group form-group-category">
+                <label for="category">Category</label>
+    
+                <select id="category" name="category" required>
                     <option value="">Select a Category</option>
                     {% for category in categories %}
                         <option value="{{ category.name }}">{{ category.name }}</option>
                     {% endfor %}
                 </select>
+              
             </div>
+            <div class="tooltip-text">
+                <p>Categories need to be created first : Categories -> Create New</p>
+            </div>
+            
 
             <div class="form-group">
                 <label for="serial">Serial Number</label>
@@ -69,6 +75,9 @@
                         <option value="{{ location.location_tag }}">{{ location.location_tag }}</option>
                     {% endfor %}
                 </select>
+            </div>
+            <div class="tooltip-text">
+                <p>Locations need to be created first : Locations -> Create New</p>
             </div>
             <div class="form-group">
                 <label for="asset-image">Upload Asset Image</label>
