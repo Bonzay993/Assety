@@ -1189,10 +1189,15 @@ input[type="file"]{
     font-size: 80%;
     justify-content: space-between;
     padding:0.9%;
+    align-items: center;
 }
 
 .asset-list-title-item{
+    height:10px;
     width:160px;
+}
+
+.categories-list-title-item{
     height:10px;
 }
 
@@ -1204,8 +1209,12 @@ input[type="file"]{
 
 }
 
+.title-body-group-image-name{
+    height:50px;
+}
+
 .asset-thumbnail{
-    width:42%;
+    height:100%;
 }
 
 .title-body-group-actions{
@@ -1325,7 +1334,7 @@ input[type="file"]{
 
 
 .default-form{
-    width:80%;
+    width:60%;
     height:50%;
     margin-top:5%;
     background-color:white;
@@ -1363,6 +1372,14 @@ input[type="file"]{
 }
 
 
+
+.tooltip-text{
+    color:rgba(0, 128, 0, 0.63);
+    font-size:12px;
+  position: relative;
+  left:227px;
+  margin-top:-8px;
+}
 
 
 .save-btn{
