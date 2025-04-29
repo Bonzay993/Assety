@@ -2,7 +2,7 @@
 
 {% block content %}
 <section class="dashboard">
-    <h2>Dashboard Overview</h2>
+    <h2 class="dashboard-heading">Dashboard Overview</h2>
     <div class="stats-container">
         <a class="stats-container-link-wrapper" href="{{ url_for('assets') }}">
             <div class="stat-card asset-stat-card">
@@ -50,25 +50,27 @@
     </div>
 
     <div class="recent-assets-master-container">
-        <h3 class="recent-assets-heading">Recent Assets</h3>
-        <div class="recent-assets-list">
-            <div class="recent-assets-header">
-                <span class="recent-assets-title asset-tag">Asset Tag</span>
-                <span class="recent-assets-title asset-model">Model</span>
-                <span class="recent-assets-title asset-serial">Serial</span>
-                <span class="recent-assets-title asset-date">Purchase Date</span>
-                <span class="recent-assets-title asset-date">Purchase Cost</span>
+       
+            <h3 class="recent-assets-heading">Recent Assets</h3>
+            <div class="recent-assets-list">
+                <div class="recent-assets-header">
+                    <span class="recent-assets-title asset-tag">Asset Tag</span>
+                    <span class="recent-assets-title asset-model">Model</span>
+                    <span class="recent-assets-title asset-serial">Serial</span>
+                    <span class="recent-assets-title asset-date">Purchase Date</span>
+                    <span class="recent-assets-title asset-date">Purchase Cost</span>
+                </div>
+                {% for asset in recent_assets %}
+                <div class="recent-assets-container {% if loop.index0 % 2 == 0 %}blue-row{% else %}lightblue-row{% endif %}">
+                    <span class="recent-assets-item asset-tag">{{ asset.asset_tag }}</span>
+                    <span class="recent-assets-item asset-model">{{ asset.model }}</span>
+                    <span class="recent-assets-item asset-serial">{{ asset.serial }}</span>
+                    <span class="recent-assets-item asset-date">{{ asset.purchase_date }}</span>
+                    <span class="recent-assets-item asset-date">{{ asset.purchase_cost }}</span>
+                </div>
+                {% endfor %}
             </div>
-            {% for asset in recent_assets %}
-            <div class="recent-assets-container {% if loop.index0 % 2 == 0 %}blue-row{% else %}lightblue-row{% endif %}">
-                <span class="recent-assets-item asset-tag">{{ asset.asset_tag }}</span>
-                <span class="recent-assets-item asset-model">{{ asset.model }}</span>
-                <span class="recent-assets-item asset-serial">{{ asset.serial }}</span>
-                <span class="recent-assets-item asset-date">{{ asset.purchase_date }}</span>
-                <span class="recent-assets-item asset-date">{{ asset.purchase_cost }}</span>
-            </div>
-            {% endfor %}
-        </div>
+        
     </div>
     
     
@@ -82,7 +84,7 @@
             <span class="activity-title activity-asset">Location</span>
         </div>
         {% for activity in recent_activities %}
-        <div class="activity-items-container ">
+        <div class="activity-items-container {% if loop.index0 % 2 == 0 %}blue-row{% else %}lightblue-row{% endif %}">
             <span class="activity-item activity-date">{{ activity.date.strftime('%Y-%m-%d %H:%M:%S') }}</span>
             <span class="activity-item activity-user">{{ activity.user }}</span>
             <span class="activity-item activity-action">{{ activity.action }}</span>
