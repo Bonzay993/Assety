@@ -1709,6 +1709,8 @@ input[type="file"]{
 /* RESPONSIVENESS */
 
 @media (max-width: 768px) {
+
+    /* Dashboard CSS */
     .sidebar{
         width:14%;
     }
@@ -1832,5 +1834,50 @@ input[type="file"]{
     .toggle-btn{
         right:10px;
     }
-    
+
+    /* view asset css */
+
+    .view-asset-container{
+        width:98%;
+    }
+
+    .view-asset-thumbnail{
+        width:300px;
+        align-self: center;
+    }
+
+    .view-asset-thumbnail-wrapper{
+        align-items: center;
+        margin-top:22%;
+    }
+
+    .view-asset-details-container{
+        width:45%;
+    }
+
+    .view-asset-heading{
+        margin-bottom:10%;
+    }
+
+    .view-asset-actions-container{
+        margin-top:10%;
+    }
+
+   
+    /* EDIT ASSET CSS */
+
+    .form-group label{
+        text-align: left;
+        flex: 0 0 90px;
+     }
+
+     .asset-thumbnail{
+        width:200px;
+     }
+     
+     .form-group input,select,textarea{
+        padding:6px 8px;
+        font-size:12px;
+     }
+     
 }
