@@ -774,33 +774,35 @@ def delete_location(location_id):
 
 @app.route('/categories')
 def categories():
-    # Debugging: Check the session data
     print(f"Session at categories page: {session}")
 
-    # Get user and company info
     user_first_name = session.get('first_name', 'User')
-    company_name = session.get('company', 'No Company')
-    company_name = company_name.replace("_", " ")
+    company_name = session.get('company', 'No Company').replace("_", " ")
 
-    # Connect to MongoDB
     client = MongoClient(app.config["MONGO_URI"])
     db = client[app.config["MONGO_DBNAME"]]
+    company_collection = db[company_name]  
 
-    # Access the company's collection
-    company_collection = db[company_name]
-
-    # Fetch only documents where "category": True
+    # Fetch all categories for this company
     all_categories = list(company_collection.find({"category": True}))
 
-    # Render the categories page
+    # Count items per category by matching category name
+    for category in all_categories:
+        category_name = category["name"]
+        item_count = company_collection.count_documents({
+            "$and": [
+                {"category": category_name},
+                {"category": {"$type": "string"}}
+            ]
+        })
+        category["quantity"] = item_count
+
     return render_template(
         "categories.html",
         categories=all_categories,
         first_name=user_first_name,
         company=company_name
     )
-
-
 
 @app.route('/new-category')
 def new_category():

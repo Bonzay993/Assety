@@ -1659,9 +1659,9 @@ input[type="file"]{
     display:flex;
     flex-flow:row wrap;
     justify-content: space-between;
-    width:60%;
     margin:0 auto;
-   
+   margin-left:20px;
+   margin-right:20px;
 }
 
 .view-asset-details-container{
