@@ -519,7 +519,7 @@ def asset_properties():
         asset = company_collection.find_one({"_id": ObjectId(asset_id)})  # Fetch asset
 
         if asset:
-            return render_template("asset-properties.html", asset=asset, locations=locations, company=company_name ,categories=categories)  
+            return render_template("asset-properties.html", asset=asset,first_name=user_first_name, locations=locations, company=company_name ,categories=categories)  
 
     return render_template("asset-properties.html", asset=None, )  # If no asset ID, load empty form
 

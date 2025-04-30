@@ -1162,7 +1162,7 @@ input[type="file"]{
 
 .assets-heading {
     font-size: 24px;
-    margin-bottom: 20px;
+    
 }
 
 .assets-list{
@@ -1190,7 +1190,7 @@ input[type="file"]{
     flex-direction: row;
     font-size: 80%;
     justify-content: space-between;
-    padding:0.9%;
+    padding:0.5%;
     align-items: center;
 }
 
@@ -1211,7 +1211,10 @@ input[type="file"]{
     flex-wrap: wrap;
     word-break: break-word;
     white-space: normal;
+    align-items: center;
+    
 }
+
 
 .title-body-group-image-name{
     height:50px;
@@ -1339,7 +1342,7 @@ input[type="file"]{
 
 .default-form{
     width:100%;
-    max-width: 1000px;
+    max-width: 1200px;
     height:50%;
     margin-top:5%;
     background-color:white;
@@ -1349,6 +1352,8 @@ input[type="file"]{
     flex-direction: column;
     margin:0 auto;
 }
+
+
 
 
 .edit-asset-form-main-container{

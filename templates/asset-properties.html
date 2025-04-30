@@ -1,12 +1,14 @@
 {% extends "inventory.html" %}
 {% block content %}
 
-    
-    <div class="new-asset-form-container default-form-container ">
-        <div class="new-asset-form-header">
-            <h1 class="assets-heading">Edit Asset</h1>
+    <section class="heading-section">
+        <div class="assets-list-top-container default-list-top-container">
+            <h1>Edit Asset {{ asset.asset_tag if asset else ''  }}</h1>
         </div>
-        <form class="new-asset-form default-form" action="{{ url_for('save_asset') }}" method="POST"  enctype="multipart/form-data"
+    </section>  
+    <section class="new-asset-form-container default-form-container ">
+       
+        <form class="edit-asset-form default-form" action="{{ url_for('save_asset') }}" method="POST"  enctype="multipart/form-data"
         id="asset-form">
             <div class="edit-asset-form-main-container">
                 <div class="edit-asset-form-data-container">
@@ -19,9 +21,11 @@
                     <div class="form-group">
                         <label for="category">Category</label>
                         <select id="category" name="category" required>
-                            <option value="">Select a Category</option>
+                            {% if not asset or not asset.category %}
+                                <option value="">Select a Category</option>
+                            {% endif %}
                             {% for category in categories %}
-                                <option value="{{ category.name }}" 
+                                <option value="{{ category.name }}"
                                     {% if asset and asset.category == category.name %}selected{% endif %}>
                                     {{ category.name }}
                                 </option>
@@ -113,7 +117,7 @@
         </form>
       
     
-    </div>
+    </section>
 
 
     <script>
