@@ -26,13 +26,13 @@
     </div>
 
     <div class="view-asset-thumbnail-container">
-        <div class="view-asset-thumbnail-container">
+        <div class="view-asset-thumbnail-wrapper">
             {% if asset.image_id %}
                 <img src="{{ url_for('get_image', image_id=asset.image_id) }}"
                      alt="Asset Image"
                      class="view-asset-thumbnail">
             {% else %}
-                <img src="{{ url_for('static', filename='img/default.png') }}"
+                <img src="{{ url_for('static', filename='img/no-image.jpg') }}"
                      alt="No Image"
                      class="asset-thumbnail">
             {% endif %}
