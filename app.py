@@ -239,58 +239,50 @@ def inventory_app():
 
 @app.route('/dashboard')
 def dashboard():
-    # Ensure user is logged in
-    company_name = session.get('company', None)
+    company_name = session.get('company')
     user_first_name = session.get('first_name', 'User')
 
     if not company_name:
         flash("Please log in to access the dashboard.", "error")
         return redirect(url_for('login'))
 
-    # Normalize company name
     company_name = company_name.replace('_', ' ')
 
-    # Connect to MongoDB
     client = MongoClient(app.config["MONGO_URI"])
     db = client[app.config["MONGO_DBNAME"]]
     company_collection = db[company_name]
 
-    # Fetch total assets
     total_assets = company_collection.count_documents({"asset": True})
+    categories = list(company_collection.find({"category": True}))  # Fetch real categories
+    locations = list(company_collection.find({"location": True}))   # Fetch locations
 
-    # Fetch categories (assuming categories exist in asset records)
-    categories = company_collection.distinct("category")
-
-    # Fetch recent assets (last 5 added)
     recent_assets = list(company_collection.find({"asset": True}).sort("_id", -1).limit(5))
 
-    # ✅ Fetch recent activities (filtered by user's company only)
     recent_activities_cursor = db.activities.find(
         {"company": company_name}
     ).sort("timestamp", -1).limit(5)
 
-    # ✅ Format activity data for the template
     formatted_activities = []
     for act in recent_activities_cursor:
         formatted_activities.append({
             "date": act.get("timestamp"),
             "user": act.get("user"),            
             "action": act.get("action"),
-            "asset": act.get("asset"),          
+            "asset": act.get("asset"),
             "location": act.get("location", "N/A")
-    })
+        })
 
-
-    # Render dashboard template
     return render_template(
         "dashboard.html",
         first_name=user_first_name,
         company=company_name,
         total_assets=total_assets,
         categories=categories,
+        locations=locations,
         recent_assets=recent_assets,
-        recent_activities=formatted_activities  # Use formatted activities
+        recent_activities=formatted_activities
     )
+
 
 
 def log_activity(action, asset_id, asset_tag, location=None):
