@@ -16,6 +16,7 @@ body {
     background-color: white;
     color: #020318;
     height:100vh;
+    scrollbar-gutter: stable;
   
 }
 
@@ -896,15 +897,18 @@ input[type="file"]{
 /* Sidebar Styles */
 .sidebar {
     width: 200px;
+    min-width: 200px;
     background-color: rgb(34, 45, 50);
     color: white;
     font-family: Arial, sans-serif;
     position: relative;
     transition: width 0.3s;
+    box-sizing: border-box;
 }
 
 .sidebar.minimized {
     width: 80px;
+    min-width: 80px;
 }
 
 .sidebar-logo {
@@ -1063,6 +1067,7 @@ input[type="file"]{
     overflow: hidden;
     max-height: 0;
     transition: max-height 0.4s ease-out;
+    
 }
 
 .dropdown-menu.show {
