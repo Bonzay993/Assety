@@ -631,41 +631,68 @@ def locations():
 def new_location():
     company_name = session.get('company', None)
     user_first_name = session.get('first_name', 'User')
+
+    
+    if request.args.get("modal") == "true":
+        # Render only the form part for use in a modal
+        return render_template("location_modal_form.html", first_name=user_first_name, company=company_name)
+    
     return render_template("new-location.html",first_name=user_first_name, company=company_name )
 
 
 
 @app.route('/save-location', methods=['POST'])
 def save_location():
-    company_name = session.get('company', None)  # Ensure correct indentation
-
+    company_name = session.get('company')
     if not company_name:
         flash("No company found in session. Please log in again.", "error")
         return redirect(url_for('login'))
 
-    # Replace underscores with spaces in the company name if needed
+    # Check if the request is from the modal
+    is_modal = request.args.get('modal') == 'true'
     company_name = company_name.replace('_', ' ')
-
-    # Access MongoDB
     client = MongoClient(app.config["MONGO_URI"])
     db = client[app.config["MONGO_DBNAME"]]
+    company_collection = db[company_name]
 
-    # Ensure the collection name corresponds to the company name
-    company_collection = db[company_name]  # Using company name as collection name
-    
-
-    # Get form data from the POST request
+    # Get form data
     location_id = request.form.get('location_id')
     location_tag = request.form['location-tag']
-    phone = request.form['phone']  # Changed from 'phone' to 'serial' (match your form)
-    address = request.form['address']  # Changed from 'address' to 'model' (match your form)
+    phone = request.form['phone']
+    address = request.form['address']
     city = request.form['city']
     state = request.form['state']
     post_code = request.form['post-code']
 
-    # Create the location data dictionary
+    # Prevent duplicate location tags (case-insensitive)
+    query = {"location": True, "location_tag": {"$regex": f"^{location_tag}$", "$options": "i"}}
+    if location_id:
+        query["_id"] = {"$ne": ObjectId(location_id)}
+
+    existing = company_collection.find_one(query)
+    if existing:
+        if is_modal:
+            return '''
+                <script>
+                    alert("A location with this name already exists.");
+                    window.history.back();
+                </script>
+            '''
+        else:
+            flash("A location with this name already exists.", "error")
+            if location_id:
+                return redirect(url_for('location_properties', location_id=location_id))
+            else:
+                return render_template(
+                    "new-location.html",
+                    location={"location_tag": location_tag, "phone": phone, "address": address, "city": city, "state": state, "post_code": post_code},
+                    first_name=session.get('first_name', 'User'),
+                    company=company_name
+                )
+
+    # Location data
     location_data = {
-        'location':True,
+        'location': True,
         'location_tag': location_tag,
         'phone': phone,
         'address': address,
@@ -675,39 +702,46 @@ def save_location():
     }
 
     try:
+        # Save location (insert or update)
         if location_id:
-            # Insert the data into the company-specific collection
             company_collection.update_one(
                 {"_id": ObjectId(location_id)},
                 {"$set": location_data}
             )
-
-            activity_data={
-                'date':datetime.datetime.now(),
-                'user': session['first_name'],
-                'action': 'Update',
-                'location': location_tag
-            }
-            db.activities.insert_one(activity_data)
-            flash("Location updated succesfully!","success")
+            action = 'Update Location'
         else:
             company_collection.insert_one(location_data)
-            activity_data = {
-                'date': datetime.datetime.now(),
-                'user': session['first_name'],
-                'action': 'Create',  # Log the creation action
-                'location': location_tag
-            }
-            db.activities.insert_one(activity_data)
-            flash("New location created!", "success")
-            
+            action = 'Create Location'
 
-        
-        return redirect(url_for('locations'))  # Redirect to inventory page
+        # Log the activity
+        db.activities.insert_one({
+            'timestamp': datetime.now(),
+            'user': session.get('first_name'),
+            'action': action,
+            'location': location_tag,
+            'company': company_name
+        })
+
+        # Handle modal response
+        if is_modal:
+            return '''
+                <script>
+                    alert("Location saved successfully!");
+                    // Reload parent page to update the location dropdown
+                    window.parent.location.reload();
+                </script>
+            '''
+        else:
+            flash("Location saved successfully!", "success")
+            return redirect(url_for('locations'))
 
     except Exception as e:
-        flash(f"An error occurred: {str(e)}", "error")
-        return redirect(url_for('dashboard'))  # Redirect on error
+        # Handle error
+        if is_modal:
+            return f"<script>alert('An error occurred: {str(e)}');</script>"
+        flash(f"An error occurred while saving the location: {str(e)}", "error")
+        return redirect(url_for('dashboard'))
+
 
 @app.route('/location-properties')
 def location_properties():
@@ -819,12 +853,6 @@ def new_category():
 
 
 
-from flask import request, redirect, url_for, session, render_template, flash
-from werkzeug.utils import secure_filename
-from datetime import datetime
-from bson import ObjectId
-from pymongo import MongoClient
-import gridfs
 
 @app.route('/save_category', methods=['POST'])
 def save_category():

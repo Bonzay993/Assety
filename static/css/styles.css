@@ -1394,17 +1394,25 @@ input[type="file"]{
 }
 
 .modal-content {
-    width: 80%;
-    height: 80%;
     background: white;
     border-radius: 8px;
     position: relative;
     padding: 1rem;
 }
 
+.modal-new-category {
+    width: 50%;
+    height: 30%;
+}
+
+.modal-new-location {
+    width: 50%;
+    height: 50%;
+}
+
 .modal-content iframe {
     width: 100%;
-    height: 90%;
+    height: 100%;
     border: none;
 }
 

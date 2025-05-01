@@ -23,7 +23,7 @@
                 </select>
 
                 <div class="create-new-element-btn">
-                    <button type="button" class="new-element-btn" onclick='openPopup("{{ url_for("new_category") }}?modal=true")'>New</button>
+                    <button type="button" class="new-element-btn" onclick="openPopup('category')">New</button>
                 </div>
               
             </div>
@@ -81,7 +81,7 @@
                 </select>
 
                 <div class="create-new-element-btn">
-                    <button type="button" class="new-element-btn" onclick="openPopup('{{ url_for('new_location') }}')">New</button>
+                    <button type="button" class="new-element-btn" onclick="openPopup('location')">New</button>
                 </div>
             </div>
             <div class="tooltip-text">
@@ -99,13 +99,22 @@
         </form>
     </div>
 
-        <!-- Modal Structure -->
-    <div id="popup-modal" class="modal-overlay" style="display: none;">
-        <div class="modal-content">
-            <iframe id="popup-frame" src="" frameborder="0"></iframe>
-            <button onclick="closePopup()" class="modal-close-btn">Close</button>
+        <!-- Category Modal -->
+    <div id="popup-modal-category" class="modal-overlay" style="display: none;">
+        <div class="modal-content modal-new-category">
+            <iframe id="popup-frame-category" src="" frameborder="0"></iframe>
+            <button onclick="closePopup('category')" class="modal-close-btn">Close</button>
         </div>
     </div>
+
+    <!-- Location Modal -->
+    <div id="popup-modal-location" class="modal-overlay" style="display: none;">
+        <div class="modal-content modal-new-location">
+            <iframe id="popup-frame-location" src="" frameborder="0"></iframe>
+            <button onclick="closePopup('location')" class="modal-close-btn">Close</button>
+        </div>
+    </div>
+
 <script>
    
     document.getElementById('asset-form').addEventListener('submit', function(event) {
@@ -129,17 +138,43 @@
         }
     });
 
-    
-    function openPopup(url) {
-    document.getElementById('popup-frame').src = url;
-    document.getElementById('popup-modal').style.display = 'flex';
+
+    function openPopup(type) {
+        let modal, iframe, url;
+
+        if (type === "category") {
+            modal = document.getElementById("popup-modal-category");
+            iframe = document.getElementById("popup-frame-category");
+            url = "{{ url_for('new_category') }}?modal=true";
+        } else if (type === "location") {
+            modal = document.getElementById("popup-modal-location");
+            iframe = document.getElementById("popup-frame-location");
+            url = "{{ url_for('new_location') }}?modal=true";
+        }
+
+        if (modal && iframe && url) {
+            iframe.src = url;
+            modal.style.display = "flex";
+        }
     }
 
-    function closePopup() {
-        document.getElementById('popup-modal').style.display = 'none';
-        document.getElementById('popup-frame').src = "";
+    function closePopup(type) {
+        let modal, iframe;
+
+        if (type === "category") {
+            modal = document.getElementById("popup-modal-category");
+            iframe = document.getElementById("popup-frame-category");
+        } else if (type === "location") {
+            modal = document.getElementById("popup-modal-location");
+            iframe = document.getElementById("popup-frame-location");
+        }
+
+        if (modal && iframe) {
+            iframe.src = "";
+            modal.style.display = "none";
+        }
     }
-</script>
+
 </script>
 
 
