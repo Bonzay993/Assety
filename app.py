@@ -808,9 +808,22 @@ def categories():
 def new_category():
     company_name = session.get('company', None)
     user_first_name = session.get('first_name', 'User')
-    return render_template("new-category.html",first_name=user_first_name, company=company_name )
+
+    if request.args.get("modal") == "true":
+        # Render only the form part for use in a modal
+        return render_template("category_modal_form.html", first_name=user_first_name, company=company_name)
+    
+    # Otherwise, render the full page with layout
+    return render_template("new-category.html", first_name=user_first_name, company=company_name)
 
 
+
+from flask import request, redirect, url_for, session, render_template, flash
+from werkzeug.utils import secure_filename
+from datetime import datetime
+from bson import ObjectId
+from pymongo import MongoClient
+import gridfs
 
 @app.route('/save_category', methods=['POST'])
 def save_category():
@@ -819,6 +832,7 @@ def save_category():
         flash("No company found in session. Please log in again.", "error")
         return redirect(url_for('login'))
 
+    is_modal = request.args.get('modal') == 'true'
     company_name = company_name.replace('_', ' ')
     client = MongoClient(app.config["MONGO_URI"])
     db = client[app.config["MONGO_DBNAME"]]
@@ -836,20 +850,26 @@ def save_category():
 
     existing = company_collection.find_one(query)
     if existing:
-        flash("A category with this name already exists.", "category-error")
-
-        if category_id:
-            return redirect(url_for('category_properties', category_id=category_id))
+        if is_modal:
+            return '''
+                <script>
+                    alert("A category with this name already exists.");
+                    window.history.back();
+                </script>
+            '''
         else:
-            # Return the form with the data filled in
-            return render_template(
-                "new-category.html",
-                category={"name": category_name, "type": category_type},
-                first_name=session.get('first_name', 'User'),
-                company=company_name
-            )
+            flash("A category with this name already exists.", "category-error")
+            if category_id:
+                return redirect(url_for('category_properties', category_id=category_id))
+            else:
+                return render_template(
+                    "new-category.html",
+                    category={"name": category_name, "type": category_type},
+                    first_name=session.get('first_name', 'User'),
+                    company=company_name
+                )
 
-    # Image upload handling
+    # Image upload
     image_file = request.files.get('image')
     image_id = None
 
@@ -866,6 +886,8 @@ def save_category():
                 timestamp=datetime.utcnow()
             )
         except Exception as e:
+            if is_modal:
+                return f"<script>alert('Image upload failed: {str(e)}');</script>"
             flash(f"Image upload failed: {str(e)}", "error")
             return redirect(url_for('dashboard'))
     elif category_id:
@@ -887,11 +909,9 @@ def save_category():
                 {"$set": category_data}
             )
             action = 'Update Category'
-            flash("Category updated successfully!", "category-success")
         else:
             company_collection.insert_one(category_data)
             action = 'Create Category'
-            flash("New category created successfully!", "category-success")
 
         db.activities.insert_one({
             'timestamp': datetime.now(),
@@ -901,12 +921,22 @@ def save_category():
             'company': company_name
         })
 
-        return redirect(url_for('categories'))
+        if is_modal:
+            return '''
+                <script>
+                    alert("Category saved successfully!");
+                    window.parent.location.reload();
+                </script>
+            '''
+        else:
+            flash("Category saved successfully!", "category-success")
+            return redirect(url_for('categories'))
 
     except Exception as e:
+        if is_modal:
+            return f"<script>alert('An error occurred: {str(e)}');</script>"
         flash(f"An error occurred while saving category: {str(e)}", "category-error")
         return redirect(url_for('dashboard'))
-
 
 
 
