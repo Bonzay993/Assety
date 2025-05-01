@@ -785,6 +785,7 @@ def categories():
 
     # Fetch all categories for this company
     all_categories = list(company_collection.find({"category": True}))
+    print(all_categories)  # Add this line to see the data fetched
 
     # Count items per category by matching category name
     for category in all_categories:
