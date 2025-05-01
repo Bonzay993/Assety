@@ -1,10 +1,15 @@
 {% extends "inventory.html" %}
 
 {% block content %}
+<section class="heading-section">
+    <div class="assets-list-top-container default-list-top-container">
+        <h1>View Asset {{ asset.asset_tag if asset else ''  }}</h1>
+    </div>
+</section>   
 <section class="view-asset-container"> 
-   
+    
     <div class="view-asset-details-container">  
-        <h1 class="view-asset-heading">View Asset {{ asset.asset_tag }}</h1>
+        <h1 class="view-asset-heading">{{ asset.asset_tag }}</h1>
         <div class="view-asset-details-wrapper">
             {% for label, value in labels_values %}
                 <div class="view-asset-row {% if loop.index is odd %}blue-row{% else %}lightblue-row{% endif %}">

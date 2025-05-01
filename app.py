@@ -519,7 +519,7 @@ def asset_properties():
         asset = company_collection.find_one({"_id": ObjectId(asset_id)})  # Fetch asset
 
         if asset:
-            return render_template("asset-properties.html", asset=asset, locations=locations, company=company_name ,categories=categories)  
+            return render_template("asset-properties.html", asset=asset,first_name=user_first_name, locations=locations, company=company_name ,categories=categories)  
 
     return render_template("asset-properties.html", asset=None, )  # If no asset ID, load empty form
 
@@ -631,41 +631,68 @@ def locations():
 def new_location():
     company_name = session.get('company', None)
     user_first_name = session.get('first_name', 'User')
+
+    
+    if request.args.get("modal") == "true":
+        # Render only the form part for use in a modal
+        return render_template("location_modal_form.html", first_name=user_first_name, company=company_name)
+    
     return render_template("new-location.html",first_name=user_first_name, company=company_name )
 
 
 
 @app.route('/save-location', methods=['POST'])
 def save_location():
-    company_name = session.get('company', None)  # Ensure correct indentation
-
+    company_name = session.get('company')
     if not company_name:
         flash("No company found in session. Please log in again.", "error")
         return redirect(url_for('login'))
 
-    # Replace underscores with spaces in the company name if needed
+    # Check if the request is from the modal
+    is_modal = request.args.get('modal') == 'true'
     company_name = company_name.replace('_', ' ')
-
-    # Access MongoDB
     client = MongoClient(app.config["MONGO_URI"])
     db = client[app.config["MONGO_DBNAME"]]
+    company_collection = db[company_name]
 
-    # Ensure the collection name corresponds to the company name
-    company_collection = db[company_name]  # Using company name as collection name
-    
-
-    # Get form data from the POST request
+    # Get form data
     location_id = request.form.get('location_id')
     location_tag = request.form['location-tag']
-    phone = request.form['phone']  # Changed from 'phone' to 'serial' (match your form)
-    address = request.form['address']  # Changed from 'address' to 'model' (match your form)
+    phone = request.form['phone']
+    address = request.form['address']
     city = request.form['city']
     state = request.form['state']
     post_code = request.form['post-code']
 
-    # Create the location data dictionary
+    # Prevent duplicate location tags (case-insensitive)
+    query = {"location": True, "location_tag": {"$regex": f"^{location_tag}$", "$options": "i"}}
+    if location_id:
+        query["_id"] = {"$ne": ObjectId(location_id)}
+
+    existing = company_collection.find_one(query)
+    if existing:
+        if is_modal:
+            return '''
+                <script>
+                    alert("A location with this name already exists.");
+                    window.history.back();
+                </script>
+            '''
+        else:
+            flash("A location with this name already exists.", "error")
+            if location_id:
+                return redirect(url_for('location_properties', location_id=location_id))
+            else:
+                return render_template(
+                    "new-location.html",
+                    location={"location_tag": location_tag, "phone": phone, "address": address, "city": city, "state": state, "post_code": post_code},
+                    first_name=session.get('first_name', 'User'),
+                    company=company_name
+                )
+
+    # Location data
     location_data = {
-        'location':True,
+        'location': True,
         'location_tag': location_tag,
         'phone': phone,
         'address': address,
@@ -675,39 +702,46 @@ def save_location():
     }
 
     try:
+        # Save location (insert or update)
         if location_id:
-            # Insert the data into the company-specific collection
             company_collection.update_one(
                 {"_id": ObjectId(location_id)},
                 {"$set": location_data}
             )
-
-            activity_data={
-                'date':datetime.datetime.now(),
-                'user': session['first_name'],
-                'action': 'Update',
-                'location': location_tag
-            }
-            db.activities.insert_one(activity_data)
-            flash("Location updated succesfully!","success")
+            action = 'Update Location'
         else:
             company_collection.insert_one(location_data)
-            activity_data = {
-                'date': datetime.datetime.now(),
-                'user': session['first_name'],
-                'action': 'Create',  # Log the creation action
-                'location': location_tag
-            }
-            db.activities.insert_one(activity_data)
-            flash("New location created!", "success")
-            
+            action = 'Create Location'
 
-        
-        return redirect(url_for('locations'))  # Redirect to inventory page
+        # Log the activity
+        db.activities.insert_one({
+            'timestamp': datetime.now(),
+            'user': session.get('first_name'),
+            'action': action,
+            'location': location_tag,
+            'company': company_name
+        })
+
+        # Handle modal response
+        if is_modal:
+            return '''
+                <script>
+                    alert("Location saved successfully!");
+                    // Reload parent page to update the location dropdown
+                    window.parent.location.reload();
+                </script>
+            '''
+        else:
+            flash("Location saved successfully!", "success")
+            return redirect(url_for('locations'))
 
     except Exception as e:
-        flash(f"An error occurred: {str(e)}", "error")
-        return redirect(url_for('dashboard'))  # Redirect on error
+        # Handle error
+        if is_modal:
+            return f"<script>alert('An error occurred: {str(e)}');</script>"
+        flash(f"An error occurred while saving the location: {str(e)}", "error")
+        return redirect(url_for('dashboard'))
+
 
 @app.route('/location-properties')
 def location_properties():
@@ -774,25 +808,30 @@ def delete_location(location_id):
 
 @app.route('/categories')
 def categories():
-    # Debugging: Check the session data
     print(f"Session at categories page: {session}")
 
-    # Get user and company info
     user_first_name = session.get('first_name', 'User')
-    company_name = session.get('company', 'No Company')
-    company_name = company_name.replace("_", " ")
+    company_name = session.get('company', 'No Company').replace("_", " ")
 
-    # Connect to MongoDB
     client = MongoClient(app.config["MONGO_URI"])
     db = client[app.config["MONGO_DBNAME"]]
+    company_collection = db[company_name]  
 
-    # Access the company's collection
-    company_collection = db[company_name]
-
-    # Fetch only documents where "category": True
+    # Fetch all categories for this company
     all_categories = list(company_collection.find({"category": True}))
+    print(all_categories)  # Add this line to see the data fetched
 
-    # Render the categories page
+    # Count items per category by matching category name
+    for category in all_categories:
+        category_name = category["name"]
+        item_count = company_collection.count_documents({
+            "$and": [
+                {"category": category_name},
+                {"category": {"$type": "string"}}
+            ]
+        })
+        category["quantity"] = item_count
+
     return render_template(
         "categories.html",
         categories=all_categories,
@@ -800,13 +839,18 @@ def categories():
         company=company_name
     )
 
-
-
 @app.route('/new-category')
 def new_category():
     company_name = session.get('company', None)
     user_first_name = session.get('first_name', 'User')
-    return render_template("new-category.html",first_name=user_first_name, company=company_name )
+
+    if request.args.get("modal") == "true":
+        # Render only the form part for use in a modal
+        return render_template("category_modal_form.html", first_name=user_first_name, company=company_name)
+    
+    # Otherwise, render the full page with layout
+    return render_template("new-category.html", first_name=user_first_name, company=company_name)
+
 
 
 
@@ -817,6 +861,7 @@ def save_category():
         flash("No company found in session. Please log in again.", "error")
         return redirect(url_for('login'))
 
+    is_modal = request.args.get('modal') == 'true'
     company_name = company_name.replace('_', ' ')
     client = MongoClient(app.config["MONGO_URI"])
     db = client[app.config["MONGO_DBNAME"]]
@@ -834,20 +879,26 @@ def save_category():
 
     existing = company_collection.find_one(query)
     if existing:
-        flash("A category with this name already exists.", "category-error")
-
-        if category_id:
-            return redirect(url_for('category_properties', category_id=category_id))
+        if is_modal:
+            return '''
+                <script>
+                    alert("A category with this name already exists.");
+                    window.history.back();
+                </script>
+            '''
         else:
-            # Return the form with the data filled in
-            return render_template(
-                "new-category.html",
-                category={"name": category_name, "type": category_type},
-                first_name=session.get('first_name', 'User'),
-                company=company_name
-            )
+            flash("A category with this name already exists.", "category-error")
+            if category_id:
+                return redirect(url_for('category_properties', category_id=category_id))
+            else:
+                return render_template(
+                    "new-category.html",
+                    category={"name": category_name, "type": category_type},
+                    first_name=session.get('first_name', 'User'),
+                    company=company_name
+                )
 
-    # Image upload handling
+    # Image upload
     image_file = request.files.get('image')
     image_id = None
 
@@ -864,6 +915,8 @@ def save_category():
                 timestamp=datetime.utcnow()
             )
         except Exception as e:
+            if is_modal:
+                return f"<script>alert('Image upload failed: {str(e)}');</script>"
             flash(f"Image upload failed: {str(e)}", "error")
             return redirect(url_for('dashboard'))
     elif category_id:
@@ -885,11 +938,9 @@ def save_category():
                 {"$set": category_data}
             )
             action = 'Update Category'
-            flash("Category updated successfully!", "category-success")
         else:
             company_collection.insert_one(category_data)
             action = 'Create Category'
-            flash("New category created successfully!", "category-success")
 
         db.activities.insert_one({
             'timestamp': datetime.now(),
@@ -899,12 +950,22 @@ def save_category():
             'company': company_name
         })
 
-        return redirect(url_for('categories'))
+        if is_modal:
+            return '''
+                <script>
+                    alert("Category saved successfully!");
+                    window.parent.location.reload();
+                </script>
+            '''
+        else:
+            flash("Category saved successfully!", "category-success")
+            return redirect(url_for('categories'))
 
     except Exception as e:
+        if is_modal:
+            return f"<script>alert('An error occurred: {str(e)}');</script>"
         flash(f"An error occurred while saving category: {str(e)}", "category-error")
         return redirect(url_for('dashboard'))
-
 
 
 
