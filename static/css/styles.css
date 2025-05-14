@@ -53,7 +53,7 @@ header {
     display:flex;
     justify-content: space-between;
     align-items: center;
-    max-width: 1200px;
+    max-width: 1280px;
     width: 100%;
     margin:0 auto;
     flex-flow:row wrap;
@@ -112,7 +112,7 @@ header .logo h1 {
     display:flex;
     justify-content: space-between;
     align-items: center;
-    max-width: 1200px;
+    max-width: 1280px;
     width: 100%;
     margin:0 auto;
     flex-flow:row wrap;
@@ -1791,18 +1791,10 @@ input[type="file"]{
 }
 
 @media (max-width: 992px) {
-    header {
-        flex-direction: column;
-        text-align: center;
-    }
-
-    .header-container {
-        flex-direction: column;
-        align-items: center;
-    }
+   
 
     .nav-container {
-        flex-direction: column;
+        
         gap: 15px;
         padding: 10px 0;
     }
@@ -1810,11 +1802,13 @@ input[type="file"]{
     .hero-container {
         flex-direction: column;
         align-items: center;
+        gap:30px;
     }
 
     .hero-sub-header {
         flex-direction: column;
         align-items: center;
+        gap:30px;
     }
 
     .hero-subcontainer {
@@ -1836,6 +1830,25 @@ input[type="file"]{
 
     .cta-btn {
         width: 60%;
+    }
+
+    .get-started-btn{
+        margin:0 auto;
+        width:200px;
+    }
+
+    .free-trial-btn{
+         margin:0 auto;
+        width:200px;
+    }
+
+    .features{
+        height:1850px;
+    }
+
+    .how-it-works{
+        height:56%;
+        margin-bottom:60px;
     }
 
     .features-grid {
