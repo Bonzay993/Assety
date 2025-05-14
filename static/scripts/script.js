@@ -1,16 +1,15 @@
 document.addEventListener("DOMContentLoaded", passwordValidator);
 
+function passwordValidator() {
+    const passwordInput = document.getElementById("password");
+    const confirmPasswordInput = document.getElementById("confirm-password");
+    const submitButton = document.querySelector("button[type='submit']");
+    const confirmPasswordGroup = confirmPasswordInput.closest('.sign-up-form-group');
 
-function passwordValidator(){
-
-    
-        const passwordInput = document.getElementById("password");
-        const confirmPasswordInput = document.getElementById("confirm-password");
-        const submitButton = document.querySelector("button[type='submit']");
-        const confirmPasswordGroup = confirmPasswordInput.closest('.sign-up-form-group');
-        
-        // Create validation message elements
-        const validationContainer = document.createElement("div");
+    // Ensure validation container is added only once
+    let validationContainer = document.querySelector(".password-validation");
+    if (!validationContainer) {
+        validationContainer = document.createElement("div");
         validationContainer.classList.add("password-validation");
 
         // Validation rules
@@ -29,57 +28,67 @@ function passwordValidator(){
             validationContainer.appendChild(item);
         });
 
-        
-        confirmPasswordGroup.parentNode.insertBefore(validationContainer, confirmPasswordGroup.nextSibling)
+        // Insert the validation container after the confirm password group
+        confirmPasswordGroup.parentNode.insertBefore(validationContainer, confirmPasswordGroup.nextSibling);
+    }
 
-        function validatePassword() {
-            const password = passwordInput.value;
-            let isValid = true;
+    function validatePassword() {
+        const password = passwordInput.value;
+        let isValid = true;
 
-            rules.forEach(rule => {
-                const item = document.getElementById(rule.id);
-                if (password) {
-                    item.style.display = "block"; // Show only after typing starts
-                }
-                if (rule.check(password)) {
-                    item.innerHTML = `✅ ${rule.text}`;
-                    item.style.color = "green";
-                } else {
-                    item.innerHTML = `❌ ${rule.text}`;
-                    item.style.color = "red";
-                    isValid = false;
-                }
-            });
+        // Validation rules
+        const rules = [
+            { id: "length", text: "At least 6 characters long", check: (pw) => pw.length >= 6 },
+            { id: "uppercase", text: "At least one uppercase letter", check: (pw) => /[A-Z]/.test(pw) },
+            { id: "match", text: "Passwords must match", check: (pw) => pw === confirmPasswordInput.value }
+        ];
 
-            // Re-check password match separately
-            const matchRule = document.getElementById("match");
-            if (confirmPasswordInput.value) {
-                matchRule.style.display = "block"; // Show only after typing
+        rules.forEach(rule => {
+            const item = document.getElementById(rule.id);
+            if (password) {
+                item.style.display = "block"; // Show only after typing starts
             }
-            if (password === confirmPasswordInput.value) {
-                matchRule.innerHTML = `✅ Passwords must match`;
-                matchRule.style.color = "green";
+            if (rule.check(password)) {
+                item.innerHTML = `✅ ${rule.text}`;
+                item.style.color = "green";
             } else {
-                matchRule.innerHTML = `❌ Passwords must match`;
-                matchRule.style.color = "red";
+                item.innerHTML = `❌ ${rule.text}`;
+                item.style.color = "red";
                 isValid = false;
             }
-
-            submitButton.disabled = !isValid; // Enable only if all checks pass
-        }
-
-        // Event listeners for real-time validation
-        passwordInput.addEventListener("input", validatePassword);
-        confirmPasswordInput.addEventListener("input", validatePassword);
-
-        // Show validation on focus (but not before typing)
-        passwordInput.addEventListener("focus", () => {
-            rules.forEach(rule => {
-                document.getElementById(rule.id).style.display = "block";
-            });
         });
 
-       
-    
+        // Re-check password match separately
+        const matchRule = document.getElementById("match");
+        if (confirmPasswordInput.value) {
+            matchRule.style.display = "block"; // Show only after typing
+        }
+        if (password === confirmPasswordInput.value) {
+            matchRule.innerHTML = `✅ Passwords must match`;
+            matchRule.style.color = "green";
+        } else {
+            matchRule.innerHTML = `❌ Passwords must match`;
+            matchRule.style.color = "red";
+            isValid = false;
+        }
 
+        // Enable submit button only if all checks pass
+        submitButton.disabled = !isValid;
+    }
+
+    // Event listeners for real-time validation
+    passwordInput.addEventListener("input", validatePassword);
+    confirmPasswordInput.addEventListener("input", validatePassword);
+
+    // Show validation on focus (but not before typing)
+    passwordInput.addEventListener("focus", () => {
+        const rules = [
+            { id: "length", text: "At least 6 characters long" },
+            { id: "uppercase", text: "At least one uppercase letter" },
+            { id: "match", text: "Passwords must match" }
+        ];
+        rules.forEach(rule => {
+            document.getElementById(rule.id).style.display = "block";
+        });
+    });
 }

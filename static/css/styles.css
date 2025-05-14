@@ -8,6 +8,7 @@
 html{
     scroll-behavior: smooth;
     overflow-y: scroll;
+    scrollbar-gutter: stable;
 }
 
 body {
@@ -16,7 +17,8 @@ body {
     background-color: white;
     color: #020318;
     height:100vh;
-    scrollbar-gutter: stable;
+    overflow-y: scroll;
+    
   
 }
 
@@ -51,7 +53,8 @@ header {
     display:flex;
     justify-content: space-between;
     align-items: center;
-    width:60%;
+    max-width: 1200px;
+    width: 100%;
     margin:0 auto;
     flex-flow:row wrap;
 }
@@ -95,18 +98,26 @@ header .logo h1 {
     color: rgb(0, 0, 0);
     background-color:rgb(255, 255, 255);
     margin-top:5%;
+    padding-left:20px;
+    padding-right:20px;
 
     
 }
 
 .hero-image{
-    width:500px;
+    width:50%;
 }
 
 .hero-container{
     display:flex;
-    flex-flow: row wrap;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    width: 100%;
     margin:0 auto;
+    flex-flow:row wrap;
+    
+   
 
 }
 
@@ -126,7 +137,7 @@ header .logo h1 {
     opacity: 0;
     transform: translateX(100px);
     transition: none; /* Prevents unintended animations on refresh */
-    width:60%;
+   
 }
 
 .hero-sub-header{
@@ -188,7 +199,7 @@ header .logo h1 {
 
 
 .free-trial-btn{
-    width:10%;
+    width:200px;
     
 }
 
@@ -271,7 +282,7 @@ header .logo h1 {
 
 /* HOW IT WORKS CSS */
 .how-it-works {
-    height:60%;
+    height:70%;
     padding: 5% 0;
     display: flex;
     flex-direction: column;
@@ -545,12 +556,16 @@ footer p {
     border-radius: 10px;
     box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.1);
     width: 400px;
+   
 }
+
+
 
 .signup-form {
     display: flex;
     flex-direction: column;
     gap:5px;
+    
 }
 
 .signup-paragraph{
@@ -598,6 +613,7 @@ input[type="file"]{
 .btn:hover {
     background: #0056b3;
 }
+
 
 
 /* LOGIN PAGE CSS */
@@ -734,8 +750,9 @@ input[type="file"]{
 }
 
 .contact-support-btn{
-    width:100%;
+    width:200px;
     text-align:center;
+    margin:0 auto;
 }
 
 
@@ -1766,6 +1783,91 @@ input[type="file"]{
 }
 
 /* RESPONSIVENESS */
+@media (max-width: 1200px) {
+    
+    .how-it-works {
+        height:80%;
+    }
+}
+
+@media (max-width: 992px) {
+    header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .header-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .nav-container {
+        flex-direction: column;
+        gap: 15px;
+        padding: 10px 0;
+    }
+
+    .hero-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .hero-sub-header {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .hero-subcontainer {
+        width: 90%;
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .hero-header {
+        font-size: 2.2rem;
+        text-align: center;
+        width: 90%;
+    }
+
+    .hero-image {
+        width: 80%;
+        max-width: 400px;
+    }
+
+    .cta-btn {
+        width: 60%;
+    }
+
+    .features-grid {
+        flex-direction: column;
+        align-items: center;
+        gap: 30px;
+    }
+
+    .feature-item {
+        width: 80%;
+    }
+
+    .step {
+        width: 80%;
+    }
+
+    .user-testimonials-wrapper {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .testimonial {
+        width: 80%;
+        margin-bottom: 20px;
+    }
+
+    .faq-container {
+        width: 90%;
+    }
+}
+
+
 
 @media (max-width: 768px) {
 
@@ -1939,4 +2041,47 @@ input[type="file"]{
         font-size:12px;
      }
      
+}
+
+
+/* Mobile devices (max-width: 576px) */
+@media (max-width: 576px) {
+    .hero-header {
+        font-size: 1.8rem;
+    }
+
+    .hero-subcontainer-p {
+        font-size: 1rem;
+    }
+
+    .cta-btn {
+        width: 80%;
+        font-size: 0.9rem;
+    }
+
+    .page-headers {
+        font-size: 1.4rem;
+    }
+
+    .feature-item-header {
+        font-size: 1.3rem;
+    }
+
+    .step {
+        padding: 1.5rem;
+    }
+
+    footer p {
+        font-size: 0.9rem;
+    }
+
+    .signup-container {
+        width: 90%;
+        padding: 25px;
+    }
+
+    .btn {
+        font-size: 14px;
+        padding: 8px;
+    }
 }
