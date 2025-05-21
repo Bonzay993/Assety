@@ -53,7 +53,7 @@ header {
     display:flex;
     justify-content: space-between;
     align-items: center;
-    max-width: 1200px;
+    max-width: 1280px;
     width: 100%;
     margin:0 auto;
     flex-flow:row wrap;
@@ -112,7 +112,7 @@ header .logo h1 {
     display:flex;
     justify-content: space-between;
     align-items: center;
-    max-width: 1200px;
+    max-width: 1280px;
     width: 100%;
     margin:0 auto;
     flex-flow:row wrap;
@@ -1173,6 +1173,63 @@ input[type="file"]{
     color: #666;
 }
 
+/* Settings Page CSS */
+
+/* Settings Page */
+.settings-container {
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    margin: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.settings-container h2 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #2c3e50;
+}
+
+.settings-section {
+    margin-bottom: 30px;
+}
+
+.settings-section h3 {
+    font-size: 18px;
+    margin-bottom: 10px;
+    color: #34495e;
+}
+
+.settings-section label {
+    display: block;
+    margin: 10px 0;
+    font-weight: bold;
+    color: #555;
+}
+
+.settings-section input,
+.settings-section select {
+    padding: 8px;
+    width: 100%;
+    max-width: 400px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.settings-btn {
+    background-color: #007bff;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.settings-btn:hover {
+    background-color: #0056b3;
+}
 
 /* All Assets CSS */
 
@@ -1791,18 +1848,10 @@ input[type="file"]{
 }
 
 @media (max-width: 992px) {
-    header {
-        flex-direction: column;
-        text-align: center;
-    }
-
-    .header-container {
-        flex-direction: column;
-        align-items: center;
-    }
+   
 
     .nav-container {
-        flex-direction: column;
+        
         gap: 15px;
         padding: 10px 0;
     }
@@ -1810,11 +1859,13 @@ input[type="file"]{
     .hero-container {
         flex-direction: column;
         align-items: center;
+        gap:30px;
     }
 
     .hero-sub-header {
         flex-direction: column;
         align-items: center;
+        gap:30px;
     }
 
     .hero-subcontainer {
@@ -1836,6 +1887,25 @@ input[type="file"]{
 
     .cta-btn {
         width: 60%;
+    }
+
+    .get-started-btn{
+        margin:0 auto;
+        width:200px;
+    }
+
+    .free-trial-btn{
+         margin:0 auto;
+        width:200px;
+    }
+
+    .features{
+        height:1850px;
+    }
+
+    .how-it-works{
+        height:56%;
+        margin-bottom:60px;
     }
 
     .features-grid {

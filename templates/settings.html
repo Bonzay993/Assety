@@ -1,0 +1,91 @@
+{% extends "inventory.html" %}
+
+{% block content %}
+<div class="settings-container">
+    <h2>Settings</h2>
+
+   <section class="settings-section">
+    <h3>Profile</h3>
+    <label>
+        First Name:
+        <input id="profile-name" type="text" value="{{ first_name }}" />
+    </label>
+     <label>
+        Last Name:
+        <input id="profile-name" type="text" value="{{ last_name }}" />
+    </label>
+    <label>
+        Email:
+        <input id="profile-email" type="email" value="{{ email }}" />
+    </label>
+    <button type="button" class="settings-btn update-profile-btn" onclick="updateProfile()">Update Profile</button>
+</section>
+
+    <section class="settings-section">
+        <h3>Preferences</h3>
+        <label>
+            Dark Mode:
+            <input type="checkbox" />
+        </label>
+        <button type="button" class="settings-btn save-preferences-btn">Save Preferences</button>
+    </section>
+<section class="settings-section">
+    <h3>Session Settings</h3>
+    <label>
+        Auto Logout Time (minutes):
+        <input id="idle-timeout-input" type="number" min="1" max="120" value="{{ settings.timeout or 20 }}" />
+    </label>
+    <button  type="button" class="settings-btn update-timeout-btn" onclick="updateTimeout()">Update Timeout</button>
+</section>
+
+    <section class="settings-section">
+        <h3>About</h3>
+        <p>Version: 0.2.0</p>
+    </section>
+</div>
+
+<script>
+    function updateTimeout() {
+        const timeout = document.getElementById('idle-timeout-input').value;
+
+        fetch('/save-settings', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ timeout: parseInt(timeout) })
+        })
+        .then(response => {
+            if (response.ok) {
+                alert('Auto logout time updated to ' + timeout + ' minutes.');
+            } else {
+                alert('Failed to update timeout.');
+            }
+        });
+    }
+
+      function updateProfile() {
+        const name = document.getElementById('profile-name').value;
+        const email = document.getElementById('profile-email').value;
+
+        fetch('/save-settings', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                first_name: name,
+                email: email
+            })
+        })
+        .then(response => {
+            if (response.ok) {
+                alert('Profile updated!');
+            } else {
+                alert('Failed to update profile.');
+            }
+        });
+    }
+</script>
+{% endblock %}
+

@@ -39,12 +39,65 @@ mongo = PyMongo(app)
 fs = gridfs.GridFS(mongo.cx[app.config["MONGO_DBNAME"]])
 
 
+@app.context_processor
+def inject_timeout():
+    return {'timeout': session.get('timeout', 2)}
 
 
 @app.route('/')
 def index():
     return render_template('index.html')
 
+@app.route('/settings')
+def settings():
+    user_first_name = session.get('first_name', 'User') 
+    user_last_name = session.get('last_name', 'User') 
+    company_name = session.get('company', None)
+    company_name = company_name.replace("_", " ")
+    user_email = session.get('email')
+    timeout = session.get('timeout')
+
+    client = MongoClient(app.config["MONGO_URI"])
+    db = client[app.config["MONGO_DBNAME"]]
+    users_collection = db['users']
+    user = users_collection.find_one({"_id": ObjectId(session['user_id'])})
+
+    user_settings = user.get('settings', {})
+
+    return render_template(
+        'settings.html',
+        first_name=user_first_name,
+        last_name=user_last_name,
+        company=company_name,
+        settings=user_settings,
+        email=user_email,
+        timeout=timeout
+    )
+
+
+
+@app.route('/save-settings', methods=['POST'])
+def save_settings():
+    if not session.get('user_id'):
+        return redirect(url_for('login'))
+
+    data = request.json  # Expecting JSON with a 'timeout' field
+
+    timeout = data.get('timeout')
+    if timeout is None:
+        return {"status": "error", "message": "Missing 'timeout' value"}, 400
+
+    client = MongoClient(app.config["MONGO_URI"])
+    db = client[app.config["MONGO_DBNAME"]]
+    users_collection = db['users']
+
+    # Update or create the settings field with timeout
+    users_collection.update_one(
+        {"_id": ObjectId(session['user_id'])},
+        {"$set": {"settings.timeout": timeout}}
+    )
+
+    return {"status": "success"}, 200
 
 
 @app.route('/sign-up', methods=['GET', 'POST'])
@@ -86,7 +139,10 @@ def sign_up():
                 'last_name': last_name,
                 'company': company,
                 'email': email,
-                'password': hashed_password
+                'password': hashed_password,
+                'settings': {
+                    'timeout': 2  # timeout set to 2 minutes 
+                }
             }
 
             try:
@@ -136,8 +192,13 @@ def login():
         if user and check_password_hash(user['password'], password):
             session['user_logged_in'] = True
             session['user_id'] = str(user['_id'])  # Store user ID in session
-            session['first_name'] = user.get('first_name', 'User').capitalize()  # Store first name in session
+            session['first_name'] = user.get('first_name', 'User').capitalize()
+            session['last_name'] = user.get('last_name', 'User').capitalize()  # Store first name in session
+            session['email'] = user['email']
             session['company'] = user['company']
+             # Get timeout from user document
+            timeout_minutes = user.get('settings', {}).get('timeout')
+            session['timeout'] = timeout_minutes
             print(f"Session after login: {session}")  # Debugging session data
             flash('Login successful!', 'success')
             return redirect(url_for('dashboard'))  # Redirect to inventory page
@@ -224,6 +285,7 @@ def inventory_app():
     # Get the first name and company name from the session
     user_first_name = session.get('first_name', 'User')  # Default to 'User' if no first name is found in session
     company_name = session.get('company', 'No Company')  # Default to 'No Company' if no company is found in session
+    timeout = session.get('timeout')
     
     # Replace underscores with spaces in the company name
     company_name = company_name.replace("_", " ")
@@ -232,9 +294,10 @@ def inventory_app():
     print(f"Session data: {session}")
     print(f"User First Name: {user_first_name}")
     print(f"Modified Company Name: {company_name}")
+    print(f"Timeout value: {timeout}")
     
     # Render the template with first name and company name
-    return render_template('inventory.html', first_name=user_first_name, company=company_name)
+    return render_template('inventory.html', first_name=user_first_name, company=company_name, timeout=timeout)
 
 
 @app.route('/dashboard')
