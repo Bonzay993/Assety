@@ -41,7 +41,7 @@
                 </li>
 
                 <li><a href="#" class="menu-item"><i class="fas fa-chart-line"></i><span class="text">Reports</span></a></li>
-                <li><a href="#" class="menu-item"><i class="fas fa-cogs"></i><span class="text">Settings</span></a></li>
+                <li><a href="{{ url_for('settings') }}" class="menu-item"><i class="fas fa-cogs"></i><span class="text">Settings</span></a></li>
             </ul>
             <div class="version">
                 <a class="version-number"><span>v</span> a 0.2.0</a>
@@ -101,92 +101,93 @@
     </script>
 
 <script>
-    let idleTime = 0;
-    const idleLimitSeconds = 120;   // ⏱ Set to 10s for testing
-    const warningSeconds = 30;     // ⏱ 30s countdown before logout
+    document.addEventListener('DOMContentLoaded', () => {
+        let idleTime = 0;
+        let idleLimitSeconds = {{ timeout | int }} * 60; 
+        const warningSeconds = 30;    // countdown before logout
 
-    let countdown = warningSeconds;
-    let countdownInterval;
-    let isUserLoggedIn = false;    // Flag to track if the user is logged in
+        let countdown = warningSeconds;
+        let countdownInterval;
+        let isUserLoggedIn = false;
 
-    const modal = document.getElementById('inactivity-modal');
-    const modalContent = document.getElementById('modal-content');
-    const countdownEl = document.getElementById('countdown');
-    const stayLoggedInBtn = document.getElementById('stay-logged-in');
+        const modal = document.getElementById('inactivity-modal');
+        const modalContent = document.getElementById('modal-content');
+        const countdownEl = document.getElementById('countdown');
+        const stayLoggedInBtn = document.getElementById('stay-logged-in');
+        const idleTimeoutInput = document.getElementById('idle-timeout-input');
+        
 
-    // Set the flag to true when the user logs in
-    function userLoggedIn() {
-        isUserLoggedIn = true;
-    }
-
-    // Reset the inactivity timer, but only if the modal is NOT visible
-    function resetInactivityTimer() {
-        if (modal.style.display !== 'flex' && isUserLoggedIn) {  // Only reset if modal is NOT visible and user is logged in
-            idleTime = 0;
-        }
-    }
-
-    // Show the modal and start the countdown
-    function showModal() {
-        modal.style.display = 'flex';
-        countdown = warningSeconds;
-        countdownEl.textContent = countdown;
-
-        // Start countdown and check every second
-        countdownInterval = setInterval(() => {
-            countdown--;
+       
+        // Show the inactivity warning modal
+        function showModal() {
+            modal.style.display = 'flex';
+            countdown = warningSeconds;
             countdownEl.textContent = countdown;
-            if (countdown <= 0) {
-                clearInterval(countdownInterval);
 
-                // 🔥 Call logout route (clear session)
-                fetch('/logout', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                }).then(() => {
-                    // 🧱 Show logout message
-                    modalContent.innerHTML = `
-                        <h2>You have been logged out</h2>
-                        <p>Session expired due to inactivity.</p>
-                        <a href="/login"><button style="padding: 0.5rem 1rem; margin-top: 1rem;">Go to Login</button></a>
-                    `;
-                });
+            countdownInterval = setInterval(() => {
+                countdown--;
+                countdownEl.textContent = countdown;
+                if (countdown <= 0) {
+                    clearInterval(countdownInterval);
+                    fetch('/logout', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(() => {
+                        modalContent.innerHTML = `
+                            <h2>You have been logged out</h2>
+                            <p>Session expired due to inactivity.</p>
+                            <a href="/login"><button style="padding: 0.5rem 1rem; margin-top: 1rem;">Go to Login</button></a>
+                        `;
+                    });
+                }
+            }, 1000);
+        }
+
+        // Dismiss the modal and clear countdown
+        function closeModal() {
+            modal.style.display = 'none';
+            clearInterval(countdownInterval);
+        }
+
+        // Mark user as logged in
+        function userLoggedIn() {
+            isUserLoggedIn = true;
+        }
+
+        // Reset inactivity timer if modal is not visible
+        function resetInactivityTimer() {
+            if (modal.style.display !== 'flex' && isUserLoggedIn) {
+                idleTime = 0;
+            }
+        }
+
+        // Button event to stay logged in
+        stayLoggedInBtn.addEventListener('click', () => {
+            resetInactivityTimer();
+            closeModal();
+        });
+
+        // User activity resets idle timer
+        ['mousemove', 'keydown', 'scroll', 'click'].forEach(event => {
+            window.addEventListener(event, resetInactivityTimer);
+        });
+
+        // Check inactivity every second
+        setInterval(() => {
+            if (isUserLoggedIn) {
+                idleTime++;
+                if (idleTime >= idleLimitSeconds && modal.style.display !== 'flex') {
+                    showModal();
+                }
             }
         }, 1000);
-    }
 
-    // Close the modal (optional, if you want to manually dismiss it)
-    function closeModal() {
-        modal.style.display = 'none';
-        clearInterval(countdownInterval);
-    }
-
-    // When the "Stay Logged In" button is clicked, reset the inactivity timer
-    stayLoggedInBtn.addEventListener('click', () => {
-        resetInactivityTimer();
-        closeModal();  // Close the modal if the user decides to stay logged in
+        // Mark user as logged in (call this once on page load)
+        userLoggedIn();
     });
-
-    // Event listeners to reset inactivity timer
-    ['mousemove', 'keydown', 'scroll', 'click'].forEach(event => {
-        window.addEventListener(event, resetInactivityTimer);
-    });
-
-    // ⏲ Check inactivity every second
-    setInterval(() => {
-        if (isUserLoggedIn) {
-            idleTime++;
-            if (idleTime >= idleLimitSeconds && modal.style.display !== 'flex') {
-                showModal();  // Show modal if idle for long enough
-            }
-        }
-    }, 1000);
-
-    // You can call this function after a successful login to start the inactivity timer
-    userLoggedIn();
 </script>
-    
+
 </body>
 </html>
