@@ -1,0 +1,50 @@
+{% extends "inventory.html" %}
+{% block content %}
+<div class="settings-container">
+    <section class="settings-section profile-page">
+        <h3>Profile</h3>
+       <label>
+    First Name:
+    <input id="profile-first-name" type="text" value="{{ first_name }}" />
+    </label>
+    <label>
+        Last Name:
+        <input id="profile-last-name" type="text" value="{{ last_name }}" />
+    </label>
+    <label>
+        Email:
+        <input id="profile-email" type="email" value="{{ email }}" />
+    </label>
+        <button type="button" class="settings-btn update-profile-btn" onclick="updateProfile()">Update Profile</button>
+    </section>
+</div>
+
+<script>
+        function updateProfile() {
+        const firstName = document.getElementById('profile-first-name').value;
+        const lastName = document.getElementById('profile-last-name').value;
+        const email = document.getElementById('profile-email').value;
+
+        fetch('/update-profile', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                first_name: firstName,
+                last_name: lastName,
+                email: email
+            })
+        })
+        .then(response => {
+            if (response.ok) {
+                alert('Profile updated!');
+                location.reload(); // Optional: reload to reflect updates
+            } else {
+                alert('Failed to update profile.');
+            }
+        });
+    }
+</script>
+{% endblock %}
+
