@@ -914,7 +914,6 @@ input[type="file"]{
 /* Sidebar Styles */
 .sidebar {
     width: 200px;
-    min-width: 200px;
     background-color: rgb(34, 45, 50);
     color: white;
     font-family: Arial, sans-serif;
@@ -925,7 +924,7 @@ input[type="file"]{
 
 .sidebar.minimized {
     width: 80px;
-    min-width: 80px;
+    
 }
 
 .sidebar-logo {
@@ -1102,6 +1101,71 @@ input[type="file"]{
 .dropdown-menu-item{
     color:white;
     text-decoration: none;
+}
+
+/* Search Bar */
+
+/* Search Bar Container */
+.search-bar {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin-right: 30px;
+    width: 300px;
+}
+
+/* Search Input */
+.search-input {
+    width: 100%;
+    padding: 10px 40px 10px 15px;
+    border: none;
+    outline: none;
+    background-color: #f0f0f0;
+    font-size: 14px;
+    transition: box-shadow 0.3s ease;
+}
+
+.search-input:focus {
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+/* Search Icon */
+.search-icon {
+    position: absolute;
+    right: 15px;
+    color: #555;
+    font-size: 16px;
+    pointer-events: none;
+}
+
+/* Avatar on the navbar css */
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.avatar-btn {
+    text-decoration: none;
+}
+
+.avatar-circle {
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.avatar-circle:hover {
+    background-color: #0056b3;
 }
 
 /* Main Content Area */

@@ -100,6 +100,13 @@ def save_settings():
     return {"status": "success"}, 200
 
 
+
+@app.route('/profile')
+def profile_page():
+    return render_template('profile-page.html')
+
+
+
 @app.route('/sign-up', methods=['GET', 'POST'])
 def sign_up():
     try:
@@ -174,6 +181,8 @@ def sign_up():
         print(f"Error: {e}")
         flash("MongoDB connection failed. Please try again later.", "error")
         return render_template('sign-up.html')
+
+
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -304,6 +313,7 @@ def inventory_app():
 def dashboard():
     company_name = session.get('company')
     user_first_name = session.get('first_name', 'User')
+    user_last_name = session.get('last_name','User')
 
     if not company_name:
         flash("Please log in to access the dashboard.", "error")
@@ -338,6 +348,7 @@ def dashboard():
     return render_template(
         "dashboard.html",
         first_name=user_first_name,
+        last_name=user_last_name,
         company=company_name,
         total_assets=total_assets,
         categories=categories,
@@ -627,6 +638,7 @@ def delete_asset(asset_id):
     return redirect(url_for('assets'))
 
 
+
 @app.route('/asset/<asset_id>')
 def view_asset(asset_id):
     
@@ -693,6 +705,7 @@ def new_location():
         return render_template("location_modal_form.html", first_name=user_first_name, company=company_name)
     
     return render_template("new-location.html",first_name=user_first_name, company=company_name )
+
 
 
 
@@ -798,6 +811,8 @@ def save_location():
         return redirect(url_for('dashboard'))
 
 
+
+
 @app.route('/location-properties')
 def location_properties():
     location_id = request.args.get('location_id')  # Get asset ID from URL
@@ -813,6 +828,8 @@ def location_properties():
             return render_template("location-properties.html", location=location)  
 
     return render_template("location-properties.html", asset=None)  # If no asset ID, load empty form
+
+
 
 
 @app.route('/delete_location/<location_id>', methods=['POST'])
@@ -861,6 +878,7 @@ def delete_location(location_id):
     return redirect(url_for('locations'))
 
 
+
 @app.route('/categories')
 def categories():
     print(f"Session at categories page: {session}")
@@ -893,6 +911,8 @@ def categories():
         first_name=user_first_name,
         company=company_name
     )
+
+
 
 @app.route('/new-category')
 def new_category():
@@ -1043,6 +1063,7 @@ def category_properties():
 
     # If no valid ID or not found, load empty template
     return render_template("category-properties.html", category=None)
+
 
 
 @app.route('/delete_category/<category_id>', methods=['POST'])
