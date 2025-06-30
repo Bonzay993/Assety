@@ -49,12 +49,19 @@
         </aside>
         <main class="main-content">
             <header class="header app-header">
-                <h1>Asset Dashboard</h1>
                 <div class="company-info">
-                    <span>{{ company }}</span>
+                    <h1>{{ company }} Asset Dashboard</h1>
+                </div>
+                <div class="search-bar">
+                    <input type="text" class="search-input" placeholder="Search by Asset Tag">
+                    <i class="fas fa-search search-icon"></i>
                 </div>
                 <div class="user-info">
-                    <span>Welcome, {{ first_name }}</span>
+                    <a href="{{ url_for('profile_page') }}" class="avatar-btn">
+                        <div class="avatar-circle">
+                            {{ first_name[0] }}{{ last_name[0] }}
+                        </div>
+                    </a>
                     <a href="{{ url_for('logout') }}">
                         <button class="logout-btn">Logout</button>
                     </a>

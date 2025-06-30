@@ -100,6 +100,64 @@ def save_settings():
     return {"status": "success"}, 200
 
 
+
+@app.route('/profile')
+def profile_page():
+    user_first_name = session.get('first_name', 'User') 
+    user_last_name = session.get('last_name', 'User') 
+    company_name = session.get('company', None)
+    company_name = company_name.replace("_", " ")
+    user_email = session.get('email')
+    
+    client = MongoClient(app.config["MONGO_URI"])
+    db = client[app.config["MONGO_DBNAME"]]
+    users_collection = db['users']
+    
+    return render_template(
+        'profile-page.html',
+        first_name=user_first_name,
+        last_name=user_last_name,
+        company=company_name,
+        email=user_email
+    )
+
+
+
+@app.route('/update-profile', methods=['POST'])
+def update_profile():
+    if not session.get('user_id'):
+        return {"status": "unauthorized"}, 401
+
+    data = request.json
+    first_name = data.get('first_name')
+    last_name = data.get('last_name')
+    email = data.get('email')
+
+    if not all([first_name, last_name, email]):
+        return {"status": "error", "message": "Missing fields"}, 400
+
+    client = MongoClient(app.config["MONGO_URI"])
+    db = client[app.config["MONGO_DBNAME"]]
+    users_collection = db['users']
+
+    users_collection.update_one(
+        {"_id": ObjectId(session['user_id'])},
+        {"$set": {
+            "first_name": first_name,
+            "last_name": last_name,
+            "email": email
+        }}
+    )
+
+    # Update session to reflect new data
+    session['first_name'] = first_name
+    session['last_name'] = last_name
+    session['email'] = email
+
+    return {"status": "success"}, 200
+
+
+
 @app.route('/sign-up', methods=['GET', 'POST'])
 def sign_up():
     try:
@@ -174,6 +232,8 @@ def sign_up():
         print(f"Error: {e}")
         flash("MongoDB connection failed. Please try again later.", "error")
         return render_template('sign-up.html')
+
+
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -284,6 +344,7 @@ def reset_password(token):
 def inventory_app():
     # Get the first name and company name from the session
     user_first_name = session.get('first_name', 'User')  # Default to 'User' if no first name is found in session
+    user_last_name = session.get('last_name', 'User') 
     company_name = session.get('company', 'No Company')  # Default to 'No Company' if no company is found in session
     timeout = session.get('timeout')
     
@@ -297,13 +358,14 @@ def inventory_app():
     print(f"Timeout value: {timeout}")
     
     # Render the template with first name and company name
-    return render_template('inventory.html', first_name=user_first_name, company=company_name, timeout=timeout)
+    return render_template('inventory.html', first_name=user_first_name,last_name=user_last_name, company=company_name, timeout=timeout)
 
 
 @app.route('/dashboard')
 def dashboard():
     company_name = session.get('company')
     user_first_name = session.get('first_name', 'User')
+    user_last_name = session.get('last_name','User')
 
     if not company_name:
         flash("Please log in to access the dashboard.", "error")
@@ -338,6 +400,7 @@ def dashboard():
     return render_template(
         "dashboard.html",
         first_name=user_first_name,
+        last_name=user_last_name,
         company=company_name,
         total_assets=total_assets,
         categories=categories,
@@ -390,6 +453,7 @@ def assets():
 
     # Get the first name from the session, if available
     user_first_name = session.get('first_name', 'User')
+    user_last_name = session.get('last_name', 'User') 
     company_name = session.get('company', 'No Company')
 
     company_name = company_name.replace("_", " ")
@@ -405,11 +469,14 @@ def assets():
     all_assets = list(company_collection.find({"asset": True}))
     
     # Pass the assets and first name to the template
-    return render_template("assets.html", assets=all_assets, first_name=user_first_name, company=company_name)
+    return render_template("assets.html", assets=all_assets, first_name=user_first_name,last_name=user_last_name, company=company_name)
+
+
 
 @app.route("/new-asset")
 def new_asset():
      user_first_name = session.get('first_name', 'User') 
+     user_last_name = session.get('last_name', 'User') 
      company_name = session.get('company', None)
      company_name = company_name.replace("_", " ")
 
@@ -421,7 +488,9 @@ def new_asset():
      locations = list(company_collection.find({"location": True}))
      categories = list(company_collection.find({"category": True}))
      
-     return render_template("new-asset.html",first_name=user_first_name, company=company_name, locations=locations, categories=categories )
+     return render_template("new-asset.html",first_name=user_first_name,last_name=user_last_name, company=company_name, locations=locations, categories=categories )
+
+
 
 
 @app.route('/save_asset', methods=['POST'])
@@ -519,6 +588,7 @@ def save_asset():
 
 
 
+
 @app.route('/image/<image_id>')
 def get_image(image_id):
     company = session.get('company')
@@ -538,10 +608,12 @@ def get_image(image_id):
 
 
 
+
 @app.route('/asset-properties')
 def asset_properties():
     asset_id = request.args.get('asset_id')  # Get asset ID from URL
-    user_first_name = session.get('first_name', 'User') 
+    user_first_name = session.get('first_name', 'User')
+    user_last_name = session.get('last_name', 'User') 
     company_name = session.get('company', None)
     company_name = company_name.replace("_", " ")
 
@@ -574,9 +646,11 @@ def asset_properties():
         asset = company_collection.find_one({"_id": ObjectId(asset_id)})  # Fetch asset
 
         if asset:
-            return render_template("asset-properties.html", asset=asset,first_name=user_first_name, locations=locations, company=company_name ,categories=categories)  
+            return render_template("asset-properties.html", asset=asset,first_name=user_first_name,last_name=user_last_name, locations=locations, company=company_name ,categories=categories)  
 
     return render_template("asset-properties.html", asset=None, )  # If no asset ID, load empty form
+
+
 
 
 @app.route('/delete_asset/<asset_id>', methods=['POST'])
@@ -627,12 +701,15 @@ def delete_asset(asset_id):
     return redirect(url_for('assets'))
 
 
+
+
 @app.route('/asset/<asset_id>')
 def view_asset(asset_id):
     
     client = MongoClient(app.config["MONGO_URI"])
     db = client[app.config["MONGO_DBNAME"]]
     user_first_name = session.get('first_name', 'User') 
+    user_last_name = session.get('last_name', 'User') 
     company_name = session.get('company', None)
     company_name = company_name.replace("_", " ")
     company_collection = db[company_name]
@@ -651,7 +728,7 @@ def view_asset(asset_id):
     ]
     labels_values = list(zip(labels, values))
 
-    return render_template('view-asset.html', asset=asset, company=company_name, labels_values=labels_values, first_name=user_first_name)
+    return render_template('view-asset.html', asset=asset, company=company_name, labels_values=labels_values, first_name=user_first_name, last_name=user_last_name,)
 
 
 
@@ -664,6 +741,7 @@ def locations():
 
     # Get the first name from the session, if available
     user_first_name = session.get('first_name', 'User')
+    user_last_name = session.get('last_name', 'User') 
     company_name = session.get('company', 'No Company')
 
     company_name = company_name.replace("_", " ")
@@ -679,20 +757,24 @@ def locations():
     all_locations = list(company_collection.find({"location": True}))
     
     # Pass the assets and first name to the template
-    return render_template("locations.html", locations=all_locations, first_name=user_first_name, company=company_name)
+    return render_template("locations.html", locations=all_locations, first_name=user_first_name,last_name=user_last_name, company=company_name)
+
+
 
 
 @app.route('/new-location')
 def new_location():
     company_name = session.get('company', None)
     user_first_name = session.get('first_name', 'User')
+    user_last_name = session.get('last_name', 'User') 
 
     
     if request.args.get("modal") == "true":
         # Render only the form part for use in a modal
-        return render_template("location_modal_form.html", first_name=user_first_name, company=company_name)
+        return render_template("location_modal_form.html", first_name=user_first_name,last_name=user_last_name, company=company_name)
     
     return render_template("new-location.html",first_name=user_first_name, company=company_name )
+
 
 
 
@@ -798,6 +880,8 @@ def save_location():
         return redirect(url_for('dashboard'))
 
 
+
+
 @app.route('/location-properties')
 def location_properties():
     location_id = request.args.get('location_id')  # Get asset ID from URL
@@ -813,6 +897,8 @@ def location_properties():
             return render_template("location-properties.html", location=location)  
 
     return render_template("location-properties.html", asset=None)  # If no asset ID, load empty form
+
+
 
 
 @app.route('/delete_location/<location_id>', methods=['POST'])
@@ -861,11 +947,13 @@ def delete_location(location_id):
     return redirect(url_for('locations'))
 
 
+
 @app.route('/categories')
 def categories():
     print(f"Session at categories page: {session}")
 
     user_first_name = session.get('first_name', 'User')
+    user_last_name = session.get('last_name', 'User') 
     company_name = session.get('company', 'No Company').replace("_", " ")
 
     client = MongoClient(app.config["MONGO_URI"])
@@ -891,20 +979,25 @@ def categories():
         "categories.html",
         categories=all_categories,
         first_name=user_first_name,
+        last_name=user_last_name,
         company=company_name
     )
+
+
+
 
 @app.route('/new-category')
 def new_category():
     company_name = session.get('company', None)
     user_first_name = session.get('first_name', 'User')
+    user_last_name = session.get('last_name', 'User') 
 
     if request.args.get("modal") == "true":
         # Render only the form part for use in a modal
         return render_template("category_modal_form.html", first_name=user_first_name, company=company_name)
     
     # Otherwise, render the full page with layout
-    return render_template("new-category.html", first_name=user_first_name, company=company_name)
+    return render_template("new-category.html", first_name=user_first_name,last_name=user_last_name, company=company_name)
 
 
 
@@ -1024,6 +1117,7 @@ def save_category():
 
 
 
+
 @app.route('/category-properties')
 def category_properties():
     category_id = request.args.get('category_id')  # Get category ID from URL
@@ -1043,6 +1137,7 @@ def category_properties():
 
     # If no valid ID or not found, load empty template
     return render_template("category-properties.html", category=None)
+
 
 
 @app.route('/delete_category/<category_id>', methods=['POST'])
