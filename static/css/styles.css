@@ -1165,6 +1165,34 @@ input[type="file"]{
 }
 
 
+/* Search Suggestions */
+.search-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+     border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    z-index: 1000;
+    font-size: 14px;
+}
+
+.search-suggestions li {
+    padding: 8px 12px;
+    cursor: pointer;
+    color:#020318;
+}
+
+.search-suggestions li:hover {
+    background-color: #f0f0f0;
+}
+
+
 /* Avatar on the navbar css */
 .user-info {
     display: flex;

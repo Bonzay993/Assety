@@ -55,7 +55,7 @@
                 <div class="search-bar">
                     <input type="text" class="search-input" placeholder="Search by Asset Tag">
                     <i class="fas fa-search search-icon"></i>
-                    
+                    <ul class="search-suggestions"></ul>
                 </div>
                 <div class="user-info">
                     <a href="{{ url_for('profile_page') }}" class="avatar-btn">
@@ -220,6 +220,46 @@
                 }
             });
         }
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const searchInput = document.querySelector('.search-input');
+        const suggestions = document.querySelector('.search-suggestions');
+
+        searchInput.addEventListener('input', async () => {
+            const query = searchInput.value.trim();
+            if (!query) {
+                suggestions.innerHTML = '';
+                return;
+            }
+            try {
+                const response = await fetch(`/search_assets?q=${encodeURIComponent(query)}`);
+                if (!response.ok) {
+                    suggestions.innerHTML = '';
+                    return;
+                }
+                const data = await response.json();
+                suggestions.innerHTML = '';
+                data.forEach(item => {
+                    const li = document.createElement('li');
+                    li.textContent = item.asset_tag;
+                    li.addEventListener('click', () => {
+                        window.location.href = `/asset/${item.id}`;
+                    });
+                    suggestions.appendChild(li);
+                });
+            } catch (error) {
+                console.error('Error fetching suggestions:', error);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.search-bar')) {
+                suggestions.innerHTML = '';
+            }
+        });
     });
 </script>
 

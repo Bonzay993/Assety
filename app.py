@@ -503,6 +503,30 @@ def search_assets_route():
     )
 
 
+@app.route('/search_assets')
+def search_assets():
+    query = request.args.get('q', '').strip()
+    if not query:
+        return jsonify([])
+
+    company_name = session.get('company')
+    if not company_name:
+        return jsonify([])
+
+    company_name = company_name.replace('_', ' ')
+    client = MongoClient(app.config["MONGO_URI"])
+    db = client[app.config["MONGO_DBNAME"]]
+    company_collection = db[company_name]
+
+    results = company_collection.find(
+        {"asset_tag": {"$regex": query, "$options": "i"}},
+        {"asset_tag": 1}
+    ).limit(3)
+
+    suggestions = [{"asset_tag": r["asset_tag"], "id": str(r["_id"])} for r in results]
+    return jsonify(suggestions)
+
+
 
 
 @app.route("/new-asset")
