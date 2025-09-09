@@ -472,9 +472,16 @@ def assets():
 
 
 
-@app.route('/search-assets')
-def search_assets():
+
+
+@app.route("/search")
+def search_assets_route():
     query = request.args.get('q', '').strip()
+    if not query:
+        return redirect(url_for('assets'))
+
+    user_first_name = session.get('first_name', 'User')
+    user_last_name = session.get('last_name', 'User')
     company_name = session.get('company', 'No Company')
     company_name = company_name.replace("_", " ")
 
@@ -482,16 +489,19 @@ def search_assets():
     db = client[app.config["MONGO_DBNAME"]]
     company_collection = db[company_name]
 
-    results = []
-    if query:
-        assets = company_collection.find({
-            "asset": True,
-            "asset_tag": {"$regex": query, "$options": "i"}
-        }).limit(10)
-        results = [{"id": str(asset["_id"]), "asset_tag": asset.get("asset_tag", "")}
-                   for asset in assets]
+    matching_assets = list(company_collection.find({
+        "asset": True,
+        "asset_tag": {"$regex": query, "$options": "i"}
+    }))
 
-    return jsonify({"results": results})
+    return render_template(
+        "assets.html",
+        assets=matching_assets,
+        first_name=user_first_name,
+        last_name=user_last_name,
+        company=company_name
+    )
+
 
 
 

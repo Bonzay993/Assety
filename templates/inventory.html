@@ -55,7 +55,7 @@
                 <div class="search-bar">
                     <input type="text" class="search-input" placeholder="Search by Asset Tag">
                     <i class="fas fa-search search-icon"></i>
-                    <div id="search-results" class="search-results"></div>
+                    
                 </div>
                 <div class="user-info">
                     <a href="{{ url_for('profile_page') }}" class="avatar-btn">
@@ -108,7 +108,7 @@
         });
     </script>
 
-    <script src="{{ url_for('static', filename='scripts/search.js') }}"></script>
+    
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         let idleTime = 0;
@@ -197,6 +197,32 @@
         userLoggedIn();
     });
 </script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const searchInput = document.querySelector('.search-input');
+        const searchIcon = document.querySelector('.search-icon');
+
+        if (searchInput && searchIcon) {
+            const performSearch = () => {
+                const query = searchInput.value.trim();
+                if (query) {
+                    window.location.href = '/search?q=' + encodeURIComponent(query);
+                }
+            };
+
+            searchIcon.addEventListener('click', performSearch);
+
+            searchInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    performSearch();
+                }
+            });
+        }
+    });
+</script>
+
 
 </body>
 </html>
