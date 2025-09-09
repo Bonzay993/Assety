@@ -1120,7 +1120,7 @@ input[type="file"]{
     padding: 10px 40px 10px 15px;
     border: none;
     outline: none;
-    background-color: #f0f0f0;
+    background-color: #ffffff;
     font-size: 14px;
     transition: box-shadow 0.3s ease;
 }
@@ -1144,7 +1144,7 @@ input[type="file"]{
     top: 100%;
     left: 0;
     right: 0;
-    background: #fff;
+    background: #ffffff;
     border: 1px solid #ccc;
     max-height: 200px;
     overflow-y: auto;
@@ -1168,19 +1168,21 @@ input[type="file"]{
 /* Search Suggestions */
 .search-suggestions {
     position: absolute;
-    top: 100%;
+    top: calc(100% + 5px);
     left: 0;
     width: 100%;
-    background-color: #f0f0f0;
+    background-color: #ffffff;
     border: 1px solid #ccc;
-     border-bottom-left-radius: 5px;
-    border-bottom-right-radius: 5px;
+    border-radius: 5px;
     list-style: none;
     padding: 0;
     margin: 0;
     z-index: 1000;
     font-size: 14px;
+    text-align: left;
 }
+
+
 
 .search-suggestions li {
     padding: 8px 12px;
@@ -1191,6 +1193,11 @@ input[type="file"]{
 .search-suggestions li:hover {
     background-color: #f0f0f0;
 }
+
+.search-suggestions:empty {
+  display: none;
+}
+
 
 
 /* Avatar on the navbar css */
