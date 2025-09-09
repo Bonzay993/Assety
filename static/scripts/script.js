@@ -1,4 +1,6 @@
-document.addEventListener("DOMContentLoaded", passwordValidator);
+if (typeof document !== "undefined") {
+    document.addEventListener("DOMContentLoaded", passwordValidator);
+}
 
 function passwordValidator() {
     const passwordInput = document.getElementById("password");
@@ -91,4 +93,9 @@ function passwordValidator() {
             document.getElementById(rule.id).style.display = "block";
         });
     });
+}
+
+// Export for testing with Jest
+if (typeof module !== "undefined") {
+    module.exports = { passwordValidator };
 }
