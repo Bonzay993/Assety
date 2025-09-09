@@ -13,6 +13,8 @@ Assety is an inventory and asset management web application built with Flask and
 - [Deployment](#deployment)
 - [Installation](#installation)
 - [Testing](#testing)
+  - [Jest Unit Tests](#jest-unit-tests)
+  - [Manual Testing](#manual-testing)
 - [Credits](#credits)
 
 ## Project Goals
@@ -38,24 +40,7 @@ The application uses a simple interface built with HTML templates and a custom C
 ## Features
 - **Account Management** – Sign‑up, log in/out and password reset via email (SendGrid).
 - **Dashboard** – Displays asset count, categories, locations, recent assets and activities.
-- **Assets** – Create, view, update and delete assets with optional image upload.
-- **Categories** – Manage asset categories. Duplicate names are prevented.
-- **Locations** – Track locations where assets are stored. Duplicate tags are prevented.
-- **Settings** – Update profile information and set an idle logout time in minutes.
-- **Search and Filters** – Pages include lists with actions to edit or delete items.
-
-## Technologies Used
-- **Python 3** with **Flask** for the web framework
-- **MongoDB** and **PyMongo** for the database
-- **GridFS** for image storage
-- **SendGrid** for transactional emails
-- HTML5, CSS3 and basic JavaScript for the front end
-
-Dependencies are listed in [`requirements.txt`](requirements.txt).
-
-## Database
-MongoDB stores user accounts in the `users` collection and each company gets its own collection for assets, categories and locations. An additional `activities` collection keeps a history of actions performed by users. Images are stored using GridFS.
-
+@@ -59,36 +61,53 @@ MongoDB stores user accounts in the `users` collection and each company gets its
 ## Deployment
 The project is configured for deployment on a platform such as Render or Heroku using the provided `Procfile`.
 Environment variables required:
@@ -81,6 +66,23 @@ Environment variables required:
    The site will be available at `http://localhost:5000`.
 
 ## Testing
+
+### Jest Unit Tests
+Client-side password validation is covered by a Jest suite located in `static/scripts/script.test.js`.
+The tests run in the `jsdom` environment so that browser APIs such as `document` are available.
+
+Install Node.js dependencies and run the tests with:
+
+```bash
+npm install
+npm test
+```
+
+The suite verifies that the validation UI appears only once, toggles the submit button as criteria are met,
+keeps rules hidden until the user interacts with the fields, shows all rules on password focus and warns
+when the two password fields do not match.
+
+### Manual Testing
 The application was manually tested using different user flows:
 - Creating an account and verifying duplicate checks
 - Logging in with valid and invalid credentials

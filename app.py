@@ -1,9 +1,8 @@
 import os
-from flask import Flask, render_template, request, redirect, url_for, flash, send_file
+from flask import Flask, render_template, request, redirect, url_for, flash, send_file, session, jsonify
 from flask_pymongo import PyMongo
 from pymongo import MongoClient
 from datetime import datetime, timedelta
-from flask import render_template, session
 from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
 from werkzeug.utils import secure_filename
@@ -470,6 +469,63 @@ def assets():
     
     # Pass the assets and first name to the template
     return render_template("assets.html", assets=all_assets, first_name=user_first_name,last_name=user_last_name, company=company_name)
+
+
+
+
+
+@app.route("/search")
+def search_assets_route():
+    query = request.args.get('q', '').strip()
+    if not query:
+        return redirect(url_for('assets'))
+
+    user_first_name = session.get('first_name', 'User')
+    user_last_name = session.get('last_name', 'User')
+    company_name = session.get('company', 'No Company')
+    company_name = company_name.replace("_", " ")
+
+    client = MongoClient(app.config["MONGO_URI"])
+    db = client[app.config["MONGO_DBNAME"]]
+    company_collection = db[company_name]
+
+    matching_assets = list(company_collection.find({
+        "asset": True,
+        "asset_tag": {"$regex": query, "$options": "i"}
+    }))
+
+    return render_template(
+        "assets.html",
+        assets=matching_assets,
+        first_name=user_first_name,
+        last_name=user_last_name,
+        company=company_name
+    )
+
+
+@app.route('/search_assets')
+def search_assets():
+    query = request.args.get('q', '').strip()
+    if not query:
+        return jsonify([])
+
+    company_name = session.get('company')
+    if not company_name:
+        return jsonify([])
+
+    company_name = company_name.replace('_', ' ')
+    client = MongoClient(app.config["MONGO_URI"])
+    db = client[app.config["MONGO_DBNAME"]]
+    company_collection = db[company_name]
+
+    results = company_collection.find(
+        {"asset_tag": {"$regex": query, "$options": "i"}},
+        {"asset_tag": 1}
+    ).limit(3)
+
+    suggestions = [{"asset_tag": r["asset_tag"], "id": str(r["_id"])} for r in results]
+    return jsonify(suggestions)
+
 
 
 
