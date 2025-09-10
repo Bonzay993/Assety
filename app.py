@@ -1,4 +1,6 @@
 import os
+import csv
+import io
 from flask import Flask, render_template, request, redirect, url_for, flash, send_file, session, jsonify
 from flask_pymongo import PyMongo
 from pymongo import MongoClient
@@ -8,6 +10,7 @@ from werkzeug.security import check_password_hash
 from werkzeug.utils import secure_filename
 from bson.objectid import ObjectId 
 from send_emails import EmailService
+from fpdf import FPDF
 import gridfs
 
 if os.path.exists("env.py"):
@@ -109,6 +112,101 @@ def save_settings():
         )
 
     return {"status": "success"}, 200
+
+
+
+@app.route('/reports')
+def reports():
+    """Display basic inventory reports and export options."""
+    company_name = session.get('company')
+    user_first_name = session.get('first_name', 'User')
+    user_last_name = session.get('last_name', 'User')
+
+    if not company_name:
+        flash("Please log in to access reports.", "error")
+        return redirect(url_for('login'))
+
+    company_name = company_name.replace('_', ' ')
+
+    client = MongoClient(app.config["MONGO_URI"])
+    db = client[app.config["MONGO_DBNAME"]]
+    company_collection = db[company_name]
+
+    category_summary = list(company_collection.aggregate([
+        {"$match": {"asset": True}},
+        {"$group": {"_id": "$category", "count": {"$sum": 1}}},
+        {"$sort": {"_id": 1}}
+    ]))
+
+    total_assets = sum(item['count'] for item in category_summary)
+
+    return render_template(
+        'reports.html',
+        first_name=user_first_name,
+        last_name=user_last_name,
+        company=company_name,
+        summary=category_summary,
+        total_assets=total_assets
+    )
+
+
+@app.route('/reports/export/<string:file_format>')
+def export_reports(file_format):
+    """Export inventory summary reports in CSV or PDF format."""
+    company_name = session.get('company')
+    if not company_name:
+        flash("Please log in to access reports.", "error")
+        return redirect(url_for('login'))
+
+    company_name = company_name.replace('_', ' ')
+
+    client = MongoClient(app.config["MONGO_URI"])
+    db = client[app.config["MONGO_DBNAME"]]
+    company_collection = db[company_name]
+
+    category_summary = list(company_collection.aggregate([
+        {"$match": {"asset": True}},
+        {"$group": {"_id": "$category", "count": {"$sum": 1}}},
+        {"$sort": {"_id": 1}}
+    ]))
+
+    if file_format == 'csv':
+        output = io.StringIO()
+        writer = csv.writer(output)
+        writer.writerow(['Category', 'Count'])
+        for item in category_summary:
+            writer.writerow([item['_id'] or 'Uncategorized', item['count']])
+        output.seek(0)
+        return send_file(
+            io.BytesIO(output.getvalue().encode()),
+            mimetype='text/csv',
+            as_attachment=True,
+            download_name='inventory_summary.csv'
+        )
+    elif file_format == 'pdf':
+        pdf = FPDF()
+        pdf.add_page()
+        pdf.set_font("Arial", size=12)
+        pdf.cell(0, 10, txt="Inventory Summary", ln=True, align='C')
+        pdf.ln(10)
+        for item in category_summary:
+            category = item['_id'] or 'Uncategorized'
+            pdf.cell(0, 10, txt=f"{category}: {item['count']}", ln=True)
+        pdf.ln(10)
+        pdf.cell(0, 10, txt=f"Total Assets: {sum(i['count'] for i in category_summary)}", ln=True)
+        pdf_output = io.BytesIO()
+        pdf_output.write(pdf.output(dest='S').encode('latin1'))
+        pdf_output.seek(0)
+        return send_file(
+            pdf_output,
+            mimetype='application/pdf',
+            as_attachment=True,
+            download_name='inventory_summary.pdf'
+        )
+    else:
+        flash('Unsupported report format.', 'error')
+        return redirect(url_for('reports'))
+
 
 
 
