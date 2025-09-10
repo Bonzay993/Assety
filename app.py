@@ -39,9 +39,11 @@ fs = gridfs.GridFS(mongo.cx[app.config["MONGO_DBNAME"]])
 
 
 @app.context_processor
-def inject_timeout():
-    return {'timeout': session.get('timeout', 2)}
-
+def inject_settings():
+    return {
+        'timeout': session.get('timeout', 2),
+        'dark_mode': session.get('dark_mode', False)
+    }
 
 @app.route('/')
 def index():
@@ -92,11 +94,19 @@ def save_settings():
     db = client[app.config["MONGO_DBNAME"]]
     users_collection = db['users']
 
-    # Update or create the settings field with timeout
-    users_collection.update_one(
-        {"_id": ObjectId(session['user_id'])},
-        {"$set": {"settings.timeout": timeout}}
-    )
+    update_fields = {}
+    if timeout is not None:
+        update_fields["settings.timeout"] = timeout
+        session['timeout'] = timeout
+    if dark_mode is not None:
+        update_fields["settings.dark_mode"] = dark_mode
+        session['dark_mode'] = dark_mode
+
+    if update_fields:
+        users_collection.update_one(
+            {"_id": ObjectId(session['user_id'])},
+            {"$set": update_fields}
+        )
 
     return {"status": "success"}, 200
 
@@ -260,6 +270,7 @@ def login():
              # Get timeout from user document
             timeout_minutes = user.get('settings', {}).get('timeout')
             session['timeout'] = timeout_minutes
+            session['dark_mode'] = user.get('settings', {}).get('dark_mode', False)
             print(f"Session after login: {session}")  # Debugging session data
             flash('Login successful!', 'success')
             return redirect(url_for('dashboard'))  # Redirect to inventory page
