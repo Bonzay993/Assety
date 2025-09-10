@@ -38,16 +38,28 @@ The goal of Assety is to provide small businesses with an easy way to track comp
 The application uses a simple interface built with HTML templates and a custom CSS file. The landing page highlights key benefits and provides links to sign up or log in. Once logged in, users see the dashboard with quick links to assets, categories and locations.
 
 ## Features
+Assety offers a range of tools to simplify asset tracking:
+
 - **Account Management** – Sign‑up, log in/out and password reset via email (SendGrid).
 - **Dashboard** – Displays asset count, categories, locations, recent assets and activities.
 @@ -59,36 +61,53 @@ MongoDB stores user accounts in the `users` collection and each company gets its
-## Deployment
-The project is configured for deployment on a platform such as Render or Heroku using the provided `Procfile`.
-Environment variables required:
-- `MONGO_URI` – connection string for MongoDB
-- `MONGO_DBNAME` – database name
-- `SECRET_KEY` – Flask secret key
-- `SENDGRID_API_KEY` and `MAIL_DEFAULT_SENDER` – for password reset emails
+- **Dashboard** – Displays asset counts, recent assets, recent activities and quick links.
+- **Asset Management** – Create, update and delete assets with optional image uploads stored in MongoDB GridFS.
+- **Categories & Locations** – Maintain reusable lists for categorising and locating assets.
+- **Search** – Find assets by tag with live search suggestions.
+- **User Profiles** – Update name and email from the profile page.
+- **Settings** – Toggle dark mode and configure an idle timeout to control automatic logouts.
+- **Activity Log** – Records asset changes for review on the dashboard.
+
+## Technologies Used
+- **Python & Flask** for the web application framework
+- **MongoDB** with Flask‑PyMongo and **GridFS** for data and file storage
+- **HTML**, **CSS** and **JavaScript** for the front end
+- **Jest** for client‑side unit testing
+- **SendGrid** for password reset emails
+
+## Database
+MongoDB stores user accounts in the `users` collection. Each company has its own collection that holds assets as well as category and location documents (flagged by `category: true` or `location: true`). An additional `activities` collection logs actions for the dashboard.
 
 ## Installation
 1. Clone the repository:
