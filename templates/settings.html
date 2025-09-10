@@ -48,9 +48,13 @@
         })
         .then(response => {
             if (response.ok) {
+                if (darkMode) {
+                    document.body.classList.add('dark-mode');
+                } else {
+                    document.body.classList.remove('dark-mode');
+                }
                 alert('Settings saved.');
             } else {
-                alert('Failed to update timeout.');
                 alert('Failed to save settings.');
             }
         });

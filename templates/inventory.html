@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
-<body class="inventory-app-body">
+<body class="inventory-app-body{% if dark_mode %} dark-mode{% endif %}">
     <!-- 🔒 Inactivity Timer Modal -->
     <div id="inactivity-modal" style="display: none; position: fixed; z-index: 9999; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.5); justify-content: center; align-items: center;">
         <div id="modal-content" style="background: white; padding: 2rem; border-radius: 10px; text-align: center;">

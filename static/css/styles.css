@@ -2075,6 +2075,145 @@ input[type="file"]{
     background-color: rgb(215, 57, 37);
 }
 
+
+/* Dark mode styles */
+body.dark-mode {
+    background-color: #121212;
+    color: #ffffff;
+}
+
+body.dark-mode .main-content {
+    background-color: #302f2f;
+    color: #ffffff;
+}
+
+body.dark-mode .header,
+body.dark-mode .sidebar {
+    background-color: #1f1f1f;
+    color: #ffffff;
+}
+
+body.dark-mode .sidebar .menu-item .text,
+body.dark-mode .sidebar .menu-item i,
+body.dark-mode .header h1 {
+    color: #ffffff;
+}
+
+body.dark-mode .search-input {
+    background-color: #333;
+    color: #fff;
+}
+
+/* Dark mode styles for Settings page */
+body.dark-mode .settings-container {
+    background: #252222;
+    color: #ffffff;
+}
+
+body.dark-mode .settings-container h2,
+body.dark-mode .settings-row label {
+    color: #ffffff;
+}
+
+body.dark-mode .settings-field input {
+    background-color: #333;
+    color: #ffffff;
+    border: 1px solid #555;
+}
+
+body.dark-mode .settings-btn {
+    background-color: #0056b3;
+}
+
+body.dark-mode .settings-btn:hover {
+    background-color: #006ae6;
+}
+
+/* Dark mode styles for Dashboard page */
+body.dark-mode .dashboard {
+    color: #ffffff;
+}
+
+body.dark-mode .stats-container,
+body.dark-mode .recent-assets-master-container,
+body.dark-mode .recent-activities-list {
+    background-color: #1e1e1e;
+    color: #ffffff;
+    box-shadow: 0px 0px 8px #000;
+}
+
+body.dark-mode .card-view-all {
+    color: #ffffff;
+}
+
+body.dark-mode .recent-assets-header,
+body.dark-mode .recent-activities-container,
+body.dark-mode .recent-assets-container,
+body.dark-mode .activity-items-container {
+    color: #ffffff;
+}
+
+body.dark-mode .blue-row {
+    background-color: #2a2a2a;
+    border-top: 1px solid #333;
+    border-bottom: 1px solid #333;
+}
+
+body.dark-mode .lightblue-row {
+    background-color: #1e1e1e;
+    color: #ffffff;
+}
+
+/* Dark mode styles for Assets page */
+body.dark-mode .assets-list {
+    background-color: #1e1e1e;
+    color: #ffffff;
+    box-shadow: 0px 0px 8px #000;
+}
+
+body.dark-mode .assets-list-heading-container {
+    border-bottom: 1px solid #333;
+}
+
+body.dark-mode .assets-list a,
+body.dark-mode .assets-list a:visited {
+    color: #ffffff;
+}
+
+body.dark-mode .new-element-btn {
+    background-color: #0056b3;
+}
+
+body.dark-mode .new-element-btn:hover {
+    background-color: #006ae6;
+}
+
+/* Dark mode styles for Profile page */
+body.dark-mode .profile-card {
+    background-color: #1e1e1e;
+    color: #ffffff;
+    box-shadow: 0px 0px 8px #000;
+}
+
+body.dark-mode .profile-title {
+    color: #ffffff;
+}
+
+body.dark-mode .profile-field label {
+    color: #ffffff;
+}
+
+body.dark-mode .profile-field input {
+    background-color: #333;
+    color: #ffffff;
+    border: 1px solid #555;
+}
+
+body.dark-mode .avatar-circle {
+    background-color: #0056b3;
+}
+
+
 /* RESPONSIVENESS */
 @media (max-width: 1200px) {
     
