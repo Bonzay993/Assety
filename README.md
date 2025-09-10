@@ -40,8 +40,6 @@ The application uses a simple interface built with HTML templates and a custom C
 ## Features
 Assety offers a range of tools to simplify asset tracking:
 
-- **Account Management** – Sign‑up, log in/out and password reset via email (SendGrid).
-- **Dashboard** – Displays asset count, categories, locations, recent assets and activities.
 @@ -59,36 +61,53 @@ MongoDB stores user accounts in the `users` collection and each company gets its
 - **Dashboard** – Displays asset counts, recent assets, recent activities and quick links.
 - **Asset Management** – Create, update and delete assets with optional image uploads stored in MongoDB GridFS.
@@ -51,6 +49,29 @@ Assety offers a range of tools to simplify asset tracking:
 - **Settings** – Toggle dark mode and configure an idle timeout to control automatic logouts.
 - **Activity Log** – Records asset changes for review on the dashboard.
 
+## Technologies Used
+- **Python & Flask** for the web application framework
+- **MongoDB** with Flask‑PyMongo and **GridFS** for data and file storage
+- **HTML**, **CSS** and **JavaScript** for the front end
+- **Jest** for client‑side unit testing
+- **SendGrid** for password reset emails
+
+## Database
+MongoDB powers the application's persistence layer and separates data by company.
+
+### Page Relationships
+- **Dashboard** – Pulls overall asset counts and recent items from the company collection while reading recent activity from the global `activities` collection.
+- **Assets Page** – Creates and updates documents flagged with `asset: true` inside the company collection. Each asset embeds the chosen `category` and `location` names and may reference an image stored in GridFS.
+- **Categories Page** – Manages documents marked with `category: true` in the same collection. These categories are reused when creating assets.
+- **Locations Page** – Handles documents marked with `location: true` so assets can be assigned physical locations.
+- **Search & Dashboard Widgets** – Query the company collection for asset tags, categories and locations to provide live suggestions and summary charts.
+- **Profile/Settings** – Reads and writes the user's record in the `users` collection, including configurable settings such as the idle timeout.
+- **Activity Log** – Displays entries from the `activities` collection, each linked to a user, company and optional `asset_id`.
+
+### General Relationships
+- Every entry in the `users` collection includes a `company` field; that name determines which company‑specific collection the user interacts with after logging in.
+- Company collections store mixed document types distinguished by flags (`asset`, `category`, `location`). Assets reference categories and locations by name, simplifying queries while keeping related metadata in one place.
+- The `activities` collection acts as a cross‑company audit trail, storing the action performed, the company and any related asset identifier for display on dashboards and logs.
 ## Technologies Used
 - **Python & Flask** for the web application framework
 - **MongoDB** with Flask‑PyMongo and **GridFS** for data and file storage
