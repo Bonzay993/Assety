@@ -1,50 +1,62 @@
 {% extends "inventory.html" %}
 {% block content %}
-<div class="settings-container">
-    <section class="settings-section profile-page">
-        <h3>Profile</h3>
-       <label>
-    First Name:
-    <input id="profile-first-name" type="text" value="{{ first_name }}" />
-    </label>
-    <label>
-        Last Name:
-        <input id="profile-last-name" type="text" value="{{ last_name }}" />
-    </label>
-    <label>
-        Email:
-        <input id="profile-email" type="email" value="{{ email }}" />
-    </label>
-        <button type="button" class="settings-btn update-profile-btn" onclick="updateProfile()">Update Profile</button>
-    </section>
+<div class="profile-card">
+    <div class="profile-avatar">
+        <div class="avatar-circle large">{{ first_name[0] }}{{ last_name[0] }}</div>
+    </div>
+    <h2 class="profile-title">My Profile</h2>
+    <div class="profile-grid">
+        <div class="profile-field">
+            <label for="profile-first-name">First Name</label>
+            <input id="profile-first-name" type="text" value="{{ first_name }}" />
+        </div>
+        <div class="profile-field">
+            <label for="profile-last-name">Last Name</label>
+            <input id="profile-last-name" type="text" value="{{ last_name }}" />
+        </div>
+        <div class="profile-field">
+            <label for="profile-email">Email</label>
+            <input id="profile-email" type="email" value="{{ email }}" />
+        </div>
+        <div class="profile-field">
+            <label for="profile-company">Company</label>
+            <input id="profile-company" type="text" value="{{ company }}" readonly />
+        </div>
+    </div>
+    <div class="profile-actions">
+        <button type="button" class="settings-btn update-profile-btn" onclick="updateProfile()">Save Changes</button>
+    </div>
 </div>
-
 <script>
-        function updateProfile() {
-        const firstName = document.getElementById('profile-first-name').value;
-        const lastName = document.getElementById('profile-last-name').value;
-        const email = document.getElementById('profile-email').value;
+function updateProfile() {
+    const firstName = document.getElementById('profile-first-name').value;
+    const lastName = document.getElementById('profile-last-name').value;
+    const email = document.getElementById('profile-email').value;
 
-        fetch('/update-profile', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                first_name: firstName,
-                last_name: lastName,
-                email: email
-            })
+    fetch('/update-profile', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            first_name: firstName,
+            last_name: lastName,
+            email: email
         })
-        .then(response => {
-            if (response.ok) {
-                alert('Profile updated!');
-                location.reload(); // Optional: reload to reflect updates
-            } else {
-                alert('Failed to update profile.');
-            }
-        });
-    }
+    })
+    .then(response => {
+        if (response.ok) {
+            alert('Profile updated!');
+            location.reload();
+        } else {
+            alert('Failed to update profile.');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Something went wrong.');
+    });
+}
 </script>
 {% endblock %}
 

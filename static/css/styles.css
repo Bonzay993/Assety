@@ -121,6 +121,59 @@ header .logo h1 {
 
 }
 
+/* Profile Page */
+.profile-card {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 2rem;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.profile-avatar {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.avatar-circle.large {
+    width: 80px;
+    height: 80px;
+    font-size: 32px;
+    margin: 0 auto;
+}
+
+.profile-title {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #34495e;
+}
+
+.profile-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem 2rem;
+}
+
+.profile-field label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #555;
+}
+
+.profile-field input {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.profile-actions {
+    text-align: right;
+    margin-top: 1.5rem;
+}
+
 @keyframes slideInFromRight {
     from {
         opacity: 0;
@@ -1120,7 +1173,7 @@ input[type="file"]{
     padding: 10px 40px 10px 15px;
     border: none;
     outline: none;
-    background-color: #f0f0f0;
+    background-color: #ffffff;
     font-size: 14px;
     transition: box-shadow 0.3s ease;
 }
@@ -1144,7 +1197,7 @@ input[type="file"]{
     top: 100%;
     left: 0;
     right: 0;
-    background: #fff;
+    background: #ffffff;
     border: 1px solid #ccc;
     max-height: 200px;
     overflow-y: auto;
@@ -1168,19 +1221,21 @@ input[type="file"]{
 /* Search Suggestions */
 .search-suggestions {
     position: absolute;
-    top: 100%;
+    top: calc(100% + 5px);
     left: 0;
     width: 100%;
-    background-color: #f0f0f0;
+    background-color: #ffffff;
     border: 1px solid #ccc;
-     border-bottom-left-radius: 5px;
-    border-bottom-right-radius: 5px;
+    border-radius: 5px;
     list-style: none;
     padding: 0;
     margin: 0;
     z-index: 1000;
     font-size: 14px;
+    text-align: left;
 }
+
+
 
 .search-suggestions li {
     padding: 8px 12px;
@@ -1191,6 +1246,11 @@ input[type="file"]{
 .search-suggestions li:hover {
     background-color: #f0f0f0;
 }
+
+.search-suggestions:empty {
+  display: none;
+}
+
 
 
 /* Avatar on the navbar css */
@@ -1301,12 +1361,18 @@ input[type="file"]{
     border-radius: 8px;
     margin: 20px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    max-width:30%;
+    margin:0 auto;
 }
 
 .settings-container h2 {
     margin-bottom: 20px;
     font-size: 24px;
     color: #2c3e50;
+}
+
+#settings-form{
+    margin-top:10%;
 }
 
 .settings-section {
@@ -1349,6 +1415,39 @@ input[type="file"]{
 .settings-btn:hover {
     background-color: #0056b3;
 }
+
+.settings-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    
+}
+
+.settings-field {
+    text-align: left;
+    display:flex;
+    flex-direction: row;
+    width:16%;
+    justify-content: flex-start;
+    
+}
+
+.settings-field input[type="checkbox"] {
+    margin-right: 5px;
+}
+
+.settings-field label {
+    font-weight: normal;
+    text-align: center;
+    margin:0 auto;
+}
+
+.settings-actions {
+    text-align: right;
+    margin-top: 20px;
+}
+
 
 /* All Assets CSS */
 

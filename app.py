@@ -80,11 +80,13 @@ def save_settings():
     if not session.get('user_id'):
         return redirect(url_for('login'))
 
-    data = request.json  # Expecting JSON with a 'timeout' field
+    data = request.json or {}
 
     timeout = data.get('timeout')
-    if timeout is None:
-        return {"status": "error", "message": "Missing 'timeout' value"}, 400
+    dark_mode = data.get('dark_mode')
+
+    if timeout is None and dark_mode is None:
+        return {"status": "error", "message": "No settings provided"}, 400
 
     client = MongoClient(app.config["MONGO_URI"])
     db = client[app.config["MONGO_DBNAME"]]
