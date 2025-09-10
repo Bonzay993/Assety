@@ -1361,12 +1361,18 @@ input[type="file"]{
     border-radius: 8px;
     margin: 20px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    max-width:30%;
+    margin:0 auto;
 }
 
 .settings-container h2 {
     margin-bottom: 20px;
     font-size: 24px;
     color: #2c3e50;
+}
+
+#settings-form{
+    margin-top:10%;
 }
 
 .settings-section {
@@ -1409,6 +1415,39 @@ input[type="file"]{
 .settings-btn:hover {
     background-color: #0056b3;
 }
+
+.settings-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    
+}
+
+.settings-field {
+    text-align: left;
+    display:flex;
+    flex-direction: row;
+    width:16%;
+    justify-content: flex-start;
+    
+}
+
+.settings-field input[type="checkbox"] {
+    margin-right: 5px;
+}
+
+.settings-field label {
+    font-weight: normal;
+    text-align: center;
+    margin:0 auto;
+}
+
+.settings-actions {
+    text-align: right;
+    margin-top: 20px;
+}
+
 
 /* All Assets CSS */
 
