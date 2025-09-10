@@ -1359,10 +1359,10 @@ input[type="file"]{
     padding: 20px;
     background: white;
     border-radius: 8px;
-    margin: 20px;
+    margin: 20px auto;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    max-width:30%;
-    margin:0 auto;
+    width: 90%;
+    max-width: 600px;
 }
 
 .settings-container h2 {
@@ -1372,7 +1372,7 @@ input[type="file"]{
 }
 
 #settings-form{
-    margin-top:10%;
+    margin-top:20px;
 }
 
 .settings-section {
@@ -1421,26 +1421,44 @@ input[type="file"]{
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 10px;
     
+}
+
+.settings-row > label {
+    flex: 1 1 60%;
 }
 
 .settings-field {
-    text-align: left;
-    display:flex;
-    flex-direction: row;
-    width:16%;
-    justify-content: flex-start;
-    
+    display: flex;
+    align-items: center; /* vertically align checkbox and text with inputs */
+    gap: 8px;            /* small spacing between checkbox and label */
+    flex: 1 1 1%;
 }
 
 .settings-field input[type="checkbox"] {
-    margin-right: 5px;
+    width: auto; /* don’t stretch like text inputs */
+    margin: 0;   /* reset unwanted spacing */
+     width: 18px;   /* make checkbox bigger */
+    height: 18px;  /* same height for square */
 }
+
+.dark-mode-toggle{
+    display: flex;
+    flex-direction: row;
+    gap:5px;
+    margin-right:-15px;
+    
+}
+
+
 
 .settings-field label {
     font-weight: normal;
     text-align: center;
     margin:0 auto;
+    margin-left:4px;
 }
 
 .settings-actions {
@@ -2329,6 +2347,27 @@ input[type="file"]{
         font-size:12px;
      }
      
+}
+
+@media (max-width: 600px) {
+    .settings-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .settings-row > label {
+        flex: 1 1 auto;
+    }
+
+    .settings-field {
+        flex: 1 1 auto;
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .settings-actions {
+        text-align: center;
+    }
 }
 
 

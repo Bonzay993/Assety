@@ -6,13 +6,14 @@
 
    
  <form id="settings-form">
-        <div class="settings-row">
+       <div class="settings-row">
             <label for="dark-mode-toggle">Dark Mode</label>
             <div class="settings-field">
                 <input id="dark-mode-toggle" type="checkbox" {% if settings.dark_mode %}checked{% endif %}>
                 <label for="dark-mode-toggle">Yes</label>
             </div>
         </div>
+
 
         <div class="settings-row">
             <label for="idle-timeout-input">Auto Logout Time (minutes)</label>
