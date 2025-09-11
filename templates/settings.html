@@ -22,6 +22,26 @@
             </div>
         </div>
 
+
+        <div class="settings-row">
+            <label for="email-notifications-toggle">Email Notifications</label>
+            <div class="settings-field">
+                <input id="email-notifications-toggle" type="checkbox" {% if settings.email_notifications %}checked{% endif %}>
+                <label for="email-notifications-toggle">Enabled</label>
+            </div>
+        </div>
+
+        <div class="settings-row">
+            <label for="language-select">Language</label>
+            <div class="settings-field">
+                <select id="language-select">
+                    <option value="en" {% if settings.language == 'en' %}selected{% endif %}>English</option>
+                    <option value="es" {% if settings.language == 'es' %}selected{% endif %}>Spanish</option>
+                    <option value="fr" {% if settings.language == 'fr' %}selected{% endif %}>French</option>
+                </select>
+            </div>
+        </div>
+
         <div class="settings-actions">
             <button type="submit" class="settings-btn save-settings-btn">Save</button>
         </div>
@@ -37,6 +57,8 @@
         e.preventDefault();
         const timeout = document.getElementById('idle-timeout-input').value;
         const darkMode = document.getElementById('dark-mode-toggle').checked;
+        const emailNotifications = document.getElementById('email-notifications-toggle').checked;
+        const language = document.getElementById('language-select').value;
 
         fetch('/save-settings', {
             method: 'POST',
@@ -44,7 +66,7 @@
                 'Content-Type': 'application/json'
             },
          
-            body: JSON.stringify({ timeout: parseInt(timeout), dark_mode: darkMode })
+            body: JSON.stringify({ timeout: parseInt(timeout), dark_mode: darkMode, email_notifications: emailNotifications, language: language })
         })
         .then(response => {
             if (response.ok) {
@@ -53,6 +75,7 @@
                 } else {
                     document.body.classList.remove('dark-mode');
                 }
+                document.documentElement.setAttribute('lang', language);
                 alert('Settings saved.');
             } else {
                 alert('Failed to save settings.');

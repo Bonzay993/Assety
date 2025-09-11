@@ -65,7 +65,7 @@ MongoDB powers the application's persistence layer and separates data by company
 - **Categories Page** – Manages documents marked with `category: true` in the same collection. These categories are reused when creating assets.
 - **Locations Page** – Handles documents marked with `location: true` so assets can be assigned physical locations.
 - **Search & Dashboard Widgets** – Query the company collection for asset tags, categories and locations to provide live suggestions and summary charts.
-- **Profile/Settings** – Reads and writes the user's record in the `users` collection, including configurable settings such as the idle timeout.
+- **Profile/Settings** – Reads and writes the user's record in the `users` collection, including configurable settings such as the idle timeout, dark mode preference, email notifications and language.
 - **Activity Log** – Displays entries from the `activities` collection, each linked to a user, company and optional `asset_id`.
 
 ### General Relationships
@@ -121,7 +121,7 @@ The application was manually tested using different user flows:
 - Logging in with valid and invalid credentials
 - Adding, editing and deleting assets, categories and locations
 - Resetting a password via email token
-- Adjusting the idle timeout in settings
+- Adjusting the idle timeout, dark mode, email notifications, and language in settings
 
 Basic syntax checks were performed with `python -m py_compile`.
 
