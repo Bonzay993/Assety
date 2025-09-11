@@ -2,10 +2,10 @@
 {% block content %}
 <section class="heading-section">
     <div class="default-list-top-container">
-        <h1 class="assets-heading">Locations</h1>
+        <h1 class="assets-heading">{{ trans('locations_list') }}</h1>
         <div class="create-new-element-btn create-new-category">
             <a href="{{ url_for('new_location') }}">
-                <button class="new-element-btn">Create New</button>
+                <button class="new-element-btn">{{ trans('create_new') }}</button>
             </a>
         </div>
     </div>
@@ -14,13 +14,13 @@
 <section class="assets-list">
     <div class="assets-list-container">
         <div class="assets-list-heading-container">
-            <p class="asset-list-title-item"><strong>Name</strong></p>
-            <p class="asset-list-title-item"><strong>Phone</strong></p>
-            <p class="asset-list-title-item"><strong>Address</strong> </p>
-            <p class="asset-list-title-item"><strong>City</strong> </p>
-            <p class="asset-list-title-item"><strong>State</strong> </p>
-            <p class="asset-list-title-item"><strong>Postal Code</strong> </p>
-            <p class="asset-list-title-item asset-list-title-item-action"><strong>Actions</strong> </p>
+            <p class="asset-list-title-item"><strong>{{ trans('name') }}</strong></p>
+            <p class="asset-list-title-item"><strong>{{ trans('phone') }}</strong></p>
+            <p class="asset-list-title-item"><strong>{{ trans('address') }}</strong> </p>
+            <p class="asset-list-title-item"><strong>{{ trans('city') }}</strong> </p>
+            <p class="asset-list-title-item"><strong>{{ trans('state') }}</strong> </p>
+            <p class="asset-list-title-item"><strong>{{ trans('postal_code') }}</strong> </p>
+            <p class="asset-list-title-item asset-list-title-item-action"><strong>{{ trans('actions') }}</strong> </p>
         </div>
 
         {% for location in locations %}
@@ -58,7 +58,7 @@
                                 <i class="fa-solid fa-pencil"></i>
                             </button>
                         </a>
-                        <form action="{{ url_for('delete_location', location_id=location._id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this asset?');">
+                        <form action="{{ url_for('delete_location', location_id=location._id) }}" method="POST" onsubmit="return confirm('{{ trans('delete_location_confirm') }}');">
                             <button class="assets-delete-button">
                                 <i class="fa-solid fa-trash"></i>
                             </button>

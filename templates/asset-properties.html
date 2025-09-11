@@ -3,7 +3,7 @@
 
     <section class="heading-section">
         <div class="assets-list-top-container default-list-top-container">
-            <h1>Edit Asset {{ asset.asset_tag if asset else ''  }}</h1>
+            <h1>{{ trans('edit_asset') }} {{ asset.asset_tag if asset else ''  }}</h1>
         </div>
     </section>  
     <section class="new-asset-form-container default-form-container ">
@@ -14,15 +14,15 @@
                 <div class="edit-asset-form-data-container">
                     <input type="hidden" name="asset_id" value="{{ asset._id if asset else '' }}">  <!-- Store ID -->
                     <div class="form-group">
-                        <label for="asset-tag">Asset Tag</label>
+                        <label for="asset-tag">{{ trans('asset_tag') }}</label>
                         <input type="text" id="asset-tag" name="asset-tag" value="{{ asset.asset_tag if asset else ''  }}" required>
                     </div>
 
                     <div class="form-group">
-                        <label for="category">Category</label>
+                        <label for="category">{{ trans('category') }}</label>
                         <select id="category" name="category" required>
                             {% if not asset or not asset.category %}
-                                <option value="">Select a Category</option>
+                                <option value="">{{ trans('select_category') }}</option>
                             {% endif %}
                             {% for category in categories %}
                                 <option value="{{ category.name }}"
@@ -34,22 +34,22 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="serial">Serial Number</label>
+                        <label for="serial">{{ trans('serial_number') }}</label>
                         <input type="text" id="serial" name="serial" value="{{ asset.serial }}" required>
                     </div>
 
                     <div class="form-group">
-                        <label for="model">Model</label>
+                        <label for="model">{{ trans('model') }}</label>
                         <input type="text" id="model" name="model" value="{{ asset.model }}" required>
                     </div>
 
                     <div class="form-group">
-                        <label for="notes">Notes</label>
-                        <textarea id="notes" name="notes" placeholder="Enter any notes here" {{ asset.notes }} rows="4"></textarea>
+                        <label for="notes">{{ trans('notes') }}</label>
+                        <textarea id="notes" name="notes" placeholder="{{ trans('notes_placeholder') }}" {{ asset.notes }} rows="4"></textarea>
                     </div>
 
                     <div class="form-group">
-                        <label for="warranty">Warranty Expiry</label>
+                        <label for="warranty">{{ trans('warranty_expiry') }}</label>
                         <div class="date-wrapper" onclick="document.getElementById('warranty').showPicker()">
                             <input type="date" id="warranty" name="warranty" value="{{ asset.warranty }}">
                         </div>
@@ -57,26 +57,26 @@
                     
 
                     <div class="form-group">
-                        <label for="order-number">Order Number</label>
+                         <label for="order-number">{{ trans('order_number') }}</label>
                         <input type="text" id="order-number" name="order-number" value="{{ asset.order_number }}" >
                     </div>
 
                     <div class="form-group purchase-cost">
-                        <label for="purchase-cost">Purchase Cost</label>
+                        <label for="purchase-cost">{{ trans('purchase_cost') }}</label>
                         <input type="text" id="purchase-cost" name="purchase-cost" value="{{ asset.purchase_cost }}" placeholder="£">
                     </div>
 
                     <div class="form-group">
-                        <label for="purchase-date">Purchase Date</label>
+                        <label for="purchase-date">{{ trans('purchase_date') }}</label>
                         <div class="date-wrapper" onclick="document.getElementById('purchase-date').showPicker()">
                             <input type="date" id="purchase-date" name="purchase-date">
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label for="location">Location</label>
+                        <label for="location">{{ trans('location') }}</label>
                         <select id="location" name="location" required>
-                            <option value="">Select a location</option>
+                            <option value="">{{ trans('select_location') }}</option>
                             {% for location in locations %}
                                 <option value="{{ location.location_tag }}" 
                                     {% if asset and asset.location == location.location_tag %}selected{% endif %}>
@@ -87,7 +87,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="asset-image">Upload Asset Image</label>
+                        <label for="asset-image">{{ trans('upload_asset_image') }}</label>
                         <input type="file" id="asset-image" name="image" accept="image/*">
                     </div>
                 </div>
@@ -109,8 +109,8 @@
                
              </div>
              <div class="form-actions">
-                <a href="javascript:window.history.back()" class="form-cancel">Cancel</a>
-                <button type="submit" class="btn save-btn"><i class="fa-solid fa-check"></i> Save</button>
+                <a href="javascript:window.history.back()" class="form-cancel">{{ trans('cancel') }}</a>
+                <button type="submit" class="btn save-btn"><i class="fa-solid fa-check"></i> {{ trans('save') }}</button>
             </div>
            
             
@@ -139,7 +139,7 @@
 
             if (!valid) {
                 event.preventDefault();
-                alert("Please fill out all required fields.");
+                alert("{{ trans('required_fields_alert') }}");
             }
         });
     </script>

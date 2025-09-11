@@ -2,20 +2,20 @@
 {% block content %}
 <section class="heading-section">
     <div class="default-list-top-container">
-        <h1>Inventory Reports</h1>
+         <h1>{{ trans('inventory_reports') }}</h1>
     </div>
 </section>
 
 <section class="reports-summary">
     <div class="assets-list-container">
         <div class="assets-list-heading-container">
-            <p class="asset-list-title-item"><strong>Category</strong></p>
-            <p class="asset-list-title-item"><strong>Count</strong></p>
+            <p class="asset-list-title-item"><strong>{{ trans('category') }}</strong></p>
+            <p class="asset-list-title-item"><strong>{{ trans('count') }}</strong></p>
         </div>
         {% for row in summary %}
         <div class="assets-list-items-container {% if loop.index0 % 2 == 0 %}blue-row{% else %}lightblue-row{% endif %}">
             <div class="title-body-group">
-                <p>{{ row._id or 'Uncategorized' }}</p>
+                <p>{{ row._id or trans('uncategorized') }}</p>
             </div>
             <div class="title-body-group">
                 <p>{{ row.count }}</p>
@@ -23,17 +23,17 @@
         </div>
         {% endfor %}
         <div class="assets-list-items-container blue-row">
-            <div class="title-body-group"><strong>Total</strong></div>
+            <div class="title-body-group"><strong>{{ trans('total') }}</strong></div>
             <div class="title-body-group"><strong>{{ total_assets }}</strong></div>
         </div>
     </div>
 
     <div class="report-export-btns" style="margin-top: 1rem;">
         <a href="{{ url_for('export_reports', file_format='csv') }}">
-            <button class="new-element-btn">Export CSV</button>
+            <button class="new-element-btn">{{ trans('export_csv') }}</button>
         </a>
         <a href="{{ url_for('export_reports', file_format='pdf') }}">
-            <button class="new-element-btn">Export PDF</button>
+            <button class="new-element-btn">{{ trans('export_pdf') }}</button>
         </a>
     </div>
 </section>

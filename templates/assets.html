@@ -3,10 +3,10 @@
 
 <section class="heading-section">
     <div class="assets-list-top-container default-list-top-container">
-        <h1>Assets List</h1>
+        <h1>{{ trans('assets_list') }}</h1>
         <div class="create-new-element-btn">
             <a href="{{ url_for('new_asset') }}">
-                <button class="new-element-btn">Create New</button>
+                <button class="new-element-btn">{{ trans('create_new') }}</button>
             </a>
         </div>
     </div>
@@ -15,15 +15,15 @@
 <section class="assets-list">
     <div class="assets-list-container">
         <div class="assets-list-heading-container">
-            <p class="asset-list-title-item"><strong>Name</strong></p>
-            <p class="asset-list-title-item"><strong>Image</strong></p>
-            <p class="asset-list-title-item asset-list-title-item-model"><strong>Model</strong></p>
-            <p class="asset-list-title-item"><strong>Serial</strong> </p>
-            <p class="asset-list-title-item"><strong>Location</strong> </p>
-            <p class="asset-list-title-item"><strong>Category</strong> </p>
-            <p class="asset-list-title-item"><strong>Purchase Date</strong> </p>
-            <p class="asset-list-title-item"><strong>Purchase Cost</strong> </p>
-            <p class="asset-list-title-item asset-list-title-item-action"><strong>Actions</strong> </p>
+            <p class="asset-list-title-item"><strong>{{ trans('name') }}</strong></p>
+            <p class="asset-list-title-item"><strong>{{ trans('image') }}</strong></p>
+            <p class="asset-list-title-item asset-list-title-item-model"><strong>{{ trans('model') }}</strong></p>
+            <p class="asset-list-title-item"><strong>{{ trans('serial') }}</strong> </p>
+            <p class="asset-list-title-item"><strong>{{ trans('location') }}</strong> </p>
+            <p class="asset-list-title-item"><strong>{{ trans('category') }}</strong> </p>
+            <p class="asset-list-title-item"><strong>{{ trans('purchase_date') }}</strong> </p>
+            <p class="asset-list-title-item"><strong>{{ trans('purchase_cost') }}</strong> </p>
+            <p class="asset-list-title-item asset-list-title-item-action"><strong>{{ trans('actions') }}</strong> </p>
         </div>
 
         {% for asset in assets %}
@@ -80,7 +80,7 @@
                                 <i class="fa-solid fa-pencil"></i>
                             </button>
                         </a>
-                        <form action="{{ url_for('delete_asset', asset_id=asset._id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this asset?');">
+                         <form action="{{ url_for('delete_asset', asset_id=asset._id) }}" method="POST" onsubmit="return confirm('{{ trans('delete_asset_confirm') }}');">
                             <button class="assets-delete-button">
                                 <i class="fa-solid fa-trash"></i>
                             </button>

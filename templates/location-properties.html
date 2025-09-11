@@ -3,43 +3,43 @@
 
     <div class="new-location-form-container default-form-container">
         <div class="new-location-form-header">
-            <h1 class="assets-heading">Add New Location</h1>
+            <h1 class="assets-heading">{{ trans('edit_location') }}</h1>
         </div>
         <form class="new-location-form default-form" action="{{ url_for('save_location') }}" method="POST" id="location-form">
             <input type="hidden" name="location_id" value="{{ location._id if location else '' }}">  <!-- Store ID -->
             <div class="form-group">
-                <label for="location-tag">Location Name</label>
+                <label for="location-tag">{{ trans('location_name') }}</label>
                 <input type="text" id="location-tag" name="location-tag" value="{{ location.location_tag }}" required>
             </div>
 
             <div class="form-group">
-                <label for="phone">Phone</label>
+                <label for="phone">{{ trans('phone') }}</label>
                 <input type="number" id="phone" name="phone" value="{{ location.phone}}">
             </div>
 
             <div class="form-group">
-                <label for="address">Address</label>
+                <label for="address">{{ trans('address') }}</label>
                 <input type="text" id="address" name="address" value="{{ location.address }}">
             </div>
 
             <div class="form-group">
-                <label for="city">City</label>
+                <label for="city">{{ trans('city') }}</label>
                 <input type text="text" name="city" value="{{ location.city }}" >
             </div>
 
             <div class="form-group">
-                <label for="state">State</label>
+                <label for="state">{{ trans('state') }}</label>>
                 <input type="text" id="state"  name="state" value="{{ location.state }}">
             </div>
 
             <div class="form-group">
-                <label for="post-code">Post Code</label>
+                <label for="post-code">{{ trans('postal_code') }}</label>
                 <input type="text" id="post-code"  name="post-code" value="{{ location.post_code }}">
             </div>
 
             <div class="form-actions">
-                <a href="javascript:window.history.back()" class="form-cancel">Cancel</a>
-                <button type="submit" class="btn save-btn"><i class="fa-solid fa-check"></i> Save</button>
+                <a href="javascript:window.history.back()" class="form-cancel">{{ trans('cancel') }}</a>
+                <button type="submit" class="btn save-btn"><i class="fa-solid fa-check"></i> {{ trans('save') }}</button>
             </div>
         </form>
     </div>
@@ -64,7 +64,7 @@
 
         if (!valid) {
             event.preventDefault();
-            alert("Please fill out all required fields.");
+            alert("{{ trans('required_fields_alert') }}");
         }
     });
 </script>

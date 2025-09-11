@@ -4,27 +4,29 @@
     <div class="profile-avatar">
         <div class="avatar-circle large">{{ first_name[0] }}{{ last_name[0] }}</div>
     </div>
-    <h2 class="profile-title">My Profile</h2>
+    <h2 class="profile-title">{{ trans('my_profile') }}</h2>
     <div class="profile-grid">
         <div class="profile-field">
-            <label for="profile-first-name">First Name</label>
+            <label for="profile-first-name">{{ trans('first_name') }}</label>
             <input id="profile-first-name" type="text" value="{{ first_name }}" />
         </div>
         <div class="profile-field">
-            <label for="profile-last-name">Last Name</label>
+            <label for="profile-last-name">{{ trans('last_name') }}</label>
             <input id="profile-last-name" type="text" value="{{ last_name }}" />
         </div>
         <div class="profile-field">
-            <label for="profile-email">Email</label>
+            <label for="profile-email">{{ trans('email') }}</label>
             <input id="profile-email" type="email" value="{{ email }}" />
         </div>
         <div class="profile-field">
-            <label for="profile-company">Company</label>
+            <label for="profile-company">{{ trans('company') }}</label>
             <input id="profile-company" type="text" value="{{ company }}" readonly />
         </div>
     </div>
     <div class="profile-actions">
-        <button type="button" class="settings-btn update-profile-btn" onclick="updateProfile()">Save Changes</button>
+        <button type="button" class="settings-btn update-profile-btn" onclick="updateProfile()">
+            {{ trans('save_changes') }}
+        </button>
     </div>
 </div>
 <script>
@@ -46,15 +48,15 @@ function updateProfile() {
     })
     .then(response => {
         if (response.ok) {
-            alert('Profile updated!');
+            alert("{{ trans('profile_updated') }}");
             location.reload();
         } else {
-            alert('Failed to update profile.');
+            alert("{{ trans('profile_update_failed') }}");
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Something went wrong.');
+        alert("{{ trans('something_wrong') }}");
     });
 }
 </script>
