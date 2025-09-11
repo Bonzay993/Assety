@@ -2,12 +2,12 @@
 
 {% block content %}
 <div class="settings-container">
-    <h2>Settings</h2>
+    <h2>{{ trans('settings') }}</h2>
 
    
  <form id="settings-form">
        <div class="settings-row">
-            <label for="dark-mode-toggle">Dark Mode</label>
+            <label for="dark-mode-toggle">{{ trans('dark_mode') }}</label>
             <div class="settings-field">
                 <input id="dark-mode-toggle" type="checkbox" {% if settings.dark_mode %}checked{% endif %}>
                 <label for="dark-mode-toggle">Yes</label>
@@ -16,7 +16,7 @@
 
 
         <div class="settings-row">
-            <label for="idle-timeout-input">Auto Logout Time (minutes)</label>
+            <label for="idle-timeout-input">{{ trans('auto_logout_time') }}</label>
             <div class="settings-field">
                 <input id="idle-timeout-input" type="number" min="1" max="120" value="{{ settings.timeout or 20 }}">
             </div>
@@ -24,7 +24,7 @@
 
 
         <div class="settings-row">
-            <label for="email-notifications-toggle">Email Notifications</label>
+            <label for="email-notifications-toggle">{{ trans('email_notifications') }}</label>
             <div class="settings-field">
                 <input id="email-notifications-toggle" type="checkbox" {% if settings.email_notifications %}checked{% endif %}>
                 <label for="email-notifications-toggle">Enabled</label>
@@ -32,7 +32,7 @@
         </div>
 
         <div class="settings-row">
-            <label for="language-select">Language</label>
+            <label for="language-select">{{ trans('language') }}</label>
             <div class="settings-field">
                 <select id="language-select">
                     <option value="en" {% if settings.language == 'en' %}selected{% endif %}>English</option>
@@ -43,7 +43,7 @@
         </div>
 
         <div class="settings-actions">
-            <button type="submit" class="settings-btn save-settings-btn">Save</button>
+            <button type="submit" class="settings-btn save-settings-btn">{{ trans('save') }}</button>
         </div>
     </form>
 

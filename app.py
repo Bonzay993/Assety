@@ -40,6 +40,69 @@ mongo = PyMongo(app)
 # Initialize GridFS
 fs = gridfs.GridFS(mongo.cx[app.config["MONGO_DBNAME"]])
 
+# Simple translation dictionary for English, Spanish, and French
+TRANSLATIONS = {
+    'en': {
+        'dashboard': 'Dashboard',
+        'assets': 'Assets',
+        'categories': 'Categories',
+        'locations': 'Locations',
+        'reports': 'Reports',
+        'settings': 'Settings',
+        'logout': 'Logout',
+        'asset_dashboard': 'Asset Dashboard',
+        'search_placeholder': 'Search by Asset Tag',
+        'dark_mode': 'Dark Mode',
+        'auto_logout_time': 'Auto Logout Time (minutes)',
+        'email_notifications': 'Email Notifications',
+        'language': 'Language',
+        'save': 'Save'
+    },
+    'es': {
+        'dashboard': 'Tablero',
+        'assets': 'Activos',
+        'categories': 'Categorías',
+        'locations': 'Ubicaciones',
+        'reports': 'Informes',
+        'settings': 'Configuración',
+        'logout': 'Cerrar sesión',
+        'asset_dashboard': 'Panel de Activos',
+        'search_placeholder': 'Buscar por etiqueta de activo',
+        'dark_mode': 'Modo oscuro',
+        'auto_logout_time': 'Tiempo de cierre automático de sesión (minutos)',
+        'email_notifications': 'Notificaciones por correo electrónico',
+        'language': 'Idioma',
+        'save': 'Guardar'
+    },
+    'fr': {
+        'dashboard': 'Tableau de bord',
+        'assets': 'Actifs',
+        'categories': 'Catégories',
+        'locations': 'Emplacements',
+        'reports': 'Rapports',
+        'settings': 'Paramètres',
+        'logout': 'Se déconnecter',
+        'asset_dashboard': 'Tableau des actifs',
+        'search_placeholder': "Rechercher par étiquette d'actif",
+        'dark_mode': 'Mode sombre',
+        'auto_logout_time': 'Temps de déconnexion automatique (minutes)',
+        'email_notifications': 'Notifications par e-mail',
+        'language': 'Langue',
+        'save': 'Enregistrer'
+    }
+}
+
+
+@app.context_processor
+def inject_translator():
+    """Provide a simple translation function to templates."""
+    language = session.get('language', 'en')
+
+    def trans(key):
+        return TRANSLATIONS.get(language, TRANSLATIONS['en']).get(key, key)
+
+    return dict(trans=trans)
+
 
 @app.context_processor
 def inject_settings():

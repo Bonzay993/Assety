@@ -24,24 +24,24 @@
                 <i class="fas fa-bars"></i>
             </button>
             <ul class="sidebar-menu" id="menu">
-                <li><a href="{{ url_for('dashboard') }}" class="menu-item"><i class="fas fa-tachometer-alt"></i><span class="text">Dashboard</span></a></li>
-                <li><a href="{{ url_for('assets') }}" class="menu-item"><i class="fas fa-box"></i><span class="text">Assets</span></a></li>
+                <li><a href="{{ url_for('dashboard') }}" class="menu-item"><i class="fas fa-tachometer-alt"></i><span class="text">{{ trans('dashboard') }}</span></a></li>
+                <li><a href="{{ url_for('assets') }}" class="menu-item"><i class="fas fa-box"></i><span class="text">{{ trans('assets') }}</span></a></li>
 
                 <!-- Categories Dropdown -->
                 <li class="dropdown">
                     <a href="#" class="menu-item" id="categories-btn">
                         <i class="fas fa-box"></i>
-                        <span class="text">Categories</span>
+                        <span class="text">{{ trans('categories') }}</span>
                         <i class="fas fa-chevron-left dropdown-arrow" id="dropdown-arrow"></i>
                     </a>
                     <ul class="dropdown-menu" id="categories-menu">
-                        <li><a class="dropdown-menu-item" href="{{ url_for('categories') }}">Categories</a></li>
-                        <li><a class="dropdown-menu-item" href="{{ url_for('locations') }}">Locations</a></li>
+                        <li><a class="dropdown-menu-item" href="{{ url_for('categories') }}">{{ trans('categories') }}</a></li>
+                        <li><a class="dropdown-menu-item" href="{{ url_for('locations') }}">{{ trans('locations') }}</a></li>
                     </ul>
                 </li>
 
-                <li><a href="{{ url_for('reports') }}" class="menu-item"><i class="fas fa-chart-line"></i><span class="text">Reports</span></a></li>
-                <li><a href="{{ url_for('settings') }}" class="menu-item"><i class="fas fa-cogs"></i><span class="text">Settings</span></a></li>
+                <li><a href="{{ url_for('reports') }}" class="menu-item"><i class="fas fa-chart-line"></i><span class="text">{{ trans('reports') }}</span></a></li>
+                <li><a href="{{ url_for('settings') }}" class="menu-item"><i class="fas fa-cogs"></i><span class="text">{{ trans('settings') }}</span></a></li>
             </ul>
             <div class="version">
                 <a class="version-number"><span>v</span> a 0.2.0</a>
@@ -50,10 +50,10 @@
         <main class="main-content">
             <header class="header app-header">
                 <div class="company-info">
-                    <h1>{{ company }} Asset Dashboard</h1>
+                    <h1>{{ company }} {{ trans('asset_dashboard') }}</h1>
                 </div>
                 <div class="search-bar">
-                    <input type="text" class="search-input" placeholder="Search by Asset Tag">
+                    <input type="text" class="search-input" placeholder="{{ trans('search_placeholder') }}">
                     <i class="fas fa-search search-icon"></i>
                     <ul class="search-suggestions"></ul>
                 </div>
@@ -64,7 +64,7 @@
                         </div>
                     </a>
                     <a href="{{ url_for('logout') }}">
-                        <button class="logout-btn">Logout</button>
+                        <button class="logout-btn">{{ trans('logout') }}</button>
                     </a>
                 </div>
             </header>
