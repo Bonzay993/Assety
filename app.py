@@ -45,7 +45,9 @@ fs = gridfs.GridFS(mongo.cx[app.config["MONGO_DBNAME"]])
 def inject_settings():
     return {
         'timeout': session.get('timeout', 2),
-        'dark_mode': session.get('dark_mode', False)
+        'dark_mode': session.get('dark_mode', False),
+        'email_notifications': session.get('email_notifications', True),
+        'language': session.get('language', 'en')
     }
 
 @app.route('/')
@@ -54,12 +56,21 @@ def index():
 
 @app.route('/settings')
 def settings():
-    user_first_name = session.get('first_name', 'User') 
-    user_last_name = session.get('last_name', 'User') 
-    company_name = session.get('company', None)
-    company_name = company_name.replace("_", " ")
+
+    """Display current user preferences."""
+    if not session.get('user_id'):
+        return redirect(url_for('login'))
+
+    user_first_name = session.get('first_name', 'User')
+    user_last_name = session.get('last_name', 'User')
+    company_name = session.get('company')
     user_email = session.get('email')
     timeout = session.get('timeout')
+
+    if company_name:
+        company_display = company_name.replace("_", " ")
+    else:
+        company_display = None
 
     client = MongoClient(app.config["MONGO_URI"])
     db = client[app.config["MONGO_DBNAME"]]
@@ -67,17 +78,22 @@ def settings():
     user = users_collection.find_one({"_id": ObjectId(session['user_id'])})
 
     user_settings = user.get('settings', {})
+    settings_data = {
+        'dark_mode': user_settings.get('dark_mode', False),
+        'timeout': user_settings.get('timeout'),
+        'email_notifications': user_settings.get('email_notifications', True),
+        'language': user_settings.get('language', 'en')
+    }
 
     return render_template(
         'settings.html',
         first_name=user_first_name,
         last_name=user_last_name,
-        company=company_name,
-        settings=user_settings,
+        company=company_display,
+        settings=settings_data,
         email=user_email,
         timeout=timeout
     )
-
 
 
 @app.route('/save-settings', methods=['POST'])
@@ -89,8 +105,10 @@ def save_settings():
 
     timeout = data.get('timeout')
     dark_mode = data.get('dark_mode')
+    email_notifications = data.get('email_notifications')
+    language = data.get('language')
 
-    if timeout is None and dark_mode is None:
+    if timeout is None and dark_mode is None and email_notifications is None and language is None:
         return {"status": "error", "message": "No settings provided"}, 400
 
     client = MongoClient(app.config["MONGO_URI"])
@@ -104,6 +122,12 @@ def save_settings():
     if dark_mode is not None:
         update_fields["settings.dark_mode"] = dark_mode
         session['dark_mode'] = dark_mode
+    if email_notifications is not None:
+        update_fields["settings.email_notifications"] = email_notifications
+        session['email_notifications'] = email_notifications
+    if language:
+        update_fields["settings.language"] = language
+        session['language'] = language
 
     if update_fields:
         users_collection.update_one(
@@ -369,6 +393,8 @@ def login():
             timeout_minutes = user.get('settings', {}).get('timeout')
             session['timeout'] = timeout_minutes
             session['dark_mode'] = user.get('settings', {}).get('dark_mode', False)
+            session['email_notifications'] = user.get('settings', {}).get('email_notifications', True)
+            session['language'] = user.get('settings', {}).get('language', 'en')
             print(f"Session after login: {session}")  # Debugging session data
             flash('Login successful!', 'success')
             return redirect(url_for('dashboard'))  # Redirect to inventory page
@@ -400,6 +426,10 @@ def forgot_password():
         
         
         if user:
+            if not user.get('settings', {}).get('email_notifications', True):
+                flash("Email notifications are disabled for this account.", 'reset-password-message')
+                return render_template("forgot-password.html")
+
             # Generate a token for password reset
             token = email_service.generate_token(email)
             reset_url = url_for('reset_password', token=token, _external=True)
@@ -746,6 +776,17 @@ def save_asset():
             'company': company_name,
             'category': category
         })
+
+        if session.get('email_notifications', True):
+            subject = f"Asset {asset_tag} {action.lower()}d"
+            html_content = (
+                f"<p>The asset <strong>{asset_tag}</strong> was {action.lower()}d in {company_name}.</p>"
+            )
+            email_service.send_email(
+                session.get('email'),
+                subject,
+                html_content
+            )
 
         return redirect(url_for('assets'))
 
