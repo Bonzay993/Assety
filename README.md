@@ -40,7 +40,7 @@ The application uses a simple interface built with HTML templates and a custom C
 ## Features
 Assety offers a range of tools to simplify asset tracking:
 
-@@ -59,36 +61,53 @@ MongoDB stores user accounts in the `users` collection and each company gets its
+
 - **Dashboard** – Displays asset counts, recent assets, recent activities and quick links.
 - **Asset Management** – Create, update and delete assets with optional image uploads stored in MongoDB GridFS.
 - **Categories & Locations** – Maintain reusable lists for categorising and locating assets.
@@ -48,6 +48,7 @@ Assety offers a range of tools to simplify asset tracking:
 - **User Profiles** – Update name and email from the profile page.
 - **Settings** – Toggle dark mode and configure an idle timeout to control automatic logouts.
 - **Activity Log** – Records asset changes for review on the dashboard.
+- **Email Notifications** – Receive password reset and asset change emails when enabled.
 
 ## Technologies Used
 - **Python & Flask** for the web application framework
