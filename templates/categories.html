@@ -2,7 +2,7 @@
 {% block content %}
 <section class="heading-section">
     <div class="default-list-top-container">
-        <h1 class="assets-heading">Categories</h1>
+        <h1 class="assets-heading">{{ trans('categories_list') }}</h1>
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                     {% for category, msg in messages %}
@@ -14,7 +14,7 @@
          {% endwith %}
         <div class="create-new-element-btn create-new-category">
             <a href="{{ url_for('new_category') }}">
-                <button class="new-element-btn">Create New</button>
+                <button class="new-element-btn">{{ trans('create_new') }}</button>
             </a>
         </div>
     </div>
@@ -23,11 +23,11 @@
 <section class="assets-list">
     <div class="assets-list-container">
         <div class="assets-list-heading-container">
-            <p class="categories-list-title-item"><strong>Name</strong></p>
-            <p class="categories-list-title-item"><strong>Image</strong></p>
-            <p class="categories-list-title-item"><strong>Type</strong> </p>
-            <p class="categories-list-title-item"><strong>Quantity</strong> </p>
-            <p class="categories-list-title-item"><strong>Actions</strong> </p>
+            <p class="categories-list-title-item"><strong>{{ trans('name') }}</strong></p>
+            <p class="categories-list-title-item"><strong>{{ trans('image') }}</strong></p>
+            <p class="categories-list-title-item"><strong>{{ trans('type') }}</strong> </p>
+            <p class="categories-list-title-item"><strong>{{ trans('quantity') }}</strong> </p>
+            <p class="categories-list-title-item"><strong>{{ trans('actions') }}</strong> </p>
         </div>
 
         {% for category in categories %}
@@ -65,7 +65,7 @@
                                 <i class="fa-solid fa-pencil"></i>
                             </button>
                         </a>
-                        <form action="{{ url_for('delete_category', category_id=category._id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this category?');">
+                        <form action="{{ url_for('delete_category', category_id=category._id) }}" method="POST" onsubmit="return confirm('{{ trans('delete_category_confirm') }}');">
                             <button class="assets-delete-button">
                                 <i class="fa-solid fa-trash"></i>
                             </button>
