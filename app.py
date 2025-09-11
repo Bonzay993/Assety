@@ -1092,20 +1092,40 @@ def save_location():
 
 @app.route('/location-properties')
 def location_properties():
-    location_id = request.args.get('location_id')  # Get asset ID from URL
     
+    location_id = request.args.get('location_id')  # Get location ID from URL
+    user_first_name = session.get('first_name', 'User')
+    user_last_name = session.get('last_name', 'User')
+    company_name = session.get('company', 'Not Available')
+    if company_name:
+        company_name = company_name.replace("_", " ")
+
     if location_id:
         client = MongoClient(app.config["MONGO_URI"])
         db = client[app.config["MONGO_DBNAME"]]
         company_collection = db[session.get('company', 'default_company')]
 
-        location = company_collection.find_one({"_id": ObjectId(location_id)})  # Fetch asset
+        
+        location = company_collection.find_one({"_id": ObjectId(location_id)})  # Fetch location
 
         if location:
-            return render_template("location-properties.html", location=location)  
+            
+            return render_template(
+                "location-properties.html",
+                location=location,
+                first_name=user_first_name,
+                last_name=user_last_name,
+                company=company_name,
+            )
 
-    return render_template("location-properties.html", asset=None)  # If no asset ID, load empty form
-
+    
+    return render_template(
+        "location-properties.html",
+        location=None,
+        first_name=user_first_name,
+        last_name=user_last_name,
+        company=company_name,
+    )  # If no location ID, load empty form
 
 
 
@@ -1326,10 +1346,16 @@ def save_category():
 
 
 
+
 @app.route('/category-properties')
 def category_properties():
     category_id = request.args.get('category_id')  # Get category ID from URL
-    
+    user_first_name = session.get('first_name', 'User')
+    user_last_name = session.get('last_name', 'User')
+    company_name = session.get('company', 'Not Available')
+    if company_name:
+        company_name = company_name.replace("_", " ")
+
     if category_id:
         client = MongoClient(app.config["MONGO_URI"])
         db = client[app.config["MONGO_DBNAME"]]
@@ -1341,10 +1367,24 @@ def category_properties():
         })  # Ensure it's actually a category
 
         if category:
-            return render_template("category-properties.html", category=category)
+            
+            return render_template(
+                "category-properties.html",
+                category=category,
+                first_name=user_first_name,
+                last_name=user_last_name,
+                company=company_name,
+            )
 
     # If no valid ID or not found, load empty template
-    return render_template("category-properties.html", category=None)
+    
+    return render_template(
+        "category-properties.html",
+        category=None,
+        first_name=user_first_name,
+        last_name=user_last_name,
+        company=company_name,
+    )
 
 
 
