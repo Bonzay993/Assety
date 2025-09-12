@@ -70,6 +70,7 @@
         const darkMode = document.getElementById('dark-mode-toggle').checked;
         const emailNotifications = document.getElementById('email-notifications-toggle').checked;
         const language = document.getElementById('language-select').value;
+        const currency = document.getElementById('currency-select').value;
 
         fetch('/save-settings', {
             method: 'POST',
