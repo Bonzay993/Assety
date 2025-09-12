@@ -63,7 +63,7 @@
 
                     <div class="form-group purchase-cost">
                         <label for="purchase-cost">{{ trans('purchase_cost') }}</label>
-                        <input type="text" id="purchase-cost" name="purchase-cost" value="{{ asset.purchase_cost }}" placeholder="£">
+                        <input type="text" id="purchase-cost" name="purchase-cost" value="{{ currency_symbol }}{{ asset.purchase_cost if asset else '' }}" placeholder="{{ currency_symbol }}">
                     </div>
 
                     <div class="form-group">

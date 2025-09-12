@@ -42,6 +42,15 @@ mongo = PyMongo(app)
 fs = gridfs.GridFS(mongo.cx[app.config["MONGO_DBNAME"]])
 
 
+# Currency symbols mapping
+CURRENCY_SYMBOLS = {
+    'GBP': '£',
+    'USD': '$',
+    'EUR': '€'
+}
+
+
+
 
 @app.context_processor
 def inject_translator():
@@ -56,11 +65,14 @@ def inject_translator():
 
 @app.context_processor
 def inject_settings():
+    currency = session.get('currency', 'GBP')
     return {
         'timeout': session.get('timeout', 2),
         'dark_mode': session.get('dark_mode', False),
         'email_notifications': session.get('email_notifications', True),
-        'language': session.get('language', 'en')
+        'language': session.get('language', 'en'),
+        'currency': currency,
+        'currency_symbol': CURRENCY_SYMBOLS.get(currency, '£')
     }
 
 @app.route('/')
@@ -95,7 +107,8 @@ def settings():
         'dark_mode': user_settings.get('dark_mode', False),
         'timeout': user_settings.get('timeout'),
         'email_notifications': user_settings.get('email_notifications', True),
-        'language': user_settings.get('language', 'en')
+        'language': user_settings.get('language', 'en'),
+        'currency': user_settings.get('currency', 'GBP')
     }
 
     return render_template(
@@ -120,8 +133,9 @@ def save_settings():
     dark_mode = data.get('dark_mode')
     email_notifications = data.get('email_notifications')
     language = data.get('language')
+    currency = data.get('currency')
 
-    if timeout is None and dark_mode is None and email_notifications is None and language is None:
+    if timeout is None and dark_mode is None and email_notifications is None and language is None and currency is None:
         return {"status": "error", "message": "No settings provided"}, 400
 
     client = MongoClient(app.config["MONGO_URI"])
@@ -141,6 +155,9 @@ def save_settings():
     if language:
         update_fields["settings.language"] = language
         session['language'] = language
+    if currency:
+        update_fields["settings.currency"] = currency
+        session['currency'] = currency
 
     if update_fields:
         users_collection.update_one(
@@ -366,7 +383,8 @@ def sign_up():
                 'email': email,
                 'password': hashed_password,
                 'settings': {
-                    'timeout': 2  # timeout set to 2 minutes 
+                    'timeout': 2,  # timeout set to 2 minutes
+                    'currency': 'GBP'  # timeout set to 2 minutes 
                 }
             }
 
@@ -429,6 +447,7 @@ def login():
             session['dark_mode'] = user.get('settings', {}).get('dark_mode', False)
             session['email_notifications'] = user.get('settings', {}).get('email_notifications', True)
             session['language'] = user.get('settings', {}).get('language', 'en')
+            session['currency'] = user.get('settings', {}).get('currency', 'GBP')
             print(f"Session after login: {session}")  # Debugging session data
             flash('Login successful!', 'success')
             return redirect(url_for('dashboard'))  # Redirect to inventory page
@@ -745,6 +764,7 @@ def save_asset():
     warranty = request.form['warranty']
     order_number = request.form['order-number']
     purchase_cost = request.form['purchase-cost']
+    purchase_cost = purchase_cost.replace('£', '').replace('$', '').replace('€', '').strip()
     purchase_date = request.form['purchase-date']
     location = request.form['location']
     category = request.form['category']
@@ -963,10 +983,13 @@ def view_asset(asset_id):
     labels = [
         'Asset Name', 'Model', 'Serial', 'Location', 'Category', 'Purchase Date', 'Purchase Cost'
     ]
+    currency = session.get('currency', 'GBP')
+    symbol = CURRENCY_SYMBOLS.get(currency, '£')
     values = [
         asset.get('asset_tag'), asset.get('model'), asset.get('serial'),
         asset.get('location'), asset.get('category'), asset.get('purchase_date'),
-        asset.get('purchase_cost')
+        asset.get('purchase_cost'),
+        f"{symbol}{asset.get('purchase_cost')}"
     ]
     labels_values = list(zip(labels, values))
 
