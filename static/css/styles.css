@@ -1301,7 +1301,6 @@ input[type="file"]{
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 30px;
     background-color:rgb(39, 77, 97);
     height:50px;
   
@@ -1824,6 +1823,12 @@ input[type="file"]{
 /* DASHBOARD CSS */
 .dashboard{
     padding:20px;
+    padding-top:3px;
+}
+
+.dashboard-heading{
+    width:80%;
+    margin:0 auto;
 }
 
 
@@ -2066,6 +2071,10 @@ input[type="file"]{
 
 .tips-panel.show{
     display:block;
+}
+
+.tips-list{
+    padding:2%;
 }
 
 
