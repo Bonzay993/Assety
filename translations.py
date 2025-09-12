@@ -91,7 +91,8 @@ TRANSLATIONS = {
         'filter': 'Filter',
         'previous': 'Previous',
         'next': 'Next',
-        'no_activities': 'No activities found.'
+        'no_activities': 'No activities found.',
+        'tip_dark_mode': 'Toggle dark mode for a comfortable view at night.'
     },
     'es': {
         'dashboard': 'Tablero',
@@ -184,7 +185,8 @@ TRANSLATIONS = {
         'filter': 'Filtrar',
         'previous': 'Anterior',
         'next': 'Siguiente',
-        'no_activities': 'No se encontraron actividades.'
+        'no_activities': 'No se encontraron actividades.',
+        'tip_dark_mode': 'Activa el modo oscuro para una visualización cómoda por la noche.'
     },
     'fr': {
         'dashboard': 'Tableau de bord',
@@ -277,6 +279,7 @@ TRANSLATIONS = {
         'filter': 'Filtrer',
         'previous': 'Précédent',
         'next': 'Suivant',
-        'no_activities': 'Aucune activité trouvée.'
+        'no_activities': 'Aucune activité trouvée.',
+         'tip_dark_mode': 'Activez le mode sombre pour un affichage confortable la nuit.'
     }
 }

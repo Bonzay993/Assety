@@ -2,6 +2,23 @@
 
 {% block content %}
 <section class="dashboard">
+
+    
+     <div class="dashboard-tips">
+        <button id="toggle-tips" class="tips-toggle-btn"
+                data-show-text="{{ trans('show_tips') }}"
+                data-hide-text="{{ trans('hide_tips') }}">
+            {{ trans('show_tips') }}
+        </button>
+        <div id="tips-panel" class="tips-panel">
+            <h3 class="tips-heading">{{ trans('quick_tips') }}</h3>
+            <ul class="tips-list">
+                <li>{{ trans('tip_search_assets') }}</li>
+                <li>{{ trans('tip_recent_activity') }}</li>
+                <li>{{ trans('tip_dark_mode') }}</li>
+            </ul>
+        </div>
+    </div>
     
     <h2 class="dashboard-heading">{{ trans('dashboard_overview') }}</h2>
     <div class="stats-container">
@@ -119,20 +136,6 @@
         {% endfor %}
     </div>
 
-     <div class="dashboard-tips">
-        <button id="toggle-tips" class="tips-toggle-btn"
-                data-show-text="{{ trans('show_tips') }}"
-                data-hide-text="{{ trans('hide_tips') }}">
-            {{ trans('show_tips') }}
-        </button>
-        <div id="tips-panel" class="tips-panel">
-            <h3 class="tips-heading">{{ trans('quick_tips') }}</h3>
-            <ul class="tips-list">
-                <li>{{ trans('tip_search_assets') }}</li>
-                <li>{{ trans('tip_recent_activity') }}</li>
-            </ul>
-        </div>
-    </div>
 </section>
 
 <script src="{{ url_for('static', filename='scripts/dashboard.js') }}"></script>
