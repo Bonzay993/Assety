@@ -240,6 +240,8 @@ def export_reports(file_format):
         except (TypeError, ValueError):
             continue
     total_value = round(total_value, 2)
+    currency = session.get('currency', 'GBP')
+    symbol = CURRENCY_SYMBOLS.get(currency, '£')
 
     if file_format == 'csv':
         output = io.StringIO()
@@ -249,7 +251,7 @@ def export_reports(file_format):
             writer.writerow([item['_id'] or 'Uncategorized', item['count']])
         writer.writerow([])
         writer.writerow(['Total Assets', total_assets])
-        writer.writerow(['Total Asset Value', f"{total_value:.2f}"])
+        writer.writerow(['Total Asset Value', f"{symbol}{total_value:.2f}"])
         output.seek(0)
         return send_file(
             io.BytesIO(output.getvalue().encode()),
@@ -262,7 +264,7 @@ def export_reports(file_format):
         pdf.add_page()
         pdf.set_font("Arial", size=12)
         pdf.cell(0, 10, txt=f"Total Assets: {total_assets}", ln=True)
-        pdf.cell(0, 10, txt=f"Total Asset Value: {total_value:.2f}", ln=True)
+        pdf.cell(0, 10, txt=f"Total Asset Value: {symbol}{total_value:.2f}", ln=True)
         pdf.ln(10)
         for item in category_summary:
             category = item['_id'] or 'Uncategorized'
@@ -985,11 +987,15 @@ def view_asset(asset_id):
     ]
     currency = session.get('currency', 'GBP')
     symbol = CURRENCY_SYMBOLS.get(currency, '£')
+    purchase_cost = asset.get('purchase_cost')
     values = [
-        asset.get('asset_tag'), asset.get('model'), asset.get('serial'),
-        asset.get('location'), asset.get('category'), asset.get('purchase_date'),
-        asset.get('purchase_cost'),
-        f"{symbol}{asset.get('purchase_cost')}"
+       asset.get('asset_tag'),
+        asset.get('model'),
+        asset.get('serial'),
+        asset.get('location'),
+        asset.get('category'),
+        asset.get('purchase_date'),
+        f"{symbol}{purchase_cost}" if purchase_cost not in (None, '') else 'N/A'
     ]
     labels_values = list(zip(labels, values))
 
