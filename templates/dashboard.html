@@ -80,7 +80,7 @@
                     <span class="recent-assets-item asset-model">{{ asset.model }}</span>
                     <span class="recent-assets-item asset-serial">{{ asset.serial }}</span>
                     <span class="recent-assets-item asset-date">{{ asset.purchase_date }}</span>
-                    <span class="recent-assets-item asset-date">{{ asset.purchase_cost }}</span>
+                    <span class="recent-assets-item asset-date">{{ currency_symbol }}{{ asset.purchase_cost }}</span>
                 </div>
                 {% endfor %}
             </div>

@@ -42,6 +42,17 @@
             </div>
         </div>
 
+        <div class="settings-row">
+            <label for="currency-select">{{ trans('currency') }}</label>
+            <div class="settings-field">
+                <select id="currency-select">
+                    <option value="GBP" {% if settings.currency == 'GBP' %}selected{% endif %}>£ Pound</option>
+                    <option value="EUR" {% if settings.currency == 'EUR' %}selected{% endif %}>€ Euro</option>
+                    <option value="USD" {% if settings.currency == 'USD' %}selected{% endif %}>$ Dollar</option>
+                </select>
+            </div>
+        </div>
+
         <div class="settings-actions">
             <button type="submit" class="settings-btn save-settings-btn">{{ trans('save') }}</button>
         </div>
@@ -66,7 +77,7 @@
                 'Content-Type': 'application/json'
             },
          
-            body: JSON.stringify({ timeout: parseInt(timeout), dark_mode: darkMode, email_notifications: emailNotifications, language: language })
+            body: JSON.stringify({ timeout: parseInt(timeout), dark_mode: darkMode, email_notifications: emailNotifications, language: language, currency: currency })
         })
         .then(response => {
             if (response.ok) {
