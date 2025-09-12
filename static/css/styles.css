@@ -838,6 +838,10 @@ input[type="file"]{
     gap: 5px;
 }
 
+.forgot-form .form-group {
+    width: 100%;
+}
+
 
 
 .forgot-form-group input {
@@ -854,6 +858,7 @@ input[type="file"]{
     border-radius: 5px;
     cursor: pointer;
     font-weight: bold;
+    width: 100%;
 }
 
 .forgot-btn:hover {
