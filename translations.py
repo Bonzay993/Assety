@@ -79,7 +79,19 @@ TRANSLATIONS = {
         'save_changes': 'Save Changes',
         'profile_updated': 'Profile updated!',
         'profile_update_failed': 'Failed to update profile.',
-        'something_wrong': 'Something went wrong.'
+        'something_wrong': 'Something went wrong.',
+        'quick_tips': 'Quick Tips',
+        'show_tips': 'Show Tips',
+        'hide_tips': 'Hide Tips',
+        'tip_search_assets': 'Use the search bar to find assets quickly.',
+        'tip_recent_activity': 'Review recent activities to stay updated.',
+        'logs': 'Logs',
+        'start_date': 'Start Date',
+        'end_date': 'End Date',
+        'filter': 'Filter',
+        'previous': 'Previous',
+        'next': 'Next',
+        'no_activities': 'No activities found.'
     },
     'es': {
         'dashboard': 'Tablero',
@@ -160,7 +172,19 @@ TRANSLATIONS = {
         'save_changes': 'Guardar Cambios',
         'profile_updated': '¡Perfil actualizado!',
         'profile_update_failed': 'Error al actualizar el perfil.',
-        'something_wrong': 'Algo salió mal.'
+        'something_wrong': 'Algo salió mal.',
+        'quick_tips': 'Consejos Rápidos',
+        'show_tips': 'Mostrar Consejos',
+        'hide_tips': 'Ocultar Consejos',
+        'tip_search_assets': 'Utiliza la barra de búsqueda para encontrar activos rápidamente.',
+        'tip_recent_activity': 'Revisa las actividades recientes para mantenerte actualizado.',
+        'logs': 'Registros',
+        'start_date': 'Fecha de inicio',
+        'end_date': 'Fecha de fin',
+        'filter': 'Filtrar',
+        'previous': 'Anterior',
+        'next': 'Siguiente',
+        'no_activities': 'No se encontraron actividades.'
     },
     'fr': {
         'dashboard': 'Tableau de bord',
@@ -241,6 +265,18 @@ TRANSLATIONS = {
         'save_changes': 'Enregistrer les modifications',
         'profile_updated': 'Profil mis à jour !',
         'profile_update_failed': 'Échec de la mise à jour du profil.',
-        'something_wrong': "Quelque chose s'est mal passé."
+        'something_wrong': "Quelque chose s'est mal passé.",
+        'quick_tips': 'Astuces Rapides',
+        'show_tips': 'Afficher les Astuces',
+        'hide_tips': 'Masquer les Astuces',
+        'tip_search_assets': 'Utilisez la barre de recherche pour trouver rapidement des actifs.',
+        'tip_recent_activity': 'Consultez les activités récentes pour rester informé.',
+        'logs': 'Journaux',
+        'start_date': 'Date de début',
+        'end_date': 'Date de fin',
+        'filter': 'Filtrer',
+        'previous': 'Précédent',
+        'next': 'Suivant',
+        'no_activities': 'Aucune activité trouvée.'
     }
 }
