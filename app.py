@@ -346,7 +346,8 @@ def logs():
             'user': act.get('user', ''),
             'action': act.get('action', ''),
             'asset': act.get('asset', ''),
-            'location': act.get('location', '')
+            'location': act.get('location', ''),
+            'category': act.get('category', '')
         })
 
     return render_template(
@@ -723,10 +724,11 @@ def dashboard():
     for act in recent_activities_cursor:
         formatted_activities.append({
             "date": act.get("timestamp"),
-            "user": act.get("user"),            
+            "user": act.get("user"),          
             "action": act.get("action"),
             "asset": act.get("asset"),
-            "location": act.get("location", "N/A")
+            "location": act.get("location", "N/A"),
+            "category": act.get("category", "")
         })
 
     return render_template(
@@ -743,7 +745,7 @@ def dashboard():
 
 
 
-def log_activity(action, asset_id, asset_tag, location=None):
+def log_activity(action, asset_id, asset_tag, location=None, category=None):
     """Logs the activity to the 'activities' collection"""
     user_name = session.get('first_name', 'Unknown User')
     company_name = session.get('company')
@@ -760,6 +762,7 @@ def log_activity(action, asset_id, asset_tag, location=None):
         'asset_tag': asset_tag,
         'timestamp': timestamp,
         'location': location or 'N/A',
+        'category': category or '',
         'company': company_name
     }
 
@@ -1088,6 +1091,7 @@ def delete_asset(asset_id):
                 'action': 'Delete',  # Correct action
                 'asset': asset.get('asset_tag'),  # Use asset_tag from the asset document
                 'location': asset.get('location', 'N/A'),  # Use location from the asset document
+                'category': asset.get('category', ''),
                 'company': company_name
             }
             db.activities.insert_one(activity_data)

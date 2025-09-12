@@ -16,6 +16,7 @@
             <span class="activity-title activity-action">{{ trans('action') }}</span>
             <span class="activity-title activity-asset">{{ trans('asset') }}</span>
             <span class="activity-title activity-asset">{{ trans('location') }}</span>
+            <span class="activity-title activity-category">{{ trans('category') }}</span>
         </div>
         {% if activities %}
             {% for activity in activities %}
@@ -25,6 +26,7 @@
                 <span class="activity-item activity-action">{{ activity.action }}</span>
                 <span class="activity-item activity-asset">{{ activity.asset }}</span>
                 <span class="activity-item activity-asset">{{ activity.location }}</span>
+                <span class="activity-item activity-category">{{ activity.category }}</span>
             </div>
             {% endfor %}
         {% else %}
