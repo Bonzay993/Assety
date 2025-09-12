@@ -334,8 +334,15 @@ def logs():
 
     formatted_activities = []
     for act in activities:
+        date = act.get('date')
+        if isinstance(date, datetime):
+            date_value = date.strftime('%Y-%m-%d %H:%M:%S')
+        elif date:
+            date_value = str(date)
+        else:
+            date_value = 'N/A'
         formatted_activities.append({
-            'date': act.get('date'),
+            'date': date_value,
             'user': act.get('user', ''),
             'action': act.get('action', ''),
             'asset': act.get('asset', ''),
@@ -395,7 +402,14 @@ def export_logs():
     pdf.cell(0, 10, txt='Activity Logs', ln=True)
     pdf.ln(5)
     for act in cursor:
-        line = f"{act.get('date').strftime('%Y-%m-%d %H:%M:%S')} - {act.get('user', '')} - {act.get('action', '')} - {act.get('asset', '')} - {act.get('location', '')}"
+        date = act.get('date')
+        if isinstance(date, datetime):
+            date_str = date.strftime('%Y-%m-%d %H:%M:%S')
+        elif date:
+            date_str = str(date)
+        else:
+            date_str = 'N/A'
+        line = f"{date_str} - {act.get('user', '')} - {act.get('action', '')} - {act.get('asset', '')} - {act.get('location', '')}"
         pdf.multi_cell(0, 8, line)
 
     pdf_output = io.BytesIO()

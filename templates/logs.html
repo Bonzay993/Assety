@@ -20,7 +20,7 @@
         {% if activities %}
             {% for activity in activities %}
             <div class="activity-items-container {% if loop.index0 % 2 == 0 %}blue-row{% else %}lightblue-row{% endif %}">
-                <span class="activity-item activity-date">{{ activity.date.strftime('%Y-%m-%d %H:%M:%S') }}</span>
+                <span class="activity-item activity-date">{{ activity.date }}</span>
                 <span class="activity-item activity-user">{{ activity.user }}</span>
                 <span class="activity-item activity-action">{{ activity.action }}</span>
                 <span class="activity-item activity-asset">{{ activity.asset }}</span>
