@@ -69,7 +69,13 @@
             </div>
             <div class="title-body-group ">
                 
-                <p>{{ currency_symbol }}{{ asset.purchase_cost }}</p>
+                 <p>
+                    {% if asset.purchase_cost is defined and asset.purchase_cost not in [none, ''] %}
+                        {{ currency_symbol }}{{ asset.purchase_cost }}
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </p>
             </div>
             <div class="title-body-group title-body-group-actions">
                 

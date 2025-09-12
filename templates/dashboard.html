@@ -80,7 +80,13 @@
                     <span class="recent-assets-item asset-model">{{ asset.model }}</span>
                     <span class="recent-assets-item asset-serial">{{ asset.serial }}</span>
                     <span class="recent-assets-item asset-date">{{ asset.purchase_date }}</span>
-                    <span class="recent-assets-item asset-date">{{ currency_symbol }}{{ asset.purchase_cost }}</span>
+                      <span class="recent-assets-item asset-date">
+                        {% if asset.purchase_cost is defined and asset.purchase_cost not in [none, ''] %}
+                            {{ currency_symbol }}{{ asset.purchase_cost }}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </span>
                 </div>
                 {% endfor %}
             </div>
