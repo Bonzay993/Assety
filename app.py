@@ -254,8 +254,8 @@ def export_reports(file_format):
         writer.writerow(['Total Asset Value', f"{symbol}{total_value:.2f}"])
         output.seek(0)
         return send_file(
-            io.BytesIO(output.getvalue().encode()),
-            mimetype='text/csv',
+            io.BytesIO(output.getvalue().encode('utf-8-sig')),
+            mimetype='text/csv; charset=utf-8',
             as_attachment=True,
             download_name='inventory_summary.csv'
         )
@@ -264,7 +264,8 @@ def export_reports(file_format):
         pdf.add_page()
         pdf.set_font("Arial", size=12)
         pdf.cell(0, 10, txt=f"Total Assets: {total_assets}", ln=True)
-        pdf.cell(0, 10, txt=f"Total Asset Value: {symbol}{total_value:.2f}", ln=True)
+        symbol_pdf = symbol.encode('cp1252', 'ignore').decode('cp1252')
+        pdf.cell(0, 10, txt=f"Total Asset Value: {symbol_pdf}{total_value:.2f}", ln=True)
         pdf.ln(10)
         for item in category_summary:
             category = item['_id'] or 'Uncategorized'

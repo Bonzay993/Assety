@@ -28,7 +28,7 @@
         </div>
         <div class="assets-list-items-container lightblue-row">
             <div class="title-body-group"><strong>{{ trans('total_asset_value') }}</strong></div>
-            <div class="title-body-group"><strong>{{ currency_symbol }}{{ total_value }}</strong></div>
+            <div class="title-body-group"><strong>{{ currency_symbol }}{{ '%.2f'|format(total_value) }}</strong></div>
         </div>
     </div>
 
