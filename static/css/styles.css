@@ -1301,7 +1301,6 @@ input[type="file"]{
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 30px;
     background-color:rgb(39, 77, 97);
     height:50px;
   
@@ -1824,6 +1823,12 @@ input[type="file"]{
 /* DASHBOARD CSS */
 .dashboard{
     padding:20px;
+    padding-top:3px;
+}
+
+.dashboard-heading{
+    width:80%;
+    margin:0 auto;
 }
 
 
@@ -2068,6 +2073,10 @@ input[type="file"]{
     display:block;
 }
 
+.tips-list{
+    padding:2%;
+}
+
 
 /* View Asset CSS */
 
@@ -2250,6 +2259,21 @@ body.dark-mode .settings-btn:hover {
 
 /* Dark mode styles for Dashboard page */
 body.dark-mode .dashboard {
+    color: #ffffff;
+}
+
+body.dark-mode .dashboard-tips {
+    background-color: #1e1e1e;
+    color: #ffffff;
+    box-shadow: 0px 0px 8px #000;
+}
+
+body.dark-mode .tips-toggle-btn {
+    background-color: #0056b3;
+    color: #ffffff;
+}
+
+body.dark-mode .tips-panel {
     color: #ffffff;
 }
 
