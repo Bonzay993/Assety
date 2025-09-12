@@ -176,6 +176,13 @@ def reports():
     ]))
 
     total_assets = sum(item['count'] for item in category_summary)
+    total_value = 0
+    for asset in company_collection.find({"asset": True}, {"purchase_cost": 1}):
+        try:
+            total_value += float(asset.get("purchase_cost") or 0)
+        except (TypeError, ValueError):
+            continue
+    total_value = round(total_value, 2)
 
     return render_template(
         'reports.html',
@@ -183,7 +190,8 @@ def reports():
         last_name=user_last_name,
         company=company_name,
         summary=category_summary,
-        total_assets=total_assets
+        total_assets=total_assets,
+        total_value=total_value
     )
 
 
@@ -207,12 +215,24 @@ def export_reports(file_format):
         {"$sort": {"_id": 1}}
     ]))
 
+    total_assets = sum(item['count'] for item in category_summary)
+    total_value = 0
+    for asset in company_collection.find({"asset": True}, {"purchase_cost": 1}):
+        try:
+            total_value += float(asset.get("purchase_cost") or 0)
+        except (TypeError, ValueError):
+            continue
+    total_value = round(total_value, 2)
+
     if file_format == 'csv':
         output = io.StringIO()
         writer = csv.writer(output)
         writer.writerow(['Category', 'Count'])
         for item in category_summary:
             writer.writerow([item['_id'] or 'Uncategorized', item['count']])
+        writer.writerow([])
+        writer.writerow(['Total Assets', total_assets])
+        writer.writerow(['Total Asset Value', f"{total_value:.2f}"])
         output.seek(0)
         return send_file(
             io.BytesIO(output.getvalue().encode()),
@@ -224,7 +244,8 @@ def export_reports(file_format):
         pdf = FPDF()
         pdf.add_page()
         pdf.set_font("Arial", size=12)
-        pdf.cell(0, 10, txt="Inventory Summary", ln=True, align='C')
+        pdf.cell(0, 10, txt=f"Total Assets: {total_assets}", ln=True)
+        pdf.cell(0, 10, txt=f"Total Asset Value: {total_value:.2f}", ln=True)
         pdf.ln(10)
         for item in category_summary:
             category = item['_id'] or 'Uncategorized'
