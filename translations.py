@@ -84,7 +84,14 @@ TRANSLATIONS = {
         'show_tips': 'Show Tips',
         'hide_tips': 'Hide Tips',
         'tip_search_assets': 'Use the search bar to find assets quickly.',
-        'tip_recent_activity': 'Review recent activities to stay updated.'
+        'tip_recent_activity': 'Review recent activities to stay updated.',
+        'logs': 'Logs',
+        'start_date': 'Start Date',
+        'end_date': 'End Date',
+        'filter': 'Filter',
+        'previous': 'Previous',
+        'next': 'Next',
+        'no_activities': 'No activities found.'
     },
     'es': {
         'dashboard': 'Tablero',
@@ -170,7 +177,14 @@ TRANSLATIONS = {
         'show_tips': 'Mostrar Consejos',
         'hide_tips': 'Ocultar Consejos',
         'tip_search_assets': 'Utiliza la barra de búsqueda para encontrar activos rápidamente.',
-        'tip_recent_activity': 'Revisa las actividades recientes para mantenerte actualizado.'
+        'tip_recent_activity': 'Revisa las actividades recientes para mantenerte actualizado.',
+        'logs': 'Registros',
+        'start_date': 'Fecha de inicio',
+        'end_date': 'Fecha de fin',
+        'filter': 'Filtrar',
+        'previous': 'Anterior',
+        'next': 'Siguiente',
+        'no_activities': 'No se encontraron actividades.'
     },
     'fr': {
         'dashboard': 'Tableau de bord',
@@ -256,6 +270,13 @@ TRANSLATIONS = {
         'show_tips': 'Afficher les Astuces',
         'hide_tips': 'Masquer les Astuces',
         'tip_search_assets': 'Utilisez la barre de recherche pour trouver rapidement des actifs.',
-        'tip_recent_activity': 'Consultez les activités récentes pour rester informé.'
+        'tip_recent_activity': 'Consultez les activités récentes pour rester informé.',
+        'logs': 'Journaux',
+        'start_date': 'Date de début',
+        'end_date': 'Date de fin',
+        'filter': 'Filtrer',
+        'previous': 'Précédent',
+        'next': 'Suivant',
+        'no_activities': 'Aucune activité trouvée.'
     }
 }

@@ -1,0 +1,43 @@
+{% extends "inventory.html" %}
+
+{% block content %}
+<section class="logs-section">
+    <h2 class="dashboard-heading">{{ trans('logs') }}</h2>
+    <form method="get" class="logs-filter-form">
+        <label>{{ trans('start_date') }} <input type="date" name="start_date" value="{{ start_date }}"></label>
+        <label>{{ trans('end_date') }} <input type="date" name="end_date" value="{{ end_date }}"></label>
+        <button type="submit" class="new-element-btn">{{ trans('filter') }}</button>
+        <a href="{{ url_for('export_logs', start_date=start_date, end_date=end_date) }}" class="new-element-btn">{{ trans('export_pdf') }}</a>
+    </form>
+    <div class="recent-activities-list">
+        <div class="recent-activities-container">
+            <span class="activity-title activity-date">{{ trans('date') }}</span>
+            <span class="activity-title activity-user">{{ trans('user') }}</span>
+            <span class="activity-title activity-action">{{ trans('action') }}</span>
+            <span class="activity-title activity-asset">{{ trans('asset') }}</span>
+            <span class="activity-title activity-asset">{{ trans('location') }}</span>
+        </div>
+        {% if activities %}
+            {% for activity in activities %}
+            <div class="activity-items-container {% if loop.index0 % 2 == 0 %}blue-row{% else %}lightblue-row{% endif %}">
+                <span class="activity-item activity-date">{{ activity.date.strftime('%Y-%m-%d %H:%M:%S') }}</span>
+                <span class="activity-item activity-user">{{ activity.user }}</span>
+                <span class="activity-item activity-action">{{ activity.action }}</span>
+                <span class="activity-item activity-asset">{{ activity.asset }}</span>
+                <span class="activity-item activity-asset">{{ activity.location }}</span>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p class="no-activities">{{ trans('no_activities') }}</p>
+        {% endif %}
+    </div>
+    <div class="pagination">
+        {% if page > 1 %}
+            <a href="{{ url_for('logs', page=page-1, start_date=start_date, end_date=end_date) }}">{{ trans('previous') }}</a>
+        {% endif %}
+        {% if has_next %}
+            <a href="{{ url_for('logs', page=page+1, start_date=start_date, end_date=end_date) }}">{{ trans('next') }}</a>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

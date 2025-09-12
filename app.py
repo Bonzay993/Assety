@@ -287,6 +287,128 @@ def export_reports(file_format):
 
 
 
+@app.route('/logs')
+def logs():
+    if not session.get('user_id'):
+        return redirect(url_for('login'))
+
+    user_first_name = session.get('first_name', 'User')
+    user_last_name = session.get('last_name', 'User')
+    company_name = session.get('company')
+    if not company_name:
+        return redirect(url_for('login'))
+    company_display = company_name.replace('_', ' ')
+
+    page = int(request.args.get('page', 1))
+    per_page = 50
+    start_date_str = request.args.get('start_date')
+    end_date_str = request.args.get('end_date')
+    query = {'company': company_name}
+
+    if start_date_str:
+        try:
+            start_dt = datetime.strptime(start_date_str, '%Y-%m-%d')
+            query['date'] = {'$gte': start_dt}
+        except ValueError:
+            start_dt = None
+    else:
+        start_dt = None
+
+    if end_date_str:
+        try:
+            end_dt = datetime.strptime(end_date_str, '%Y-%m-%d') + timedelta(days=1)
+            if 'date' in query:
+                query['date']['$lt'] = end_dt
+            else:
+                query['date'] = {'$lt': end_dt}
+        except ValueError:
+            end_dt = None
+
+    client = MongoClient(app.config['MONGO_URI'])
+    db = client[app.config['MONGO_DBNAME']]
+    cursor = db.activities.find(query).sort('date', -1).skip((page - 1) * per_page).limit(per_page + 1)
+    activities = list(cursor)
+    has_next = len(activities) > per_page
+    if has_next:
+        activities = activities[:-1]
+
+    formatted_activities = []
+    for act in activities:
+        formatted_activities.append({
+            'date': act.get('date'),
+            'user': act.get('user', ''),
+            'action': act.get('action', ''),
+            'asset': act.get('asset', ''),
+            'location': act.get('location', '')
+        })
+
+    return render_template(
+        'logs.html',
+        activities=formatted_activities,
+        page=page,
+        has_next=has_next,
+        start_date=start_date_str,
+        end_date=end_date_str,
+        first_name=user_first_name,
+        last_name=user_last_name,
+        company=company_display
+    )
+
+
+@app.route('/logs/export')
+def export_logs():
+    if not session.get('user_id'):
+        return redirect(url_for('login'))
+
+    company_name = session.get('company')
+    if not company_name:
+        return redirect(url_for('login'))
+
+    start_date_str = request.args.get('start_date')
+    end_date_str = request.args.get('end_date')
+    query = {'company': company_name}
+
+    if start_date_str:
+        try:
+            start_dt = datetime.strptime(start_date_str, '%Y-%m-%d')
+            query['date'] = {'$gte': start_dt}
+        except ValueError:
+            pass
+
+    if end_date_str:
+        try:
+            end_dt = datetime.strptime(end_date_str, '%Y-%m-%d') + timedelta(days=1)
+            if 'date' in query:
+                query['date']['$lt'] = end_dt
+            else:
+                query['date'] = {'$lt': end_dt}
+        except ValueError:
+            pass
+
+    client = MongoClient(app.config['MONGO_URI'])
+    db = client[app.config['MONGO_DBNAME']]
+    cursor = db.activities.find(query).sort('date', -1)
+
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font('Arial', size=12)
+    pdf.cell(0, 10, txt='Activity Logs', ln=True)
+    pdf.ln(5)
+    for act in cursor:
+        line = f"{act.get('date').strftime('%Y-%m-%d %H:%M:%S')} - {act.get('user', '')} - {act.get('action', '')} - {act.get('asset', '')} - {act.get('location', '')}"
+        pdf.multi_cell(0, 8, line)
+
+    pdf_output = io.BytesIO()
+    pdf_output.write(pdf.output(dest='S').encode('latin1'))
+    pdf_output.seek(0)
+    return send_file(
+        pdf_output,
+        mimetype='application/pdf',
+        as_attachment=True,
+        download_name='activity_logs.pdf'
+    )
+
+
 
 @app.route('/profile')
 def profile_page():
