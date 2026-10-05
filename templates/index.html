@@ -48,7 +48,7 @@
                         <p class="hero-subcontainer-p">Track your stock levels, manage products, and streamline your workflow with Assety.</p>
                         <a href="{{ url_for('sign_up') }}" class="cta-btn get-started-btn">GET STARTED</a>
                     </div>
-                    <img class="hero-image" src="/static/img/hero5.jpg">
+                    <img class="hero-image" src="{{ url_for('static', filename='img/hero5.jpg') }}" alt="Asset management">
                 </div>
               
             
@@ -189,6 +189,7 @@
     <script>
         document.addEventListener("DOMContentLoaded", function() {
     // Animate "Why Choose Assety?" heading from the right
+    if (typeof gsap === 'undefined') return;
     gsap.from("#features h2", { 
         x: 100, 
         opacity: 0, 
@@ -223,7 +224,7 @@
 });
 document.addEventListener("DOMContentLoaded", function() {
     const heroContent = document.querySelector(".hero-content");
-    heroContent.classList.add("animate"); // Only triggers animation on first load
+    if (heroContent) heroContent.classList.add("animate");
 });
 
     </script>

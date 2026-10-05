@@ -17,7 +17,6 @@
         </div>
     </div>
     
-    </div>
     <div class="container inventory-app-container">
         <aside class="sidebar" id="sidebar">
             <button class="toggle-btn" id="toggle-btn">
@@ -69,6 +68,11 @@
                     </a>
                 </div>
             </header>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% for category, message in messages %}
+                    <div class="alert {{ 'alert-success' if category == 'success' else 'alert-danger' }}" role="alert">{{ message }}</div>
+                {% endfor %}
+            {% endwith %}
             {% block content %}
               
             {% endblock %}
@@ -110,161 +114,9 @@
     </script>
 
     
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        let idleTime = 0;
-        let idleLimitSeconds = {{ timeout | int }} * 60; 
-        const warningSeconds = 30;    // countdown before logout
+<script id="idle-timer-script" data-timeout="{{ timeout | int }}" src="{{ url_for('static', filename='scripts/inactivity.js') }}"></script>
 
-        let countdown = warningSeconds;
-        let countdownInterval;
-        let isUserLoggedIn = false;
-
-        const modal = document.getElementById('inactivity-modal');
-        const modalContent = document.getElementById('modal-content');
-        const countdownEl = document.getElementById('countdown');
-        const stayLoggedInBtn = document.getElementById('stay-logged-in');
-        const idleTimeoutInput = document.getElementById('idle-timeout-input');
-        
-
-       
-        // Show the inactivity warning modal
-        function showModal() {
-            modal.style.display = 'flex';
-            countdown = warningSeconds;
-            countdownEl.textContent = countdown;
-
-            countdownInterval = setInterval(() => {
-                countdown--;
-                countdownEl.textContent = countdown;
-                if (countdown <= 0) {
-                    clearInterval(countdownInterval);
-                    fetch('/logout', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        }
-                    }).then(() => {
-                        modalContent.innerHTML = `
-                            <h2>You have been logged out</h2>
-                            <p>Session expired due to inactivity.</p>
-                            <a href="/login"><button style="padding: 0.5rem 1rem; margin-top: 1rem;">Go to Login</button></a>
-                        `;
-                    });
-                }
-            }, 1000);
-        }
-
-        // Dismiss the modal and clear countdown
-        function closeModal() {
-            modal.style.display = 'none';
-            clearInterval(countdownInterval);
-        }
-
-        // Mark user as logged in
-        function userLoggedIn() {
-            isUserLoggedIn = true;
-        }
-
-        // Reset inactivity timer if modal is not visible
-        function resetInactivityTimer() {
-            if (modal.style.display !== 'flex' && isUserLoggedIn) {
-                idleTime = 0;
-            }
-        }
-
-        // Button event to stay logged in
-        stayLoggedInBtn.addEventListener('click', () => {
-            resetInactivityTimer();
-            closeModal();
-        });
-
-        // User activity resets idle timer
-        ['mousemove', 'keydown', 'scroll', 'click'].forEach(event => {
-            window.addEventListener(event, resetInactivityTimer);
-        });
-
-        // Check inactivity every second
-        setInterval(() => {
-            if (isUserLoggedIn) {
-                idleTime++;
-                if (idleTime >= idleLimitSeconds && modal.style.display !== 'flex') {
-                    showModal();
-                }
-            }
-        }, 1000);
-
-        // Mark user as logged in (call this once on page load)
-        userLoggedIn();
-    });
-</script>
-
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const searchInput = document.querySelector('.search-input');
-        const searchIcon = document.querySelector('.search-icon');
-
-        if (searchInput && searchIcon) {
-            const performSearch = () => {
-                const query = searchInput.value.trim();
-                if (query) {
-                    window.location.href = '/search?q=' + encodeURIComponent(query);
-                }
-            };
-
-            searchIcon.addEventListener('click', performSearch);
-
-            searchInput.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    performSearch();
-                }
-            });
-        }
-    });
-</script>
-
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const searchInput = document.querySelector('.search-input');
-        const suggestions = document.querySelector('.search-suggestions');
-      
-        
-
-        searchInput.addEventListener('input', async () => {
-            const query = searchInput.value.trim();
-            if (!query) {
-                suggestions.innerHTML = '';
-                return;
-            }
-            try {
-                const response = await fetch(`/search_assets?q=${encodeURIComponent(query)}`);
-                if (!response.ok) {
-                    suggestions.innerHTML = '';
-                    return;
-                }
-                const data = await response.json();
-                suggestions.innerHTML = '';
-                data.forEach(item => {
-                    const li = document.createElement('li');
-                    li.textContent = item.asset_tag;
-                    li.addEventListener('click', () => {
-                        window.location.href = `/asset/${item.id}`;
-                    });
-                    suggestions.appendChild(li);
-                });
-            } catch (error) {
-                console.error('Error fetching suggestions:', error);
-            }
-        });
-
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.search-bar')) {
-                suggestions.innerHTML = '';
-            }
-        });
-    });
-</script>
+<script src="{{ url_for('static', filename='scripts/search.js') }}"></script>
 
 
 </body>

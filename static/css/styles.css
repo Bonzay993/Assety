@@ -2377,6 +2377,11 @@ body.dark-mode .form-cancel {
 
 
 /* Inactivity modal styles */
+#inactivity-modal #modal-content,
+#inactivity-modal #modal-content * {
+    color: #000;
+}
+
 .inactivity-modal {
     display: none;
     position: fixed;

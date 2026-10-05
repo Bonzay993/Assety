@@ -21,6 +21,24 @@ describe('passwordValidator', () => {
     expect(document.querySelectorAll('.password-validation').length).toBe(1);
   });
 
+  test('does not throw on pages without password fields', () => {
+    document.body.innerHTML = '<h1>Assety</h1>';
+    expect(() => passwordValidator()).not.toThrow();
+  });
+
+  test('does not disable or crash the login form', () => {
+    document.body.innerHTML = '<form><input id="password"><button type="submit">Login</button></form>';
+    expect(() => passwordValidator()).not.toThrow();
+    expect(document.querySelector('button').disabled).toBe(false);
+  });
+
+  test('supports the password reset form groups', () => {
+    document.body.innerHTML = '<form><div class="form-group"><input id="password"></div><div class="form-group"><input id="confirm-password"></div><button type="submit">Reset</button></form>';
+    expect(() => passwordValidator()).not.toThrow();
+    expect(document.querySelector('button').disabled).toBe(true);
+    expect(document.querySelectorAll('.password-validation').length).toBe(1);
+  });
+
   test('enables submit button when criteria met', () => {
     passwordValidator();
     const passwordInput = document.getElementById('password');

@@ -84,20 +84,37 @@ MongoDB powers the application's persistence layer and separates data by company
 MongoDB stores user accounts in the `users` collection. Each company has its own collection that holds assets as well as category and location documents (flagged by `category: true` or `location: true`). An additional `activities` collection logs actions for the dashboard.
 
 ## Installation
-1. Clone the repository:
-   ```bash
-   git clone <repo-url>
-   ```
-2. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-3. Set the environment variables listed above.
-4. Run the application locally:
-   ```bash
-   python app.py
-   ```
-   The site will be available at `http://localhost:5000`.
+Use Python 3.12 (pinned in `.python-version`) and Node.js 24 for the browser tests.
+Create and activate a virtual environment, then install the dependencies:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate  # Windows CMD: .venv\Scripts\activate
+pip install -r requirements.txt
+npm ci
+```
+
+Configure these values in your local environment or Heroku Config Vars:
+
+| Variable | Purpose |
+| --- | --- |
+| `MONGO_URI` | MongoDB connection string. For a local server: `mongodb://127.0.0.1:27017/assety_dev`. Use your Atlas connection string on Heroku. |
+| `MONGO_DBNAME` | Database name. Optional when the URI includes it; this is the database name, not the cluster name. |
+| `SECRET_KEY` | A private, stable random signing key. Required on Heroku; the app uses a temporary random key for local development when unset. |
+| `SENDGRID_API_KEY` | Optional SendGrid credential for password recovery and asset notification emails. |
+| `MAIL_DEFAULT_SENDER` | Optional verified SendGrid sender address; required when enabling email delivery. |
+
+Generate a signing key locally with `python -c "import secrets; print(secrets.token_hex(32))"` and enter it securely in Heroku Config Vars. Never commit or share the key or a MongoDB URI containing credentials. Local development sessions reset when the temporary signing key changes.
+
+Start MongoDB, then run `python app.py`. The development server listens on port 5000; set `FLASK_DEBUG=1` only when you want local debugging.
+
+### Heroku
+
+The `Procfile` starts Gunicorn and binds to Heroku's assigned `PORT`; it does not use Flask's development server. Before deploying, configure `MONGO_URI`, the database name (in the URI or `MONGO_DBNAME`), and `SECRET_KEY`. The Atlas database user and network access rules must permit connections from Heroku. Configure SendGrid only if you need email delivery.
+
+After deployment, inspect startup errors with `heroku logs --tail --app YOUR_APP_NAME`. Changing the signing key invalidates existing sessions and password reset links. Users should sign in again after upgrading from the old hardcoded key.
+
+Company names are used verbatim as MongoDB collection keys, including underscores. This update does not migrate historical records. If an older version wrote an underscore company's records into a separate collection with spaces, inspect those collections and their ownership before migrating any data.
 
 ## Testing
 
@@ -108,13 +125,25 @@ The tests run in the `jsdom` environment so that browser APIs such as `document`
 Install Node.js dependencies and run the tests with:
 
 ```bash
-npm install
+npm ci
 npm test
 ```
 
 The suite verifies that the validation UI appears only once, toggles the submit button as criteria are met,
 keeps rules hidden until the user interacts with the fields, shows all rules on password focus and warns
-when the two password fields do not match.
+when the two password fields do not match. It also checks login/reset page compatibility and the idle warning, stay-logged-in action, and logout countdown.
+
+### Python integration tests
+
+With a MongoDB server running locally, run:
+
+```bash
+python -m unittest discover -s tests -v
+```
+
+The tests create a uniquely named temporary database, then remove it. They use `mongodb://127.0.0.1:27017` by default; set `ASSETY_TEST_MONGO_URI` only to a MongoDB server intended for tests. They do not use the application's configured production database or send email.
+
+Coverage includes authentication, signup/login/password recovery, settings/profile validation, company isolation, asset/image handling, category/location edits and deletion, literal search, activity-log filtering and pagination, PDF exports, and Heroku startup configuration. PDFs use FPDF's built-in fonts: supported Windows-1252 characters (including currency symbols) are preserved; unsupported glyphs are replaced rather than crashing the export.
 
 ### Manual Testing
 The application was manually tested using different user flows:

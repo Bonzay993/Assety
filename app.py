@@ -1,14 +1,20 @@
 import os
 import csv
 import io
-from flask import Flask, render_template, request, redirect, url_for, flash, send_file, session, jsonify
+import math
+import re
+import secrets
+import atexit
+from decimal import Decimal, InvalidOperation
+from flask import Flask, render_template, request, redirect, url_for, flash, send_file, session, jsonify, abort, g
 from flask_pymongo import PyMongo
-from pymongo import MongoClient
 from datetime import datetime, timedelta
 from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
 from werkzeug.utils import secure_filename
+from markupsafe import escape
 from bson.objectid import ObjectId 
+from bson.errors import InvalidId
 from send_emails import EmailService
 from fpdf import FPDF
 from translations import TRANSLATIONS
@@ -21,12 +27,14 @@ if os.path.exists("env.py"):
 app = Flask(__name__)
 app.config["MONGO_DBNAME"] = os.environ.get("MONGO_DBNAME")
 app.config["MONGO_URI"] = os.environ.get("MONGO_URI")
-app.secret_key = os.environ.get("SECRET_KEY")
+if os.environ.get('DYNO') and not os.environ.get('SECRET_KEY'):
+    raise ValueError('Set SECRET_KEY in Heroku Config Vars before starting Assety.')
+app.secret_key = os.environ.get("SECRET_KEY") or secrets.token_hex(32)
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 app.config['SESSION_COOKIE_NAME'] = 'session'  # Customize the cookie name (optional)
 app.config['SESSION_PERMANENT'] = False  # Session will not last beyond the browser session
 app.config['SESSION_TYPE'] = 'filesystem'  # Store session in the filesystem, can also be 'redis' or 'mongodb
 
-app.config['SECRET_KEY'] = 'top-secret!'
 app.config['MAIL_SERVER'] = 'smtp.sendgrid.net'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
@@ -37,6 +45,10 @@ app.config['SENDGRID_API_KEY'] = os.environ.get('SENDGRID_API_KEY')
 
 email_service = EmailService(app)
 mongo = PyMongo(app)
+atexit.register(mongo.cx.close)
+app.config['MONGO_DBNAME'] = app.config['MONGO_DBNAME'] or (mongo.db.name if mongo.db is not None else None)
+if not app.config['MONGO_DBNAME']:
+    raise ValueError('Set MONGO_DBNAME or include a database name in MONGO_URI.')
 
 # Initialize GridFS
 fs = gridfs.GridFS(mongo.cx[app.config["MONGO_DBNAME"]])
@@ -48,6 +60,120 @@ CURRENCY_SYMBOLS = {
     'USD': '$',
     'EUR': '€'
 }
+
+
+def email_query(email):
+    """Match legacy mixed-case email addresses without interpreting regex syntax."""
+    return {'email': {'$regex': '^' + re.escape(email) + '$', '$options': 'i'}}
+
+
+def valid_email(email):
+    return isinstance(email, str) and bool(re.fullmatch(r'[^\s@]+@[^\s@]+\.[^\s@]+', email))
+
+
+def valid_password(password, confirmation):
+    return (isinstance(password, str) and len(password) >= 6
+            and bool(re.search(r'[A-Z]', password)) and password == confirmation)
+
+
+def pdf_text(value):
+    # FPDF's core fonts use Windows-1252; its output method expects Latin-1 bytes.
+    return str(value).encode('cp1252', errors='replace').decode('latin1')
+
+
+def activity_date(activity):
+    return activity.get('timestamp') or activity.get('date')
+
+
+def activity_label(activity):
+    return activity.get('asset') or activity.get('asset_tag') or activity.get('category') or ''
+
+
+def delete_unused_image(collection, image_id):
+    if image_id and not collection.find_one({'image_id': image_id}):
+        fs.delete(image_id)
+
+
+def activity_date_filter(company):
+    bounds = {}
+    for argument, operator in [('start_date', '$gte'), ('end_date', '$lt')]:
+        value = request.args.get(argument)
+        if value:
+            try:
+                parsed = datetime.strptime(value, '%Y-%m-%d')
+                bounds[operator] = parsed + timedelta(days=1) if argument == 'end_date' else parsed
+            except ValueError:
+                pass
+    query = {'company': company}
+    if bounds:
+        query['$or'] = [
+            {'timestamp': bounds},
+            {'timestamp': {'$exists': False}, 'date': bounds},
+        ]
+    return query
+
+
+def activity_cursor(db, query, skip=0, limit=None):
+    pipeline = [
+        {'$match': query},
+        {'$addFields': {'event_date': {'$ifNull': ['$timestamp', '$date']}}},
+        {'$sort': {'event_date': -1, '_id': -1}},
+        {'$skip': skip},
+    ]
+    if limit is not None:
+        pipeline.append({'$limit': limit})
+    return db.activities.aggregate(pipeline)
+
+
+@app.before_request
+def require_account():
+    public = {'index', 'login', 'sign_up', 'forgot_password', 'reset_password',
+              'logout', 'static', 'test_mongo'}
+    if request.endpoint is None or request.endpoint in public:
+        return
+    user_id = session.get('user_id')
+    try:
+        user = mongo.cx[app.config['MONGO_DBNAME']].users.find_one({'_id': ObjectId(user_id)}) if user_id else None
+    except (InvalidId, TypeError):
+        user = None
+    if not user or not user.get('company'):
+        session.clear()
+        if request.endpoint in {'save_settings', 'update_profile', 'search_assets'}:
+            return jsonify(status='unauthorized'), 401
+        if request.endpoint == 'get_image':
+            return 'Unauthorized', 403
+        return redirect(url_for('login'))
+    g.current_user = user
+    # The user's persisted company is the collection key, never a display name.
+    session['company'] = user['company']
+
+    resources = {
+        'view_asset': ('asset_id', 'asset', 'path'),
+        'delete_asset': ('asset_id', 'asset', 'path'),
+        'asset_properties': ('asset_id', 'asset', 'query'),
+        'save_asset': ('asset_id', 'asset', 'form'),
+        'delete_category': ('category_id', 'category', 'path'),
+        'category_properties': ('category_id', 'category', 'query'),
+        'save_category': ('category_id', 'category', 'form'),
+        'delete_location': ('location_id', 'location', 'path'),
+        'location_properties': ('location_id', 'location', 'query'),
+        'save_location': ('location_id', 'location', 'form'),
+    }
+    resource = resources.get(request.endpoint)
+    if resource:
+        field, flag, source = resource
+        values = request.view_args if source == 'path' else request.args if source == 'query' else request.form
+        value = values.get(field)
+        if not value and source == 'form':
+            return
+        try:
+            object_id = ObjectId(value) if value else None
+        except (InvalidId, TypeError):
+            abort(404)
+        collection = mongo.cx[app.config['MONGO_DBNAME']][user['company']]
+        g.item = collection.find_one({'_id': object_id, flag: True}) if object_id else None
+        if g.item is None:
+            abort(404)
 
 
 
@@ -67,7 +193,9 @@ def inject_translator():
 def inject_settings():
     currency = session.get('currency', 'GBP')
     return {
-        'timeout': session.get('timeout', 2),
+        'timeout': session.get('timeout') or 2,
+        'first_name': session.get('first_name') or 'User',
+        'last_name': session.get('last_name') or 'User',
         'dark_mode': session.get('dark_mode', False),
         'email_notifications': session.get('email_notifications', True),
         'language': session.get('language', 'en'),
@@ -97,7 +225,7 @@ def settings():
     else:
         company_display = None
 
-    client = MongoClient(app.config["MONGO_URI"])
+    client = mongo.cx
     db = client[app.config["MONGO_DBNAME"]]
     users_collection = db['users']
     user = users_collection.find_one({"_id": ObjectId(session['user_id'])})
@@ -127,7 +255,9 @@ def save_settings():
     if not session.get('user_id'):
         return redirect(url_for('login'))
 
-    data = request.json or {}
+    data = request.get_json(silent=True)
+    if not isinstance(data, dict):
+        return {'status': 'error', 'message': 'Expected a JSON object'}, 400
 
     timeout = data.get('timeout')
     dark_mode = data.get('dark_mode')
@@ -138,7 +268,16 @@ def save_settings():
     if timeout is None and dark_mode is None and email_notifications is None and language is None and currency is None:
         return {"status": "error", "message": "No settings provided"}, 400
 
-    client = MongoClient(app.config["MONGO_URI"])
+    if timeout is not None and (type(timeout) is not int or not 1 <= timeout <= 120):
+        return {'status': 'error', 'message': 'Timeout must be between 1 and 120 minutes'}, 400
+    if any(value is not None and type(value) is not bool for value in [dark_mode, email_notifications]):
+        return {'status': 'error', 'message': 'Toggles must be boolean values'}, 400
+    if language is not None and (not isinstance(language, str) or language not in TRANSLATIONS):
+        return {'status': 'error', 'message': 'Unsupported language'}, 400
+    if currency is not None and (not isinstance(currency, str) or currency not in CURRENCY_SYMBOLS):
+        return {'status': 'error', 'message': 'Unsupported currency'}, 400
+
+    client = mongo.cx
     db = client[app.config["MONGO_DBNAME"]]
     users_collection = db['users']
 
@@ -180,9 +319,8 @@ def reports():
         flash("Please log in to access reports.", "error")
         return redirect(url_for('login'))
 
-    company_name = company_name.replace('_', ' ')
 
-    client = MongoClient(app.config["MONGO_URI"])
+    client = mongo.cx
     db = client[app.config["MONGO_DBNAME"]]
     company_collection = db[company_name]
 
@@ -220,9 +358,8 @@ def export_reports(file_format):
         flash("Please log in to access reports.", "error")
         return redirect(url_for('login'))
 
-    company_name = company_name.replace('_', ' ')
 
-    client = MongoClient(app.config["MONGO_URI"])
+    client = mongo.cx
     db = client[app.config["MONGO_DBNAME"]]
     company_collection = db[company_name]
 
@@ -264,12 +401,12 @@ def export_reports(file_format):
         pdf.add_page()
         pdf.set_font("Arial", size=12)
         pdf.cell(0, 10, txt=f"Total Assets: {total_assets}", ln=True)
-        symbol_pdf = symbol.encode('cp1252', 'ignore').decode('cp1252')
+        symbol_pdf = pdf_text(symbol)
         pdf.cell(0, 10, txt=f"Total Asset Value: {symbol_pdf}{total_value:.2f}", ln=True)
         pdf.ln(10)
         for item in category_summary:
             category = item['_id'] or 'Uncategorized'
-            pdf.cell(0, 10, txt=f"{category}: {item['count']}", ln=True)
+            pdf.cell(0, 10, txt=pdf_text(f"{category}: {item['count']}"), ln=True)
         pdf.ln(10)
         pdf.cell(0, 10, txt=f"Total Assets: {sum(i['count'] for i in category_summary)}", ln=True)
         pdf_output = io.BytesIO()
@@ -299,34 +436,18 @@ def logs():
         return redirect(url_for('login'))
     company_display = company_name.replace('_', ' ')
 
-    page = int(request.args.get('page', 1))
+    try:
+        page = max(1, min(1_000_000, int(request.args.get('page', 1))))
+    except ValueError:
+        page = 1
     per_page = 50
     start_date_str = request.args.get('start_date')
     end_date_str = request.args.get('end_date')
-    query = {'company': company_name}
+    query = activity_date_filter(company_name)
 
-    if start_date_str:
-        try:
-            start_dt = datetime.strptime(start_date_str, '%Y-%m-%d')
-            query['date'] = {'$gte': start_dt}
-        except ValueError:
-            start_dt = None
-    else:
-        start_dt = None
-
-    if end_date_str:
-        try:
-            end_dt = datetime.strptime(end_date_str, '%Y-%m-%d') + timedelta(days=1)
-            if 'date' in query:
-                query['date']['$lt'] = end_dt
-            else:
-                query['date'] = {'$lt': end_dt}
-        except ValueError:
-            end_dt = None
-
-    client = MongoClient(app.config['MONGO_URI'])
+    client = mongo.cx
     db = client[app.config['MONGO_DBNAME']]
-    cursor = db.activities.find(query).sort('date', -1).skip((page - 1) * per_page).limit(per_page + 1)
+    cursor = activity_cursor(db, query, skip=(page - 1) * per_page, limit=per_page + 1)
     activities = list(cursor)
     has_next = len(activities) > per_page
     if has_next:
@@ -334,7 +455,7 @@ def logs():
 
     formatted_activities = []
     for act in activities:
-        date = act.get('date')
+        date = activity_date(act)
         if isinstance(date, datetime):
             date_value = date.strftime('%Y-%m-%d %H:%M:%S')
         elif date:
@@ -345,7 +466,7 @@ def logs():
             'date': date_value,
             'user': act.get('user', ''),
             'action': act.get('action', ''),
-            'asset': act.get('asset', ''),
+            'asset': activity_label(act),
             'location': act.get('location', '')
         })
 
@@ -373,28 +494,11 @@ def export_logs():
 
     start_date_str = request.args.get('start_date')
     end_date_str = request.args.get('end_date')
-    query = {'company': company_name}
+    query = activity_date_filter(company_name)
 
-    if start_date_str:
-        try:
-            start_dt = datetime.strptime(start_date_str, '%Y-%m-%d')
-            query['date'] = {'$gte': start_dt}
-        except ValueError:
-            pass
-
-    if end_date_str:
-        try:
-            end_dt = datetime.strptime(end_date_str, '%Y-%m-%d') + timedelta(days=1)
-            if 'date' in query:
-                query['date']['$lt'] = end_dt
-            else:
-                query['date'] = {'$lt': end_dt}
-        except ValueError:
-            pass
-
-    client = MongoClient(app.config['MONGO_URI'])
+    client = mongo.cx
     db = client[app.config['MONGO_DBNAME']]
-    cursor = db.activities.find(query).sort('date', -1)
+    cursor = activity_cursor(db, query)
 
     pdf = FPDF()
     pdf.add_page()
@@ -402,15 +506,15 @@ def export_logs():
     pdf.cell(0, 10, txt='Activity Logs', ln=True)
     pdf.ln(5)
     for act in cursor:
-        date = act.get('date')
+        date = activity_date(act)
         if isinstance(date, datetime):
             date_str = date.strftime('%Y-%m-%d %H:%M:%S')
         elif date:
             date_str = str(date)
         else:
             date_str = 'N/A'
-        line = f"{date_str} - {act.get('user', '')} - {act.get('action', '')} - {act.get('asset', '')} - {act.get('location', '')}"
-        pdf.multi_cell(0, 8, line)
+        line = f"{date_str} - {act.get('user', '')} - {act.get('action', '')} - {activity_label(act)} - {act.get('location', '')}"
+        pdf.multi_cell(0, 8, pdf_text(line))
 
     pdf_output = io.BytesIO()
     pdf_output.write(pdf.output(dest='S').encode('latin1'))
@@ -429,10 +533,9 @@ def profile_page():
     user_first_name = session.get('first_name', 'User') 
     user_last_name = session.get('last_name', 'User') 
     company_name = session.get('company', None)
-    company_name = company_name.replace("_", " ")
     user_email = session.get('email')
     
-    client = MongoClient(app.config["MONGO_URI"])
+    client = mongo.cx
     db = client[app.config["MONGO_DBNAME"]]
     users_collection = db['users']
     
@@ -451,17 +554,24 @@ def update_profile():
     if not session.get('user_id'):
         return {"status": "unauthorized"}, 401
 
-    data = request.json
+    data = request.get_json(silent=True)
+    if not isinstance(data, dict):
+        return {'status': 'error', 'message': 'Expected a JSON object'}, 400
     first_name = data.get('first_name')
     last_name = data.get('last_name')
     email = data.get('email')
 
-    if not all([first_name, last_name, email]):
+    if not all(isinstance(value, str) and value.strip() for value in [first_name, last_name, email]) or not valid_email(email.strip()):
         return {"status": "error", "message": "Missing fields"}, 400
+    first_name, last_name, email = first_name.strip(), last_name.strip(), email.strip().lower()
 
-    client = MongoClient(app.config["MONGO_URI"])
+    client = mongo.cx
     db = client[app.config["MONGO_DBNAME"]]
     users_collection = db['users']
+
+    duplicate = users_collection.find_one({**email_query(email), '_id': {'$ne': ObjectId(session['user_id'])}})
+    if duplicate:
+        return {'status': 'error', 'message': 'Email address is already in use'}, 400
 
     users_collection.update_one(
         {"_id": ObjectId(session['user_id'])},
@@ -485,22 +595,25 @@ def update_profile():
 def sign_up():
     try:
         # Directly connect using MongoClient
-        client = MongoClient(app.config["MONGO_URI"])
+        client = mongo.cx
         db = client[app.config["MONGO_DBNAME"]]
         users_collection = db['users']  # Access 'users' collection directly
-        # Check if connection was successful by listing collection names
-        collections = db.list_collection_names()
-        print(f"Collections available: {collections}")
-
         if request.method == 'POST':
-            first_name = request.form.get('first-name')
-            last_name = request.form.get('last-name')
-            company = request.form.get('company')
-            email = request.form.get('email')
-            password = request.form.get('password')
+            first_name = request.form.get('first-name', '').strip()
+            last_name = request.form.get('last-name', '').strip()
+            company = request.form.get('company', '').strip()
+            email = request.form.get('email', '').strip().lower()
+            password = request.form.get('password', '')
+            confirmation = request.form.get('confirm-password', '')
+            if not all([first_name, last_name, company]) or not valid_email(email) or not valid_password(password, confirmation):
+                flash('Enter all fields, a valid email, and matching passwords with at least six characters and an uppercase letter.', 'signup-error')
+                return render_template('sign-up.html'), 400
+            if '\x00' in company or '$' in company or company.startswith('system.') or company in {'users', 'activities', 'fs.files', 'fs.chunks'}:
+                flash('Please choose a different company name.', 'signup-company-error')
+                return render_template('sign-up.html'), 400
 
             # Check if the email or company already exists in the database
-            existing_user = users_collection.find_one({'email': email})
+            existing_user = users_collection.find_one(email_query(email))
             # Check if the company name already exists in the database
             existing_company = db.list_collection_names()  # List of all collections in the DB
             if company in existing_company:
@@ -547,15 +660,19 @@ def sign_up():
                 return redirect(url_for('login'))  # Redirect to login after successful signup
 
             except Exception as e:
-                flash(f"An error occurred: {str(e)}", "error")
+                # Do not leave an unusable account if its company initialization failed.
+                if 'user_insert' in locals():
+                    users_collection.delete_one({'_id': user_insert.inserted_id})
+                app.logger.error('Account creation failed (%s)', type(e).__name__)
+                flash('Account creation failed. Please try again later.', 'signup-error')
                 return redirect(url_for('sign_up'))
 
         return render_template('sign-up.html')
 
     except Exception as e:
-        print(f"Error: {e}")
-        flash("MongoDB connection failed. Please try again later.", "error")
-        return render_template('sign-up.html')
+        app.logger.error('Account database request failed (%s)', type(e).__name__)
+        flash("MongoDB connection failed. Please try again later.", "signup-error")
+        return render_template('sign-up.html'), 503
 
 
 
@@ -565,29 +682,29 @@ def login():
     session.permanent = False
    
     if request.method == 'POST':
-        email = request.form.get('email')
-        password = request.form.get('password')
+        email = request.form.get('email', '').strip().lower()
+        password = request.form.get('password', '')
 
-        client = MongoClient(app.config["MONGO_URI"])
+        client = mongo.cx
         db = client[app.config["MONGO_DBNAME"]]
         users_collection = db['users']
-        user = users_collection.find_one({'email': email})  # Find user by email
+        user = users_collection.find_one(email_query(email)) if email and password else None
 
-        if user and check_password_hash(user['password'], password):
+        if user and user.get('password') and check_password_hash(user['password'], password):
+            session.clear()
             session['user_logged_in'] = True
             session['user_id'] = str(user['_id'])  # Store user ID in session
-            session['first_name'] = user.get('first_name', 'User').capitalize()
-            session['last_name'] = user.get('last_name', 'User').capitalize()  # Store first name in session
+            session['first_name'] = user.get('first_name') or 'User'
+            session['last_name'] = user.get('last_name') or 'User'
             session['email'] = user['email']
             session['company'] = user['company']
              # Get timeout from user document
-            timeout_minutes = user.get('settings', {}).get('timeout')
+            timeout_minutes = user.get('settings', {}).get('timeout', 2) or 2
             session['timeout'] = timeout_minutes
             session['dark_mode'] = user.get('settings', {}).get('dark_mode', False)
             session['email_notifications'] = user.get('settings', {}).get('email_notifications', True)
             session['language'] = user.get('settings', {}).get('language', 'en')
             session['currency'] = user.get('settings', {}).get('currency', 'GBP')
-            print(f"Session after login: {session}")  # Debugging session data
             flash('Login successful!', 'success')
             return redirect(url_for('dashboard'))  # Redirect to inventory page
         else:
@@ -610,20 +727,20 @@ def logout():
 def forgot_password():
     if request.method == "POST":
       
-        client = MongoClient(app.config["MONGO_URI"])
+        client = mongo.cx
         db = client[app.config["MONGO_DBNAME"]]
-        email = request.form.get("email").lower()
+        email = request.form.get('email', '').strip().lower()
+        if not valid_email(email):
+            flash('Enter a valid email address.', 'reset-password-message-error')
+            return render_template('forgot-password.html'), 400
         users_collection = db['users']
-        user = users_collection.find_one({'email': email})  # Find user by email
+        user = users_collection.find_one(email_query(email))
         
         
         if user:
-            if not user.get('settings', {}).get('email_notifications', True):
-                flash("Email notifications are disabled for this account.", 'reset-password-message')
-                return render_template("forgot-password.html")
-
             # Generate a token for password reset
-            token = email_service.generate_token(email)
+            email = user['email']
+            token = email_service.generate_token(email, user['password'])
             reset_url = url_for('reset_password', token=token, _external=True)
 
             # Send the password reset email
@@ -649,24 +766,31 @@ def forgot_password():
 @app.route("/reset_password/<token>", methods=["GET", "POST"])
 def reset_password(token):
     email = email_service.verify_token(token)
-    if not email:
+    db = mongo.cx[app.config['MONGO_DBNAME']]
+    user = db.users.find_one(email_query(email)) if email else None
+    if not user or not email_service.verify_token(token, password_hash=user.get('password', '')):
         flash("The password reset link is invalid or has expired.", 'password-update-expired')
         return redirect(url_for('login'))
 
     if request.method == "POST":
-        new_password = request.form.get("password")
+        new_password = request.form.get('password', '')
+        if not valid_password(new_password, request.form.get('confirm-password', '')):
+            flash('Enter matching passwords with at least six characters and an uppercase letter.', 'reset-error')
+            return render_template('reset-password.html', token=token), 400
         hashed_password = generate_password_hash(new_password)
         
         # Update the password in the database
-        client = MongoClient(app.config["MONGO_URI"])
+        client = mongo.cx
         db = client[app.config["MONGO_DBNAME"]]
         users_collection = db['users']
-        user = users_collection.update_one({"email": email}, {"$set": {"password": hashed_password}})
+        result = users_collection.update_one({'_id': user['_id'], 'password': user['password']}, {'$set': {'password': hashed_password}})
+        if result.matched_count != 1:
+            flash('The password reset link is invalid or has expired.', 'password-update-expired')
+            return redirect(url_for('login'))
+        session.clear()
         
         flash("Your password has been updated successfully.", 'password-update-success')
         return redirect(url_for('login'))
-    else:
-        flash("There was something wrong while updating the password. Please try again later,'password-update-fail")
     
     return render_template("reset-password.html", token=token)
 
@@ -681,13 +805,8 @@ def inventory_app():
     timeout = session.get('timeout')
     
     # Replace underscores with spaces in the company name
-    company_name = company_name.replace("_", " ")
     
     # Debugging: print session data and modified company name
-    print(f"Session data: {session}")
-    print(f"User First Name: {user_first_name}")
-    print(f"Modified Company Name: {company_name}")
-    print(f"Timeout value: {timeout}")
     
     # Render the template with first name and company name
     return render_template('inventory.html', first_name=user_first_name,last_name=user_last_name, company=company_name, timeout=timeout)
@@ -703,9 +822,8 @@ def dashboard():
         flash("Please log in to access the dashboard.", "error")
         return redirect(url_for('login'))
 
-    company_name = company_name.replace('_', ' ')
 
-    client = MongoClient(app.config["MONGO_URI"])
+    client = mongo.cx
     db = client[app.config["MONGO_DBNAME"]]
     company_collection = db[company_name]
 
@@ -715,17 +833,15 @@ def dashboard():
 
     recent_assets = list(company_collection.find({"asset": True}).sort("_id", -1).limit(5))
 
-    recent_activities_cursor = db.activities.find(
-        {"company": company_name}
-    ).sort("timestamp", -1).limit(5)
+    recent_activities_cursor = activity_cursor(db, {'company': company_name}, limit=5)
 
     formatted_activities = []
     for act in recent_activities_cursor:
         formatted_activities.append({
-            "date": act.get("timestamp"),
+            "date": activity_date(act).strftime('%Y-%m-%d %H:%M:%S') if isinstance(activity_date(act), datetime) else str(activity_date(act) or 'N/A'),
             "user": act.get("user"),            
             "action": act.get("action"),
-            "asset": act.get("asset"),
+            "asset": activity_label(act),
             "location": act.get("location", "N/A")
         })
 
@@ -749,7 +865,7 @@ def log_activity(action, asset_id, asset_tag, location=None):
     company_name = session.get('company')
     timestamp = datetime.now()
 
-    client = MongoClient(app.config["MONGO_URI"])
+    client = mongo.cx
     db = client[app.config["MONGO_DBNAME"]]
     activities_collection = db['activities']
 
@@ -763,35 +879,33 @@ def log_activity(action, asset_id, asset_tag, location=None):
         'company': company_name
     }
 
-    print(f"LOGGED ACTIVITY: {activity_data}")  # Optional debugging log
     activities_collection.insert_one(activity_data)
 
 
 @app.route('/test-mongo')
 def test_mongo():
     try:
-        client = MongoClient(app.config["MONGO_URI"])
+        client = mongo.cx
         db = client[app.config["MONGO_DBNAME"]]
-        collections = db.list_collection_names()
-        return f"Connected to MongoDB! Collections: {collections}", 200
+        client.admin.command('ping')
+        return 'Connected to MongoDB!', 200
     except Exception as e:
-        return f"Error connecting to MongoDB: {str(e)}", 500
+        app.logger.error('Database readiness check failed (%s)', type(e).__name__)
+        return 'Database connection unavailable', 503
 
 
 @app.route("/assets")
 def assets():
     # Debugging: Check the session data
-    print(f"Session at assets page: {session}")
 
     # Get the first name from the session, if available
     user_first_name = session.get('first_name', 'User')
     user_last_name = session.get('last_name', 'User') 
     company_name = session.get('company', 'No Company')
 
-    company_name = company_name.replace("_", " ")
 
     # Fetch assets from the database as before
-    client = MongoClient(app.config["MONGO_URI"])
+    client = mongo.cx
     db = client[app.config["MONGO_DBNAME"]]
     
       # Access the company's asset collection
@@ -816,15 +930,14 @@ def search_assets_route():
     user_first_name = session.get('first_name', 'User')
     user_last_name = session.get('last_name', 'User')
     company_name = session.get('company', 'No Company')
-    company_name = company_name.replace("_", " ")
 
-    client = MongoClient(app.config["MONGO_URI"])
+    client = mongo.cx
     db = client[app.config["MONGO_DBNAME"]]
     company_collection = db[company_name]
 
     matching_assets = list(company_collection.find({
         "asset": True,
-        "asset_tag": {"$regex": query, "$options": "i"}
+        "asset_tag": {"$regex": re.escape(query), "$options": "i"}
     }))
 
     return render_template(
@@ -846,13 +959,12 @@ def search_assets():
     if not company_name:
         return jsonify([])
 
-    company_name = company_name.replace('_', ' ')
-    client = MongoClient(app.config["MONGO_URI"])
+    client = mongo.cx
     db = client[app.config["MONGO_DBNAME"]]
     company_collection = db[company_name]
 
     results = company_collection.find(
-        {"asset_tag": {"$regex": query, "$options": "i"}},
+        {"asset": True, "asset_tag": {"$regex": re.escape(query), "$options": "i"}},
         {"asset_tag": 1}
     ).limit(3)
 
@@ -867,9 +979,8 @@ def new_asset():
      user_first_name = session.get('first_name', 'User') 
      user_last_name = session.get('last_name', 'User') 
      company_name = session.get('company', None)
-     company_name = company_name.replace("_", " ")
 
-     client = MongoClient(app.config["MONGO_URI"])
+     client = mongo.cx
      db = client[app.config["MONGO_DBNAME"]]
 
      company_collection = db[company_name]
@@ -889,39 +1000,64 @@ def save_asset():
         flash("No company found in session. Please log in again.", "error")
         return redirect(url_for('login'))
 
-    company_name = company_name.replace('_', ' ')
-    client = MongoClient(app.config["MONGO_URI"])
+    client = mongo.cx
     db = client[app.config["MONGO_DBNAME"]]
     company_collection = db[company_name]
     fs = gridfs.GridFS(db)
 
     asset_id = request.form.get('asset_id')
-    asset_tag = request.form['asset-tag']
-    serial = request.form['serial']
-    model = request.form['model']
-    notes = request.form['notes']
-    warranty = request.form['warranty']
-    order_number = request.form['order-number']
-    purchase_cost = request.form['purchase-cost']
+    asset_tag = request.form.get('asset-tag', '').strip()
+    serial = request.form.get('serial', '').strip()
+    model = request.form.get('model', '').strip()
+    notes = request.form.get('notes', '').strip()
+    warranty = request.form.get('warranty', '').strip()
+    order_number = request.form.get('order-number', '').strip()
+    purchase_cost = request.form.get('purchase-cost', '').strip()
     purchase_cost = purchase_cost.replace('£', '').replace('$', '').replace('€', '').strip()
-    purchase_date = request.form['purchase-date']
-    location = request.form['location']
-    category = request.form['category']
+    purchase_date = request.form.get('purchase-date', '').strip()
+    location = request.form.get('location', '').strip()
+    category = request.form.get('category', '').strip()
+
+    if not asset_tag or not category:
+        flash('Asset tag and category are required.', 'error')
+        return redirect(url_for('new_asset')) if not asset_id else redirect(url_for('asset_properties', asset_id=asset_id))
+    if purchase_cost:
+        try:
+            amount = Decimal(purchase_cost.replace(',', ''))
+            if not amount.is_finite() or amount < 0 or not math.isfinite(float(amount)):
+                raise InvalidOperation
+            purchase_cost = format(amount, 'f')
+        except (InvalidOperation, ValueError, OverflowError):
+            return 'Purchase cost must be a non-negative number', 400
+    for value in [purchase_date, warranty]:
+        if value:
+            try:
+                datetime.strptime(value, '%Y-%m-%d')
+            except ValueError:
+                return 'Enter a valid date in YYYY-MM-DD format', 400
+    duplicate_query = {'asset': True, 'asset_tag': {'$regex': '^' + re.escape(asset_tag) + '$', '$options': 'i'}}
+    if asset_id:
+        duplicate_query['_id'] = {'$ne': ObjectId(asset_id)}
+    if company_collection.find_one(duplicate_query):
+        flash('An asset with this tag already exists.', 'error')
+        return redirect(url_for('assets'))
 
     image_file = request.files.get('image')
     image_id = None
 
     if image_file and image_file.filename != "":
+        if image_file.mimetype not in {'image/png', 'image/jpeg', 'image/gif', 'image/webp'}:
+            return 'Upload a PNG, JPEG, GIF, or WebP image', 400
         try:
             filename = secure_filename(image_file.filename)
             image_id = fs.put(
                 image_file,
                 filename=filename,
-                content_type=image_file.content_type,
+                content_type=image_file.mimetype,
                 company=company_name,
                 uploaded_by=session.get('first_name'),
                 asset_tag=asset_tag,
-                timestamp=datetime.utcnow()
+                timestamp=datetime.now()
             )
         except Exception as e:
             flash(f"Image upload failed: {str(e)}", "error")
@@ -954,6 +1090,7 @@ def save_asset():
                 {"$set": asset_data}
             )
             action = 'Update'
+            delete_unused_image(company_collection, g.item.get('image_id'))
             flash("Asset updated successfully!", "success")
         else:
             company_collection.insert_one(asset_data)
@@ -973,7 +1110,7 @@ def save_asset():
         if session.get('email_notifications', True):
             subject = f"Asset {asset_tag} {action.lower()}d"
             html_content = (
-                f"<p>The asset <strong>{asset_tag}</strong> was {action.lower()}d in {company_name}.</p>"
+                f"<p>The asset <strong>{escape(asset_tag)}</strong> was {action.lower()}d in {escape(company_name)}.</p>"
             )
             email_service.send_email(
                 session.get('email'),
@@ -1002,10 +1139,15 @@ def get_image(image_id):
         if image_file.company != company:
             return "Forbidden", 403
 
-        return send_file(image_file, mimetype=image_file.content_type)
+        mimetype = image_file.metadata.get('content_type') if image_file.metadata else None
+        # Older uploads used GridFS's deprecated contentType field.
+        mimetype = mimetype or image_file._file.get('contentType') or 'application/octet-stream'
+        response = send_file(image_file, mimetype=mimetype, as_attachment=mimetype not in {'image/png', 'image/jpeg', 'image/gif', 'image/webp'}, download_name=image_file.filename or 'image')
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+        return response
 
     except Exception as e:
-        return f"Image not found: {str(e)}", 404
+        return 'Image not found', 404
 
 
 
@@ -1016,29 +1158,9 @@ def asset_properties():
     user_first_name = session.get('first_name', 'User')
     user_last_name = session.get('last_name', 'User') 
     company_name = session.get('company', None)
-    company_name = company_name.replace("_", " ")
 
-    image_file = request.files.get('image')
-    image_id = None
-
-    if image_file and image_file.filename != "":
-        try:
-            filename = secure_filename(image_file.filename)
-            image_id = fs.put(
-                image_file,
-                filename=filename,
-                content_type=image_file.content_type,
-                company=company_name,
-                uploaded_by=session.get('first_name'),
-                asset_tag=asset_tag,
-                timestamp=datetime.utcnow()
-            )
-        except Exception as e:
-            flash(f"Image upload failed: {str(e)}", "error")
-            return redirect(url_for('dashboard'))
-    
     if asset_id:
-        client = MongoClient(app.config["MONGO_URI"])
+        client = mongo.cx
         db = client[app.config["MONGO_DBNAME"]]
         company_collection = db[session.get('company', 'default_company')]
         locations = list(company_collection.find({"location": True}))
@@ -1064,10 +1186,9 @@ def delete_asset(asset_id):
             return redirect(url_for('login'))
 
         # Replace underscores with spaces in company name (if needed)
-        company_name = company_name.replace("_", " ")
 
         # Connect to MongoDB
-        client = MongoClient(app.config["MONGO_URI"])
+        client = mongo.cx
         db = client[app.config["MONGO_DBNAME"]]
         company_collection = db[company_name]
 
@@ -1081,6 +1202,7 @@ def delete_asset(asset_id):
         result = company_collection.delete_one({"_id": ObjectId(asset_id)})
 
         if result.deleted_count > 0:
+            delete_unused_image(company_collection, asset.get('image_id'))
             # Log the delete activity
             activity_data = {
                 'timestamp': datetime.now(),
@@ -1107,12 +1229,11 @@ def delete_asset(asset_id):
 @app.route('/asset/<asset_id>')
 def view_asset(asset_id):
     
-    client = MongoClient(app.config["MONGO_URI"])
+    client = mongo.cx
     db = client[app.config["MONGO_DBNAME"]]
     user_first_name = session.get('first_name', 'User') 
     user_last_name = session.get('last_name', 'User') 
     company_name = session.get('company', None)
-    company_name = company_name.replace("_", " ")
     company_collection = db[company_name]
 
     # Fetch asset details from the database using the provided asset_id
@@ -1145,17 +1266,15 @@ def view_asset(asset_id):
 @app.route('/locations')
 def locations():
     # Debugging: Check the session data
-    print(f"Session at assets page: {session}")
 
     # Get the first name from the session, if available
     user_first_name = session.get('first_name', 'User')
     user_last_name = session.get('last_name', 'User') 
     company_name = session.get('company', 'No Company')
 
-    company_name = company_name.replace("_", " ")
 
     # Fetch assets from the database as before
-    client = MongoClient(app.config["MONGO_URI"])
+    client = mongo.cx
     db = client[app.config["MONGO_DBNAME"]]
     
       # Access the company's asset collection
@@ -1195,22 +1314,23 @@ def save_location():
 
     # Check if the request is from the modal
     is_modal = request.args.get('modal') == 'true'
-    company_name = company_name.replace('_', ' ')
-    client = MongoClient(app.config["MONGO_URI"])
+    client = mongo.cx
     db = client[app.config["MONGO_DBNAME"]]
     company_collection = db[company_name]
 
     # Get form data
     location_id = request.form.get('location_id')
-    location_tag = request.form['location-tag']
-    phone = request.form['phone']
-    address = request.form['address']
-    city = request.form['city']
-    state = request.form['state']
-    post_code = request.form['post-code']
+    location_tag = request.form.get('location-tag', '').strip()
+    if not location_tag:
+        return 'Location name is required', 400
+    phone = request.form.get('phone', '').strip()
+    address = request.form.get('address', '').strip()
+    city = request.form.get('city', '').strip()
+    state = request.form.get('state', '').strip()
+    post_code = request.form.get('post-code', '').strip()
 
     # Prevent duplicate location tags (case-insensitive)
-    query = {"location": True, "location_tag": {"$regex": f"^{location_tag}$", "$options": "i"}}
+    query = {"location": True, "location_tag": {"$regex": "^" + re.escape(location_tag) + "$", "$options": "i"}}
     if location_id:
         query["_id"] = {"$ne": ObjectId(location_id)}
 
@@ -1253,6 +1373,8 @@ def save_location():
                 {"_id": ObjectId(location_id)},
                 {"$set": location_data}
             )
+            if g.item['location_tag'] != location_tag:
+                company_collection.update_many({'asset': True, 'location': g.item['location_tag']}, {'$set': {'location': location_tag}})
             action = 'Update Location'
         else:
             company_collection.insert_one(location_data)
@@ -1269,13 +1391,7 @@ def save_location():
 
         # Handle modal response
         if is_modal:
-            return '''
-                <script>
-                    alert("Location saved successfully!");
-                    // Reload parent page to update the location dropdown
-                    window.parent.location.reload();
-                </script>
-            '''
+            return render_template('modal_saved.html', kind='location', name=location_tag)
         else:
             flash("Location saved successfully!", "success")
             return redirect(url_for('locations'))
@@ -1297,11 +1413,8 @@ def location_properties():
     user_first_name = session.get('first_name', 'User')
     user_last_name = session.get('last_name', 'User')
     company_name = session.get('company', 'Not Available')
-    if company_name:
-        company_name = company_name.replace("_", " ")
-
     if location_id:
-        client = MongoClient(app.config["MONGO_URI"])
+        client = mongo.cx
         db = client[app.config["MONGO_DBNAME"]]
         company_collection = db[session.get('company', 'default_company')]
 
@@ -1339,10 +1452,9 @@ def delete_location(location_id):
             return redirect(url_for('login'))
 
         # Replace underscores with spaces in company name (if needed)
-        company_name = company_name.replace("_", " ")
 
         # Connect to MongoDB
-        client = MongoClient(app.config["MONGO_URI"])
+        client = mongo.cx
         db = client[app.config["MONGO_DBNAME"]]
         company_collection = db[company_name]
 
@@ -1352,16 +1464,21 @@ def delete_location(location_id):
             flash("Location not found!", "danger")
             return redirect(url_for('locations'))
 
+        if company_collection.count_documents({'asset': True, 'location': location['location_tag']}):
+            flash('Move assets to another location before deleting this location.', 'error')
+            return redirect(url_for('locations'))
+
         # Attempt to find and delete the asset
         result = company_collection.delete_one({"_id": ObjectId(location_id)})
 
         if result.deleted_count > 0:
             # Log the delete activity
             activity_data = {
-                'date': datetime.datetime.now(),
+                'timestamp': datetime.now(),
                 'user': session['first_name'],
-                'action': 'Delete',
-                'location': location.get('location_tag', 'Unknown location')  # Use asset_tag or a fallback
+                'action': 'Delete Location',
+                'company': company_name,
+                'location': location.get('location_tag', 'Unknown location')
             }
             db.activities.insert_one(activity_data)
 
@@ -1378,24 +1495,23 @@ def delete_location(location_id):
 
 @app.route('/categories')
 def categories():
-    print(f"Session at categories page: {session}")
 
     user_first_name = session.get('first_name', 'User')
     user_last_name = session.get('last_name', 'User') 
-    company_name = session.get('company', 'No Company').replace("_", " ")
+    company_name = session.get('company', 'No Company')
 
-    client = MongoClient(app.config["MONGO_URI"])
+    client = mongo.cx
     db = client[app.config["MONGO_DBNAME"]]
     company_collection = db[company_name]  
 
     # Fetch all categories for this company
     all_categories = list(company_collection.find({"category": True}))
-    print(all_categories)  # Add this line to see the data fetched
 
     # Count items per category by matching category name
     for category in all_categories:
         category_name = category["name"]
         item_count = company_collection.count_documents({
+            'asset': True,
             "$and": [
                 {"category": category_name},
                 {"category": {"$type": "string"}}
@@ -1438,18 +1554,19 @@ def save_category():
         return redirect(url_for('login'))
 
     is_modal = request.args.get('modal') == 'true'
-    company_name = company_name.replace('_', ' ')
-    client = MongoClient(app.config["MONGO_URI"])
+    client = mongo.cx
     db = client[app.config["MONGO_DBNAME"]]
     company_collection = db[company_name]
     fs = gridfs.GridFS(db)
 
     category_id = request.form.get('category_id')
-    category_name = request.form['category-name']
-    category_type = request.form['category-type']
+    category_name = request.form.get('category-name', '').strip()
+    if not category_name:
+        return 'Category name is required', 400
+    category_type = request.form.get('category-type', '').strip()
 
     # Prevent duplicate category names (case-insensitive)
-    query = {"category": True, "name": {"$regex": f"^{category_name}$", "$options": "i"}}
+    query = {"category": True, "name": {"$regex": "^" + re.escape(category_name) + "$", "$options": "i"}}
     if category_id:
         query["_id"] = {"$ne": ObjectId(category_id)}
 
@@ -1479,16 +1596,18 @@ def save_category():
     image_id = None
 
     if image_file and image_file.filename != "":
+        if image_file.mimetype not in {'image/png', 'image/jpeg', 'image/gif', 'image/webp'}:
+            return 'Upload a PNG, JPEG, GIF, or WebP image', 400
         try:
             filename = secure_filename(image_file.filename)
             image_id = fs.put(
                 image_file,
                 filename=filename,
-                content_type=image_file.content_type,
+                content_type=image_file.mimetype,
                 company=company_name,
                 uploaded_by=session.get('first_name'),
                 category_name=category_name,
-                timestamp=datetime.utcnow()
+                timestamp=datetime.now()
             )
         except Exception as e:
             if is_modal:
@@ -1513,7 +1632,10 @@ def save_category():
                 {"_id": ObjectId(category_id)},
                 {"$set": category_data}
             )
+            if g.item['name'] != category_name:
+                company_collection.update_many({'asset': True, 'category': g.item['name']}, {'$set': {'category': category_name}})
             action = 'Update Category'
+            delete_unused_image(company_collection, g.item.get('image_id'))
         else:
             company_collection.insert_one(category_data)
             action = 'Create Category'
@@ -1527,12 +1649,7 @@ def save_category():
         })
 
         if is_modal:
-            return '''
-                <script>
-                    alert("Category saved successfully!");
-                    window.parent.location.reload();
-                </script>
-            '''
+            return render_template('modal_saved.html', kind='category', name=category_name)
         else:
             flash("Category saved successfully!", "category-success")
             return redirect(url_for('categories'))
@@ -1553,11 +1670,8 @@ def category_properties():
     user_first_name = session.get('first_name', 'User')
     user_last_name = session.get('last_name', 'User')
     company_name = session.get('company', 'Not Available')
-    if company_name:
-        company_name = company_name.replace("_", " ")
-
     if category_id:
-        client = MongoClient(app.config["MONGO_URI"])
+        client = mongo.cx
         db = client[app.config["MONGO_DBNAME"]]
         company_collection = db[session.get('company', 'default_company')]
 
@@ -1597,10 +1711,9 @@ def delete_category(category_id):
             flash("No company found in session. Please log in again.", "error")
             return redirect(url_for('login'))
 
-        company_name = company_name.replace("_", " ")
 
         # Connect to MongoDB
-        client = MongoClient(app.config["MONGO_URI"])
+        client = mongo.cx
         db = client[app.config["MONGO_DBNAME"]]
         company_collection = db[company_name]
 
@@ -1611,13 +1724,18 @@ def delete_category(category_id):
             flash("Category not found!", "danger")
             return redirect(url_for('categories'))
 
+        if company_collection.count_documents({'asset': True, 'category': category['name']}):
+            flash('Move assets to another category before deleting this category.', 'error')
+            return redirect(url_for('categories'))
+
         # Delete the category
         result = company_collection.delete_one({"_id": ObjectId(category_id)})
 
         if result.deleted_count > 0:
             # Log the delete activity
+            delete_unused_image(company_collection, category.get('image_id'))
             activity_data = {
-                'date': datetime.datetime.now(),
+                'timestamp': datetime.now(),
                 'user': session['first_name'],
                 'action': 'Delete Category',
                 'category': category.get('name', 'Unknown category'),
@@ -1638,4 +1756,4 @@ def delete_category(category_id):
 if __name__ == "__main__":
     app.run(host=os.environ.get("IP", "0.0.0.0"),
             port=int(os.environ.get("PORT", 5000)),
-            debug=True)
+            debug=os.environ.get('FLASK_DEBUG') == '1')

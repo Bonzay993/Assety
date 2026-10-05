@@ -1,43 +1,49 @@
-if (typeof document !== 'undefined') {
-  document.addEventListener('DOMContentLoaded', () => {
-    const input = document.querySelector('.search-input');
-    const icon = document.querySelector('.search-icon');
-    const results = document.getElementById('search-results');
+function setupSearch() {
+  const input = document.querySelector('.search-input');
+  const icon = document.querySelector('.search-icon');
+  const suggestions = document.querySelector('.search-suggestions');
+  if (!input || !icon || !suggestions || input.dataset.searchInitialized) return;
+  input.dataset.searchInitialized = 'true';
+  let sequence = 0;
 
-    async function performSearch() {
-      const query = input.value.trim();
-      if (!query) {
-        results.innerHTML = '';
-        results.style.display = 'none';
-        return;
-      }
-      try {
-        const response = await fetch(`/search-assets?q=${encodeURIComponent(query)}`);
-        const data = await response.json();
-        results.innerHTML = '';
-        if (!data.results.length) {
-          const p = document.createElement('p');
-          p.textContent = 'No assets found';
-          results.appendChild(p);
-        } else {
-          data.results.forEach(item => {
-            const link = document.createElement('a');
-            link.href = `/asset/${item.id}`;
-            link.textContent = item.asset_tag;
-            results.appendChild(link);
-          });
-        }
-        results.style.display = 'block';
-      } catch (err) {
-        console.error('Search error', err);
-      }
+  function navigate() {
+    const query = input.value.trim();
+    if (query) window.location.href = '/search?q=' + encodeURIComponent(query);
+  }
+  icon.addEventListener('click', navigate);
+  input.addEventListener('keydown', event => {
+    if (event.key === 'Enter') { event.preventDefault(); navigate(); }
+  });
+  input.addEventListener('input', async () => {
+    const current = ++sequence;
+    const query = input.value.trim();
+    suggestions.replaceChildren();
+    if (!query) return;
+    try {
+      const response = await fetch('/search_assets?q=' + encodeURIComponent(query));
+      if (!response.ok || current !== sequence) return;
+      const data = await response.json();
+      if (current !== sequence) return;
+      suggestions.replaceChildren();
+      data.forEach(item => {
+        const li = document.createElement('li');
+        li.textContent = item.asset_tag;
+        li.addEventListener('click', () => {
+          window.location.href = '/asset/' + encodeURIComponent(item.id);
+        });
+        suggestions.appendChild(li);
+      });
+    } catch (error) {
+      if (current === sequence) suggestions.replaceChildren();
     }
-
-    icon.addEventListener('click', performSearch);
-    input.addEventListener('keyup', e => {
-      if (e.key === 'Enter') {
-        performSearch();
-      }
-    });
+  });
+  document.addEventListener('click', event => {
+    if (!event.target.closest('.search-bar')) {
+      sequence += 1;
+      suggestions.replaceChildren();
+    }
   });
 }
+
+if (typeof document !== 'undefined') document.addEventListener('DOMContentLoaded', setupSearch);
+if (typeof module !== 'undefined') module.exports = { setupSearch };

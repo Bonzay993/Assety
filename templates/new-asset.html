@@ -116,6 +116,21 @@
     </div>
 
 <script>
+    window.addEventListener('message', event => {
+        if (event.origin !== window.location.origin || !event.data || event.data.type !== 'assety-option-saved') return;
+        const { kind, name } = event.data;
+        if (!['category', 'location'].includes(kind) || typeof name !== 'string') return;
+        const frame = document.getElementById('popup-frame-' + kind);
+        if (!frame || event.source !== frame.contentWindow) return;
+        const select = document.getElementById(kind);
+        let option = Array.from(select.options).find(item => item.value === name);
+        if (!option) {
+            option = new Option(name, name);
+            select.add(option);
+        }
+        select.value = name;
+        closePopup(kind);
+    });
    
     document.getElementById('asset-form').addEventListener('submit', function(event) {
         
