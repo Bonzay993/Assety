@@ -13,14 +13,12 @@
             {% endif %}
          {% endwith %}
         <div class="create-new-element-btn create-new-category">
-            <a href="{{ url_for('new_category') }}">
-                <button class="new-element-btn">{{ trans('create_new') }}</button>
-            </a>
+            <a href="{{ url_for('new_category') }}" class="new-element-btn">{{ trans('create_new') }}</a>
         </div>
     </div>
 </section>
 
-<section class="assets-list">
+<div class="assets-list category-records">
     <div class="assets-list-container">
         <div class="assets-list-heading-container">
             <p class="categories-list-title-item"><strong>{{ trans('name') }}</strong></p>
@@ -32,11 +30,11 @@
 
         {% for category in categories %}
         <div class="assets-list-items-container {% if loop.index0 % 2 == 0 %}blue-row{% else %}lightblue-row{% endif %}">
-            <div class="title-body-group">
+            <div class="title-body-group" data-label="{{ trans('name') }}">
                 
                 <p>{{ category.name}}</p>
             </div>
-            <div class="title-body-group title-body-group-image-name">
+            <div class="title-body-group title-body-group-image-name" data-label="{{ trans('image') }}">
                 {% if category.image_id %}
                     <img src="{{ url_for('get_image', image_id=category.image_id) }}"
                          alt="Category Image"
@@ -48,33 +46,36 @@
                 {% endif %}
                 
             </div>
-            <div class="title-body-group">
+            <div class="title-body-group" data-label="{{ trans('type') }}">
                 <p>{{ category.type }}</p>
             </div>
-            <div class="title-body-group">
+            <div class="title-body-group" data-label="{{ trans('quantity') }}">
                 
                 <p>{{ category.quantity}}</p>
             </div>
            
            
                 
+                <div class="title-body-group title-body-group-actions" data-label="{{ trans('actions') }}">
                 <div class="inner-action-group">
                     <div class="assets-interactive-btn">
-                        <a href="{{ url_for('category_properties', category_id=category._id) }}">
-                            <button class="assets-edit-button">
-                                <i class="fa-solid fa-pencil"></i>
-                            </button>
-                        </a>
+                        <a href="{{ url_for('category_properties', category_id=category._id) }}" class="assets-edit-button" aria-label="Edit record" title="Edit">
+                                <i class="fa-solid fa-pencil" aria-hidden="true"></i>
+                            </a>
                         <form action="{{ url_for('delete_category', category_id=category._id) }}" method="POST" onsubmit="return confirm('{{ trans('delete_category_confirm') }}');">
-                            <button class="assets-delete-button">
-                                <i class="fa-solid fa-trash"></i>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button class="assets-delete-button" aria-label="Delete record" title="Delete">
+                                <i class="fa-solid fa-trash" aria-hidden="true"></i>
                             </button>
                         </form>
                     </div>
                 </div>
+                </div>
             </div>
        
+    {% else %}
+        <div class="empty-state"><p>No categories yet.</p><a href="{{ url_for('new_category') }}">Create your first categorie</a></div>
     {% endfor %}
     </div>
-</section>
+</div>
 {% endblock %}

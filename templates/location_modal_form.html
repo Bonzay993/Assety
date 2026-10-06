@@ -4,40 +4,41 @@
     <div class="new-location-form-header">
         <h1 class="assets-heading" >Add New Location</h1>
     </div>
-    <form class="new-location-form default-form" action="{{ url_for('save_location') }}?modal=true" method="POST" enctype="multipart/form-data">
+    <form class="new-location-form default-form" action="{{ url_for('save_location') }}?modal=true" method="POST" enctype="multipart/form-data" id="location-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <div class="form-group">
             <label for="location-tag">Location Name</label>
-            <input type="text" id="location-tag" name="location-tag" placeholder="Enter Location Name" required>
+            <input type="text" id="location-tag" name="location-tag" placeholder="Enter Location Name" required maxlength="200" value="{{ form_values.get('location-tag', '') }}">
         </div>
 
         <div class="form-group">
             <label for="phone">Phone</label>
-            <input type="number" id="phone" name="phone" placeholder="Enter Phone Number">
+            <input type="tel" id="phone" autocomplete="tel" maxlength="32" name="phone" placeholder="Enter Phone Number" value="{{ form_values.get('phone', '') }}">
         </div>
 
         <div class="form-group">
             <label for="address">Address</label>
-            <input type="text" id="address" name="address" placeholder="Enter Full Address">
+            <input type="text" id="address" name="address" placeholder="Enter Full Address" value="{{ form_values.get('address', '') }}">
         </div>
 
         <div class="form-group">
             <label for="city">City</label>
-            <input type="text" name="city" placeholder="Enter City Name" >
+            <input type="text" id="city" name="city" placeholder="Enter City Name"  value="{{ form_values.get('city', '') }}">
         </div>
 
         <div class="form-group">
             <label for="state">State</label>
-            <input type="text" id="state"  name="state" placeholder="Enter State Name">
+            <input type="text" id="state"  name="state" placeholder="Enter State Name" value="{{ form_values.get('state', '') }}">
         </div>
 
         <div class="form-group">
             <label for="post-code">Post Code</label>
-            <input type="text" id="post-code"  name="post-code" placeholder="Enter the PostCode">
+            <input type="text" id="post-code"  name="post-code" placeholder="Enter the PostCode" value="{{ form_values.get('post-code', '') }}">
         </div>
 
         <div class="form-actions">
             <a href="javascript:window.history.back()" class="form-cancel">Cancel</a>
-            <button type="submit" class="btn save-btn"><i class="fa-solid fa-check"></i> Save</button>
+            <button type="submit" class="btn save-btn"><i class="fa-solid fa-check" aria-hidden="true"></i> Save</button>
         </div>
     </form>
 </div>

@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="settings-container">
-    <h2>{{ trans('settings') }}</h2>
+    <h1>{{ trans('settings') }}</h1>
 
    
  <form id="settings-form">
@@ -58,8 +58,32 @@
         </div>
     </form>
 
-
-   
+    <section id="change-email" class="email-settings" aria-labelledby="change-email-heading">
+        <h2 id="change-email-heading">{{ trans('change_email') }}</h2>
+        <p>{{ trans('change_email_help') }}</p>
+        <form id="change-email-form">
+            <div class="settings-row">
+                <span>{{ trans('current_email') }}</span>
+                <span id="current-email" class="settings-field">{{ email }}</span>
+            </div>
+            <div class="settings-row">
+                <label for="new-email">{{ trans('new_email') }}</label>
+                <div class="settings-field">
+                    <input id="new-email" name="email" type="email" autocomplete="email" maxlength="254" required>
+                </div>
+            </div>
+            <div class="settings-row">
+                <label for="email-current-password">{{ trans('current_password') }}</label>
+                <div class="settings-field">
+                    <input id="email-current-password" name="password" type="password" autocomplete="current-password" required>
+                </div>
+            </div>
+            <p id="change-email-message" class="email-settings-message" role="status" aria-live="polite" aria-atomic="true"></p>
+            <div class="settings-actions">
+                <button type="submit" class="settings-btn" id="change-email-button">{{ trans('change_email') }}</button>
+            </div>
+        </form>
+    </section>
 </div>
 
 
@@ -75,7 +99,7 @@
         fetch('/save-settings', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json', 'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').content
             },
          
             body: JSON.stringify({ timeout: parseInt(timeout), dark_mode: darkMode, email_notifications: emailNotifications, language: language, currency: currency })
@@ -98,6 +122,41 @@
 
       
     });
+</script>
+<script>
+document.getElementById('change-email-form').addEventListener('submit', async function (event) {
+    event.preventDefault();
+    const button = document.getElementById('change-email-button');
+    const message = document.getElementById('change-email-message');
+    const password = document.getElementById('email-current-password');
+    const email = document.getElementById('new-email');
+    button.disabled = true;
+    button.textContent = {{ trans('saving') | tojson }};
+    message.textContent = '';
+    try {
+        const response = await fetch({{ url_for('change_email') | tojson }}, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', 'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').content},
+            body: JSON.stringify({email: email.value, password: password.value})
+        });
+        const result = await response.json();
+        if (response.status === 401) {
+            message.textContent = {{ trans('sign_in_again') | tojson }};
+        } else if (!response.ok) {
+            message.textContent = result.message || {{ trans('something_wrong') | tojson }};
+        } else {
+            document.getElementById('current-email').textContent = result.email;
+            email.value = '';
+            message.textContent = {{ trans('email_updated') | tojson }};
+        }
+    } catch (error) {
+        message.textContent = {{ trans('something_wrong') | tojson }};
+    } finally {
+        password.value = '';
+        button.disabled = false;
+        button.textContent = {{ trans('change_email') | tojson }};
+    }
+});
 </script>
 {% endblock %}
 

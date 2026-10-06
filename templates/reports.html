@@ -6,7 +6,7 @@
     </div>
 </section>
 
-<section class="reports-summary">
+<div class="reports-summary">
     <div class="assets-list-container">
         <div class="assets-list-heading-container">
             <p class="asset-list-title-item"><strong>{{ trans('category') }}</strong></p>
@@ -33,12 +33,8 @@
     </div>
 
     <div class="report-export-btns" style="margin-top: 1rem;">
-        <a href="{{ url_for('export_reports', file_format='csv') }}">
-            <button class="new-element-btn">{{ trans('export_csv') }}</button>
-        </a>
-        <a href="{{ url_for('export_reports', file_format='pdf') }}">
-            <button class="new-element-btn">{{ trans('export_pdf') }}</button>
-        </a>
+        <a href="{{ url_for('export_reports', file_format='csv') }}" class="new-element-btn">{{ trans('export_csv') }}</a>
+        <a href="{{ url_for('export_reports', file_format='pdf') }}" class="new-element-btn">{{ trans('export_pdf') }}</a>
     </div>
-</section>
+</div>
 {% endblock %}

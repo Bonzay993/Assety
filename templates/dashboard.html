@@ -2,6 +2,7 @@
 
 {% block content %}
 <section class="dashboard">
+    <h1 class="dashboard-heading">{{ trans('dashboard_overview') }}</h1>
 
     
      <div class="dashboard-tips">
@@ -11,7 +12,7 @@
             {{ trans('show_tips') }}
         </button>
         <div id="tips-panel" class="tips-panel">
-            <h3 class="tips-heading">{{ trans('quick_tips') }}</h3>
+            <h2 class="tips-heading">{{ trans('quick_tips') }}</h2>
             <ul class="tips-list">
                 <li>{{ trans('tip_search_assets') }}</li>
                 <li>{{ trans('tip_recent_activity') }}</li>
@@ -20,7 +21,6 @@
         </div>
     </div>
     
-    <h2 class="dashboard-heading">{{ trans('dashboard_overview') }}</h2>
     <div class="stats-container">
         <a class="stats-container-link-wrapper" href="{{ url_for('assets') }}">
             <div class="stat-card asset-stat-card">
@@ -29,12 +29,12 @@
                     
                     <p class="stat-card-paragraph">{{ trans('assets') }}</p>
                 </div>
-                <i class="fa-solid fa-barcode stat-card-span"></i>
+                <i class="fa-solid fa-barcode stat-card-span" aria-hidden="true"></i>
             </div>
             <div class="card-view-all assets-card-view-all">
                 
                 <p class="assets-card-view-all-p">{{ trans('view_all') }}</p>
-                <i class="fa-solid fa-arrow-right"></i>
+                <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
             </div>
 
            
@@ -49,12 +49,12 @@
                     
                     <p class="stat-card-paragraph">{{ trans('categories') }}</p>
                 </div>
-                <i class="fa-solid fa-table-list stat-card-span"></i>
+                <i class="fa-solid fa-table-list stat-card-span" aria-hidden="true"></i>
             </div>
             <div class="card-view-all categories-card-view-all">
                
                 <p class="assets-card-view-all-p">{{ trans('view_all') }}</p>
-                <i class="fa-solid fa-arrow-right"></i>
+                <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
             </div>
         </a>
         
@@ -65,12 +65,12 @@
                     
                     <p class="stat-card-paragraph">{{ trans('locations') }}</p>
                 </div>
-                <i class="fa-solid fa-location-dot stat-card-span"></i>
+                <i class="fa-solid fa-location-dot stat-card-span" aria-hidden="true"></i>
             </div>
             <div class="card-view-all locations-card-view-all">
                 
                 <p class="assets-card-view-all-p">{{ trans('view_all') }}</p>
-                <i class="fa-solid fa-arrow-right"></i>
+                <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
             </div>
         </a>
     </div>
@@ -91,11 +91,11 @@
                 </div>
                 {% for asset in recent_assets %}
                 <div class="recent-assets-container {% if loop.index0 % 2 == 0 %}blue-row{% else %}lightblue-row{% endif %}">
-                    <span class="recent-assets-item asset-tag">{{ asset.asset_tag }}</span>
-                    <span class="recent-assets-item asset-model">{{ asset.model }}</span>
-                    <span class="recent-assets-item asset-serial">{{ asset.serial }}</span>
-                    <span class="recent-assets-item asset-date">{{ asset.purchase_date }}</span>
-                      <span class="recent-assets-item asset-date">
+                    <span class="recent-assets-item asset-tag" data-label="{{ trans('asset_tag') }}">{{ asset.asset_tag }}</span>
+                    <span class="recent-assets-item asset-model" data-label="{{ trans('model') }}">{{ asset.model }}</span>
+                    <span class="recent-assets-item asset-serial" data-label="{{ trans('serial') }}">{{ asset.serial }}</span>
+                    <span class="recent-assets-item asset-date" data-label="{{ trans('purchase_date') }}">{{ asset.purchase_date }}</span>
+                      <span class="recent-assets-item asset-date" data-label="{{ trans('purchase_cost') }}">
                         {% if asset.purchase_cost is defined and asset.purchase_cost not in [none, ''] %}
                             {{ currency_symbol }}{{ asset.purchase_cost }}
                         {% else %}
@@ -125,11 +125,11 @@
         </div>
         {% for activity in recent_activities %}
         <div class="activity-items-container {% if loop.index0 % 2 == 0 %}blue-row{% else %}lightblue-row{% endif %}">
-            <span class="activity-item activity-date">{{ activity.date }}</span>
-            <span class="activity-item activity-user">{{ activity.user }}</span>
-            <span class="activity-item activity-action">{{ activity.action }}</span>
-            <span class="activity-item activity-asset">{{ activity.asset }}</span>
-            <span class="activity-item activity-asset">{{ activity.location }}</span>
+            <span class="activity-item activity-date" data-label="{{ trans('date') }}">{{ activity.date }}</span>
+            <span class="activity-item activity-user" data-label="{{ trans('user') }}">{{ activity.user }}</span>
+            <span class="activity-item activity-action" data-label="{{ trans('action') }}">{{ activity.action }}</span>
+            <span class="activity-item activity-asset" data-label="{{ trans('asset') }}">{{ activity.asset }}</span>
+            <span class="activity-item activity-asset" data-label="{{ trans('location') }}">{{ activity.location }}</span>
         </div>
         {% endfor %}
     </div>

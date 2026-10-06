@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="560" viewBox="0 0 1120 560" role="img" aria-labelledby="title description">
+  <title id="title">Assety application architecture</title>
+  <desc id="description">Browser requests are handled by Flask, which authenticates users and reads or writes MongoDB collections and GridFS. Optional email messages are sent through SendGrid.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f3f8fb"/><stop offset="1" stop-color="#e6f1f5"/></linearGradient>
+    <linearGradient id="navy" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#17485b"/><stop offset="1" stop-color="#103342"/></linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="8" stdDeviation="9" flood-color="#123747" flood-opacity=".12"/></filter>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0 10 5 0 10z" fill="#5a9aab"/></marker>
+    <style>
+      text{font-family:Inter,Segoe UI,Arial,sans-serif;fill:#143a4b}.title{font-size:29px;font-weight:700}.head{font-size:21px;font-weight:700;fill:white}.body{font-size:16px}.small{font-size:14px;fill:#496878}.label{font-size:13px;font-weight:700;letter-spacing:1.2px;fill:#5a9aab}.box{filter:url(#shadow)}
+    </style>
+  </defs>
+  <rect width="1120" height="560" rx="26" fill="url(#bg)"/>
+  <text x="56" y="62" class="title">How Assety handles a request</text>
+  <text x="57" y="91" class="small">A company-scoped inventory workspace with optional email delivery</text>
+
+  <g class="box">
+    <rect x="54" y="176" width="238" height="196" rx="18" fill="white"/>
+    <rect x="54" y="176" width="238" height="58" rx="18" fill="url(#navy)"/><path d="M54 216h238v18H54z" fill="url(#navy)"/>
+    <text x="78" y="213" class="head">Browser</text>
+    <text x="78" y="270" class="body">Responsive HTML and CSS</text>
+    <text x="78" y="299" class="body">Jinja pages + JavaScript</text>
+    <text x="78" y="340" class="small">Visitor or signed-in user</text>
+  </g>
+  <g class="box">
+    <rect x="425" y="145" width="270" height="254" rx="18" fill="white"/>
+    <rect x="425" y="145" width="270" height="58" rx="18" fill="url(#navy)"/><path d="M425 185h270v18H425z" fill="url(#navy)"/>
+    <text x="450" y="182" class="head">Flask application</text>
+    <text x="450" y="238" class="body">Routes and validation</text>
+    <text x="450" y="267" class="body">Authentication + sessions</text>
+    <text x="450" y="296" class="body">Company access boundaries</text>
+    <text x="450" y="325" class="body">Reports + activity logging</text>
+    <text x="450" y="367" class="small">Gunicorn serves production traffic</text>
+  </g>
+  <g class="box">
+    <rect x="828" y="127" width="238" height="120" rx="18" fill="white"/>
+    <rect x="828" y="127" width="238" height="50" rx="18" fill="#2d7180"/><path d="M828 159h238v18H828z" fill="#2d7180"/>
+    <text x="852" y="161" class="head">MongoDB</text>
+    <text x="852" y="207" class="body">users · company collections</text>
+    <text x="852" y="230" class="small">activities</text>
+  </g>
+  <g class="box">
+    <rect x="828" y="282" width="238" height="104" rx="18" fill="white"/>
+    <rect x="828" y="282" width="238" height="50" rx="18" fill="#2d7180"/><path d="M828 314h238v18H828z" fill="#2d7180"/>
+    <text x="852" y="316" class="head">GridFS</text>
+    <text x="852" y="359" class="body">Asset image files</text>
+  </g>
+  <g class="box">
+    <rect x="425" y="450" width="270" height="72" rx="16" fill="white"/>
+    <text x="450" y="480" class="label">OPTIONAL EMAIL</text>
+    <text x="450" y="505" class="body">SendGrid</text>
+  </g>
+  <path d="M300 274h111" stroke="#5a9aab" stroke-width="4" marker-end="url(#arrow)"/>
+  <text x="316" y="257" class="label">HTTP</text>
+  <path d="M704 225h106" stroke="#5a9aab" stroke-width="4" marker-end="url(#arrow)"/>
+  <text x="715" y="208" class="label">READ / WRITE</text>
+  <path d="M704 325h106" stroke="#5a9aab" stroke-width="4" marker-end="url(#arrow)"/>
+  <text x="724" y="308" class="label">UPLOADS</text>
+  <path d="M560 411v28" stroke="#5a9aab" stroke-width="4" marker-end="url(#arrow)"/>
+</svg>

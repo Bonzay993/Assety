@@ -2,6 +2,9 @@ blinker==1.9.0
 click==8.1.7
 dnspython==2.7.0
 Flask==3.0.3
+Flask-WTF==1.2.2
+WTForms==3.2.2
+Pillow==12.3.0
 Flask-PyMongo==2.3.0
 itsdangerous==2.2.0
 pymongo==4.10.1

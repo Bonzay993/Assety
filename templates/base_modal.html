@@ -2,10 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ title or "Modal" }}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}">
 </head>
-<body>
+<body class="modal-page{% if dark_mode %} dark-mode{% endif %}">
+    {% for category, message in get_flashed_messages(with_categories=true) %}
+        <p class="alert alert-danger" role="alert">{{ message }}</p>
+    {% endfor %}
     {% block content %}{% endblock %}
 </body>
 </html>

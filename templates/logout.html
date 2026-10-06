@@ -1,0 +1,13 @@
+{% extends "index.html" %}
+{% block content %}
+<section class="login">
+    <div class="login-container">
+        <h1>Sign out of Assety</h1>
+        <form action="{{ url_for('logout') }}" method="post">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="btn">Sign out</button>
+        </form>
+        <p><a href="{{ url_for('dashboard') }}">Return to dashboard</a></p>
+    </div>
+</section>
+{% endblock %}

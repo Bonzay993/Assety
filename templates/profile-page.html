@@ -4,23 +4,24 @@
     <div class="profile-avatar">
         <div class="avatar-circle large">{{ first_name[0] }}{{ last_name[0] }}</div>
     </div>
-    <h2 class="profile-title">{{ trans('my_profile') }}</h2>
+    <h1 class="profile-title">{{ trans('my_profile') }}</h1>
     <div class="profile-grid">
         <div class="profile-field">
             <label for="profile-first-name">{{ trans('first_name') }}</label>
-            <input id="profile-first-name" type="text" value="{{ first_name }}" />
+            <input id="profile-first-name" type="text" value="{{ first_name }}">
         </div>
         <div class="profile-field">
             <label for="profile-last-name">{{ trans('last_name') }}</label>
-            <input id="profile-last-name" type="text" value="{{ last_name }}" />
+            <input id="profile-last-name" type="text" value="{{ last_name }}">
         </div>
         <div class="profile-field">
             <label for="profile-email">{{ trans('email') }}</label>
-            <input id="profile-email" type="email" value="{{ email }}" />
+            <input id="profile-email" type="email" value="{{ email }}" readonly>
+            <a href="{{ url_for('settings') }}#change-email">{{ trans('change_email_in_settings') }}</a>
         </div>
         <div class="profile-field">
             <label for="profile-company">{{ trans('company') }}</label>
-            <input id="profile-company" type="text" value="{{ company }}" readonly />
+            <input id="profile-company" type="text" value="{{ company }}" readonly>
         </div>
     </div>
     <div class="profile-actions">
@@ -33,17 +34,15 @@
 function updateProfile() {
     const firstName = document.getElementById('profile-first-name').value;
     const lastName = document.getElementById('profile-last-name').value;
-    const email = document.getElementById('profile-email').value;
 
     fetch('/update-profile', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json', 'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').content
         },
         body: JSON.stringify({
             first_name: firstName,
-            last_name: lastName,
-            email: email
+            last_name: lastName
         })
     })
     .then(response => {

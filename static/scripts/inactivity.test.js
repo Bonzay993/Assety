@@ -24,9 +24,23 @@ describe('inactivity timeout', () => {
     jest.advanceTimersByTime(90000);
     await Promise.resolve();
     expect(fetch).toHaveBeenCalledTimes(1);
-    expect(fetch).toHaveBeenCalledWith('/logout', { method: 'POST' });
+    expect(fetch).toHaveBeenCalledWith('/logout', {
+      method: 'POST', headers: {'X-CSRFToken': '', 'X-Requested-With': 'fetch'}
+    });
     expect(document.getElementById('modal-content').textContent).toContain('You have been logged out');
     jest.advanceTimersByTime(90000);
     expect(fetch).toHaveBeenCalledTimes(1);
+  });
+
+  test('warning receives keyboard focus and restores it when dismissed', () => {
+    const input = document.createElement('input');
+    document.body.appendChild(input);
+    input.focus();
+    setupInactivityTimer(1);
+    jest.advanceTimersByTime(60000);
+    const stay = document.getElementById('stay-logged-in');
+    expect(document.activeElement).toBe(stay);
+    stay.click();
+    expect(document.activeElement).toBe(input);
   });
 });

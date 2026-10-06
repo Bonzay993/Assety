@@ -2,14 +2,16 @@
 <html lang="{{ language or 'en' }}">
 <head>
     <meta charset="UTF-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Asset Management System</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body class="inventory-app-body{% if dark_mode %} dark-mode{% endif %}">
-    <!-- 🔒 Inactivity Timer Modal -->
-    <div id="inactivity-modal" style="display: none; position: fixed; z-index: 9999; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.5); justify-content: center; align-items: center;">
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <div id="inactivity-modal" role="alertdialog" aria-modal="true" aria-label="Session inactivity warning" style="display: none; position: fixed; z-index: 9999; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.5); justify-content: center; align-items: center;">
         <div id="modal-content" style="background: white; padding: 2rem; border-radius: 10px; text-align: center;">
             <h2>You will be logged out soon</h2>
             <p>You've been inactive. You'll be logged out in <span id="countdown">30</span> seconds.</p>
@@ -18,54 +20,56 @@
     </div>
     
     <div class="container inventory-app-container">
-        <aside class="sidebar" id="sidebar">
-            <button class="toggle-btn" id="toggle-btn">
-                <i class="fas fa-bars"></i>
+        <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+            <a class="sidebar-brand" href="{{ url_for('dashboard') }}" aria-label="Assety dashboard"><img class="brand-mark" src="{{ url_for('static', filename='img/assety-mark.svg') }}" alt=""><span class="brand-name">assety</span></a>
+            <button type="button" class="toggle-btn" id="toggle-btn" aria-label="Toggle navigation" aria-controls="menu" aria-expanded="true">
+                <i class="fas fa-bars" aria-hidden="true"></i><span class="toggle-label">Menu</span>
             </button>
             <ul class="sidebar-menu" id="menu">
-                <li><a href="{{ url_for('dashboard') }}" class="menu-item"><i class="fas fa-tachometer-alt"></i><span class="text">{{ trans('dashboard') }}</span></a></li>
-                <li><a href="{{ url_for('assets') }}" class="menu-item"><i class="fas fa-box"></i><span class="text">{{ trans('assets') }}</span></a></li>
+                <li><a href="{{ url_for('dashboard') }}" class="menu-item{% if request.endpoint == 'dashboard' %} is-active{% endif %}"{% if request.endpoint == 'dashboard' %} aria-current="page"{% endif %} aria-label="{{ trans('dashboard') }}"><i class="fas fa-tachometer-alt" aria-hidden="true"></i><span class="text">{{ trans('dashboard') }}</span></a></li>
+                <li><a href="{{ url_for('assets') }}" class="menu-item{% if request.endpoint in ['assets', 'new_asset', 'asset_properties', 'view_asset'] %} is-active{% endif %}"{% if request.endpoint in ['assets', 'new_asset', 'asset_properties', 'view_asset'] %} aria-current="page"{% endif %} aria-label="{{ trans('assets') }}"><i class="fas fa-box" aria-hidden="true"></i><span class="text">{{ trans('assets') }}</span></a></li>
 
                 <!-- Categories Dropdown -->
                 <li class="dropdown">
-                    <a href="#" class="menu-item" id="categories-btn">
-                        <i class="fas fa-box"></i>
+                    <button type="button" class="menu-item{% if request.endpoint in ['categories', 'new_category', 'category_properties', 'locations', 'new_location', 'location_properties'] %} is-active{% endif %}" id="categories-btn" aria-label="{{ trans('categories') }}" aria-controls="categories-menu" aria-expanded="false">
+                        <i class="fas fa-box" aria-hidden="true"></i>
                         <span class="text">{{ trans('categories') }}</span>
-                        <i class="fas fa-chevron-left dropdown-arrow" id="dropdown-arrow"></i>
-                    </a>
+                        <i class="fas fa-chevron-left dropdown-arrow" aria-hidden="true" id="dropdown-arrow"></i>
+                    </button>
                     <ul class="dropdown-menu" id="categories-menu">
                         <li><a class="dropdown-menu-item" href="{{ url_for('categories') }}">{{ trans('categories') }}</a></li>
                         <li><a class="dropdown-menu-item" href="{{ url_for('locations') }}">{{ trans('locations') }}</a></li>
                     </ul>
                 </li>
 
-                <li><a href="{{ url_for('reports') }}" class="menu-item"><i class="fas fa-chart-line"></i><span class="text">{{ trans('reports') }}</span></a></li>
-                <li><a href="{{ url_for('settings') }}" class="menu-item"><i class="fas fa-cogs"></i><span class="text">{{ trans('settings') }}</span></a></li>
-                <li><a href="{{ url_for('logs') }}" class="menu-item"><i class="fas fa-file-alt"></i><span class="text">{{ trans('logs') }}</span></a></li>
+                <li><a href="{{ url_for('reports') }}" class="menu-item{% if request.endpoint == 'reports' %} is-active{% endif %}"{% if request.endpoint == 'reports' %} aria-current="page"{% endif %} aria-label="{{ trans('reports') }}"><i class="fas fa-chart-line" aria-hidden="true"></i><span class="text">{{ trans('reports') }}</span></a></li>
+                <li><a href="{{ url_for('settings') }}" class="menu-item{% if request.endpoint in ['settings', 'profile_page', 'change_email'] %} is-active{% endif %}"{% if request.endpoint in ['settings', 'profile_page', 'change_email'] %} aria-current="page"{% endif %} aria-label="{{ trans('settings') }}"><i class="fas fa-cogs" aria-hidden="true"></i><span class="text">{{ trans('settings') }}</span></a></li>
+                <li><a href="{{ url_for('logs') }}" class="menu-item{% if request.endpoint == 'logs' %} is-active{% endif %}"{% if request.endpoint == 'logs' %} aria-current="page"{% endif %} aria-label="{{ trans('logs') }}"><i class="fas fa-file-alt" aria-hidden="true"></i><span class="text">{{ trans('logs') }}</span></a></li>
             </ul>
             <div class="version">
                 <a class="version-number"><span>v</span> a 0.2.0</a>
             </div>
         </aside>
-        <main class="main-content">
+        <main class="main-content" id="main-content" tabindex="-1">
             <header class="header app-header">
                 <div class="company-info">
-                    <h1>{{ company }} {{ trans('asset_dashboard') }}</h1>
+                    <p class="app-title">{{ company }} {{ trans('asset_dashboard') }}</p>
                 </div>
                 <div class="search-bar">
-                    <input type="text" class="search-input" placeholder="{{ trans('search_placeholder') }}">
-                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="search-input" aria-label="{{ trans('search_placeholder') }}" placeholder="{{ trans('search_placeholder') }}">
+                    <i class="fas fa-search search-icon" aria-hidden="true"></i>
                     <ul class="search-suggestions"></ul>
                 </div>
                 <div class="user-info">
-                    <a href="{{ url_for('profile_page') }}" class="avatar-btn">
+                    <a href="{{ url_for('profile_page') }}" class="avatar-btn" aria-label="{{ trans('my_profile') }}">
                         <div class="avatar-circle">
                             {{ first_name[0] }}{{ last_name[0] }}
                         </div>
                     </a>
-                    <a href="{{ url_for('logout') }}">
-                        <button class="logout-btn">{{ trans('logout') }}</button>
-                    </a>
+                    <form action="{{ url_for('logout') }}" method="post" class="logout-form">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="logout-btn">{{ trans('logout') }}</button>
+                    </form>
                 </div>
             </header>
             {% with messages = get_flashed_messages(with_categories=true) %}
@@ -74,44 +78,15 @@
                 {% endfor %}
             {% endwith %}
             {% block content %}
-              
+                <section class="heading-section">
+                    <h1>Inventory overview</h1>
+                    <p><a href="{{ url_for('dashboard') }}">Open the dashboard</a> or <a href="{{ url_for('assets') }}">browse your assets</a>.</p>
+                </section>
             {% endblock %}
         </main>
     </div>
     
-    <script>
-        const toggleBtn = document.getElementById('toggle-btn');
-        const sidebar = document.getElementById('sidebar');
-        const menuItems = document.querySelectorAll('.sidebar-menu .menu-item');
-        const categoriesBtn = document.getElementById('categories-btn');
-        const dropdown = document.getElementById('categories-menu');
-        const arrow = document.getElementById('dropdown-arrow');
-
-        toggleBtn.addEventListener('click', () => {
-            sidebar.classList.toggle('minimized');
-            
-            // When sidebar is minimized, close the dropdown and reset the arrow
-            if (sidebar.classList.contains('minimized')) {
-                if (dropdown.classList.contains('show')) {
-                    dropdown.classList.remove('show');
-                    arrow.classList.replace('fa-chevron-down', 'fa-chevron-left');
-                }
-            }
-        });
-
-        categoriesBtn.addEventListener('click', function(event) {
-            event.preventDefault();
-            if (!sidebar.classList.contains('minimized')) {
-                if (dropdown.classList.contains('show')) {
-                    dropdown.classList.remove('show');
-                    arrow.classList.replace('fa-chevron-down', 'fa-chevron-left');
-                } else {
-                    dropdown.classList.add('show');
-                    arrow.classList.replace('fa-chevron-left', 'fa-chevron-down');
-                }
-            }
-        });
-    </script>
+    <script src="{{ url_for('static', filename='scripts/navigation.js') }}"></script>
 
     
 <script id="idle-timer-script" data-timeout="{{ timeout | int }}" src="{{ url_for('static', filename='scripts/inactivity.js') }}"></script>

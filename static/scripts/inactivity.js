@@ -9,6 +9,13 @@ function setupInactivityTimer(idleMinutes = 2) {
     let idleSeconds = 0;
     let remaining = 30;
     let loggedOut = false;
+    let previousFocus;
+    modal.addEventListener('keydown', event => {
+        if (event.key === 'Tab' && !loggedOut) {
+            event.preventDefault();
+            stayButton.focus();
+        }
+    });
     const resetOnActivity = () => {
         if (!loggedOut && modal.style.display !== 'flex') idleSeconds = 0;
     };
@@ -17,6 +24,7 @@ function setupInactivityTimer(idleMinutes = 2) {
         modal.style.display = 'none';
         idleSeconds = 0;
         remaining = 30;
+        if (previousFocus?.isConnected) previousFocus.focus();
     });
     ['mousemove', 'keydown', 'scroll', 'click'].forEach(event => {
         window.addEventListener(event, resetOnActivity);
@@ -30,9 +38,16 @@ function setupInactivityTimer(idleMinutes = 2) {
                 loggedOut = true;
                 clearInterval(timer);
                 try {
-                    const response = await fetch('/logout', { method: 'POST' });
+                    const response = await fetch('/logout', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': document.querySelector('meta[name="csrf-token"]')?.content || '',
+                            'X-Requested-With': 'fetch'
+                        }
+                    });
                     if (!response.ok) throw new Error('Logout failed');
                     content.innerHTML = '<h2>You have been logged out</h2><p>Session expired due to inactivity.</p><a href="/login">Go to Login</a>';
+                    content.querySelector('a').focus();
                 } catch (error) {
                     window.location.assign('/logout');
                 }
@@ -41,6 +56,8 @@ function setupInactivityTimer(idleMinutes = 2) {
             remaining = 30;
             countdown.textContent = remaining;
             modal.style.display = 'flex';
+            previousFocus = document.activeElement;
+            stayButton.focus();
         }
     }, 1000);
     return timer;
