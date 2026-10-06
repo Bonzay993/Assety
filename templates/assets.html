@@ -5,14 +5,12 @@
     <div class="assets-list-top-container default-list-top-container">
         <h1>{{ trans('assets_list') }}</h1>
         <div class="create-new-element-btn">
-            <a href="{{ url_for('new_asset') }}">
-                <button class="new-element-btn">{{ trans('create_new') }}</button>
-            </a>
+            <a href="{{ url_for('new_asset') }}" class="new-element-btn">{{ trans('create_new') }}</a>
         </div>
     </div>
 </section>   
 
-<section class="assets-list">
+<div class="assets-list asset-records">
     <div class="assets-list-container">
         <div class="assets-list-heading-container">
             <p class="asset-list-title-item"><strong>{{ trans('name') }}</strong></p>
@@ -28,12 +26,12 @@
 
         {% for asset in assets %}
         <div class="assets-list-items-container {% if loop.index0 % 2 == 0 %}blue-row{% else %}lightblue-row{% endif %}">
-            <div class="title-body-group">
+            <div class="title-body-group" data-label="{{ trans('name') }}">
                 
                 <p><a href="{{ url_for('view_asset', asset_id=asset._id) }}">{{ asset.asset_tag }}</a></p>
             </div>
            
-            <div class="title-body-group title-body-group-image-name">
+            <div class="title-body-group title-body-group-image-name" data-label="{{ trans('image') }}">
                 {% if asset.image_id %}
                     <img src="{{ url_for('get_image', image_id=asset.image_id) }}"
                          alt="Asset Image"
@@ -47,27 +45,27 @@
             </div>
            
             
-            <div class="title-body-group title-body-group-model">
+            <div class="title-body-group title-body-group-model" data-label="{{ trans('model') }}">
                 
                 <p>{{ asset.model}}</p>
             </div>
-            <div class="title-body-group">
+            <div class="title-body-group" data-label="{{ trans('serial') }}">
                 
                 <p>{{ asset.serial }}</p>
             </div>
-            <div class="title-body-group">
+            <div class="title-body-group" data-label="{{ trans('location') }}">
                 
                 <p>{{ asset.location }}</p>
             </div>
-            <div class="title-body-group">
+            <div class="title-body-group" data-label="{{ trans('category') }}">
                 
                 <p>{{ asset.category }}</p>
             </div>
-            <div class="title-body-group">
+            <div class="title-body-group" data-label="{{ trans('purchase_date') }}">
                 
                 <p>{{ asset.purchase_date }}</p>
             </div>
-            <div class="title-body-group ">
+            <div class="title-body-group " data-label="{{ trans('purchase_cost') }}">
                 
                  <p>
                     {% if asset.purchase_cost is defined and asset.purchase_cost not in [none, ''] %}
@@ -77,27 +75,28 @@
                     {% endif %}
                 </p>
             </div>
-            <div class="title-body-group title-body-group-actions">
+            <div class="title-body-group title-body-group-actions" data-label="{{ trans('actions') }}">
                 
                 <div class="inner-action-group">
                     <div class="assets-interactive-btn">
-                        <a href="{{ url_for('asset_properties', asset_id=asset._id) }}">
-                            <button class="assets-edit-button">
-                                <i class="fa-solid fa-pencil"></i>
-                            </button>
-                        </a>
+                        <a href="{{ url_for('asset_properties', asset_id=asset._id) }}" class="assets-edit-button" aria-label="Edit record" title="Edit">
+                                <i class="fa-solid fa-pencil" aria-hidden="true"></i>
+                            </a>
                          <form action="{{ url_for('delete_asset', asset_id=asset._id) }}" method="POST" onsubmit="return confirm('{{ trans('delete_asset_confirm') }}');">
-                            <button class="assets-delete-button">
-                                <i class="fa-solid fa-trash"></i>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button class="assets-delete-button" aria-label="Delete record" title="Delete">
+                                <i class="fa-solid fa-trash" aria-hidden="true"></i>
                             </button>
                         </form>
                     </div>
                 </div>
             </div>
         </div> 
+    {% else %}
+        <div class="empty-state"><p>No assets yet.</p><a href="{{ url_for('new_asset') }}">Create your first asset</a></div>
     {% endfor %}
     </div>
-</section>
+</div>
 
 
 {% endblock %}

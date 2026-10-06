@@ -6,24 +6,23 @@
             <h1>{{ trans('edit_asset') }} {{ asset.asset_tag if asset else ''  }}</h1>
         </div>
     </section>  
-    <section class="new-asset-form-container default-form-container ">
+    <div class="new-asset-form-container default-form-container ">
        
         <form class="edit-asset-form default-form" action="{{ url_for('save_asset') }}" method="POST"  enctype="multipart/form-data"
         id="asset-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <div class="edit-asset-form-main-container">
                 <div class="edit-asset-form-data-container">
                     <input type="hidden" name="asset_id" value="{{ asset._id if asset else '' }}">  <!-- Store ID -->
                     <div class="form-group">
                         <label for="asset-tag">{{ trans('asset_tag') }}</label>
-                        <input type="text" id="asset-tag" name="asset-tag" value="{{ asset.asset_tag if asset else ''  }}" required>
+                        <input type="text" id="asset-tag" name="asset-tag" value="{{ asset.asset_tag if asset else ''  }}" required maxlength="200">
                     </div>
 
                     <div class="form-group">
                         <label for="category">{{ trans('category') }}</label>
                         <select id="category" name="category" required>
-                            {% if not asset or not asset.category %}
                                 <option value="">{{ trans('select_category') }}</option>
-                            {% endif %}
                             {% for category in categories %}
                                 <option value="{{ category.name }}"
                                     {% if asset and asset.category == category.name %}selected{% endif %}>
@@ -35,22 +34,22 @@
 
                     <div class="form-group">
                         <label for="serial">{{ trans('serial_number') }}</label>
-                        <input type="text" id="serial" name="serial" value="{{ asset.serial }}" required>
+                        <input type="text" id="serial" name="serial" value="{{ asset.serial }}">
                     </div>
 
                     <div class="form-group">
                         <label for="model">{{ trans('model') }}</label>
-                        <input type="text" id="model" name="model" value="{{ asset.model }}" required>
+                        <input type="text" id="model" name="model" value="{{ asset.model }}">
                     </div>
 
                     <div class="form-group">
                         <label for="notes">{{ trans('notes') }}</label>
-                        <textarea id="notes" name="notes" placeholder="{{ trans('notes_placeholder') }}" {{ asset.notes }} rows="4"></textarea>
+                        <textarea id="notes" name="notes" maxlength="4000" placeholder="{{ trans('notes_placeholder') }}" rows="4">{{ asset.notes }}</textarea>
                     </div>
 
                     <div class="form-group">
                         <label for="warranty">{{ trans('warranty_expiry') }}</label>
-                        <div class="date-wrapper" onclick="document.getElementById('warranty').showPicker()">
+                        <div class="date-wrapper" onclick="document.getElementById('warranty').showPicker?.()">
                             <input type="date" id="warranty" name="warranty" value="{{ asset.warranty }}">
                         </div>
                     </div>
@@ -68,14 +67,14 @@
 
                     <div class="form-group">
                         <label for="purchase-date">{{ trans('purchase_date') }}</label>
-                        <div class="date-wrapper" onclick="document.getElementById('purchase-date').showPicker()">
-                            <input type="date" id="purchase-date" name="purchase-date">
+                        <div class="date-wrapper" onclick="document.getElementById('purchase-date').showPicker?.()">
+                            <input type="date" id="purchase-date" name="purchase-date" value="{{ asset.purchase_date }}">
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label for="location">{{ trans('location') }}</label>
-                        <select id="location" name="location" required>
+                        <select id="location" name="location">
                             <option value="">{{ trans('select_location') }}</option>
                             {% for location in locations %}
                                 <option value="{{ location.location_tag }}" 
@@ -109,15 +108,15 @@
                
              </div>
              <div class="form-actions">
-                <a href="javascript:window.history.back()" class="form-cancel">{{ trans('cancel') }}</a>
-                <button type="submit" class="btn save-btn"><i class="fa-solid fa-check"></i> {{ trans('save') }}</button>
+                <a href="{{ url_for('assets') }}" class="form-cancel">{{ trans('cancel') }}</a>
+                <button type="submit" class="btn save-btn"><i class="fa-solid fa-check" aria-hidden="true"></i> {{ trans('save') }}</button>
             </div>
            
             
         </form>
       
     
-    </section>
+    </div>
 
 
     <script>

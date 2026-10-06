@@ -11,17 +11,17 @@
          {% if messages %}
                 {% for category, msg in messages %}
                     {% if category == 'login' %}
-                        <div class="alert alert-danger">{{ msg }}</div>
+                        <div class="alert alert-danger" role="alert">{{ msg }}</div>
                     {% elif category == 'logout' %}
-                        <div class="alert alert-success">{{ msg }}</div>
+                        <div class="alert alert-success" role="alert">{{ msg }}</div>
                     {% elif category == 'signup-success' %}
-                        <div class="alert alert-success">{{ msg }}</div>
+                        <div class="alert alert-success" role="alert">{{ msg }}</div>
                     {% elif category == 'password-update-expired' %}
-                        <div class="alert alert-danger">{{ msg }}</div>
+                        <div class="alert alert-danger" role="alert">{{ msg }}</div>
                     {% elif category == 'password-update-fail' %}
-                        <div class="alert alert-danger">{{ msg }}</div>
+                        <div class="alert alert-danger" role="alert">{{ msg }}</div>
                     {% elif category == 'password-update-success' %}
-                        <div class="alert alert-success">{{ msg }}</div>
+                        <div class="alert alert-success" role="alert">{{ msg }}</div>
                     {% endif %}
                 {% endfor %}
              {% endif %}
@@ -29,17 +29,20 @@
     
 
          <form action="{{ url_for('login') }}" method="post" class="login-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <div class="login-form-group">
                 <div class="login-input-wrapper">
-                    <i class="fa-solid fa-envelope"></i>
-                    <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                    <i class="fa-solid fa-envelope" aria-hidden="true"></i>
+                    <label class="sr-only" for="email">Email address</label>
+                <input type="email" id="email" name="email" placeholder="Enter your email" required autocomplete="email">
                 </div>
             </div>
             
             <div class="login-form-group">
                 <div class="login-input-wrapper">
-                    <i class="fa-solid fa-key"></i>
-                    <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                    <i class="fa-solid fa-key" aria-hidden="true"></i>
+                    <label class="sr-only" for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required autocomplete="current-password">
                 </div>
             </div>
         

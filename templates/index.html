@@ -2,9 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Assety</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <script src="https://kit.fontawesome.com/00bb1ba651.js" crossorigin="anonymous"></script>
@@ -15,26 +17,29 @@
     
 
 </head>
-<body class="montserrat-500">
+<body class="montserrat-500 {% if request.endpoint == 'index' %}landing-page{% elif request.endpoint in ['login', 'sign_up', 'forgot_password', 'reset_password'] %}auth-page{% else %}site-page{% endif %}">
+    <a class="skip-link" href="#main-content">Skip to content</a>
     <!-- Header Section -->
     <header>
         <div class="header-container">
             <div class="logo">
-                <a class="logo-wrapper" href="{{ url_for('index') }}"><h1>Assety</h1></a>
+                <a class="logo-wrapper" href="{{ url_for('index') }}" aria-label="Assety home"><img class="brand-mark" src="{{ url_for('static', filename='img/assety-mark.svg') }}" alt=""><span class="brand-name">assety</span></a>
             </div>
-            <nav>
+            <nav aria-label="Main navigation">
                 <ul class="nav-container">
                     <li class="nav-item"><a class="nav-item-url" href="{{ url_for('index') }}">Home</a></li>
                     <li class="nav-item"><a class="nav-item-url" href="{{ url_for('index') }}#features">Features</a></li>
-                    <li class="nav-item"><a class="nav-item-url" href="#">Pricing</a></li>
+                    <li class="nav-item"><a class="nav-item-url" href="{{ url_for('index') }}#pricing">Pricing</a></li>
+                    <li class="nav-item"><a class="nav-item-url" href="{{ url_for('index') }}#how-it-works">How it works</a></li>
                     <li class="nav-item"><a class="nav-item-url" href="{{ url_for('login') }}">Login</a></li>
-                    <li class="nav-item"><a class="nav-item-url" href="{{ url_for('sign_up') }}">Sign Up</a></li>
+                    <li class="nav-item"><a class="nav-item-url nav-cta" href="{{ url_for('sign_up') }}">Create account</a></li>
                 </ul>
             </nav>
         </div>
     </header>
    
 
+<main id="main-content" tabindex="-1">
 {% block content %}
 
     <!-- Main Hero Section -->
@@ -42,125 +47,172 @@
         <div class="hero-content">
             
             <div class="hero-container">
-                <h2 class="hero-header">Efficient Inventory Management Made Easy</h2>
-                <div class="hero-sub-header">
-                    <div class="hero-subcontainer">
-                        <p class="hero-subcontainer-p">Track your stock levels, manage products, and streamline your workflow with Assety.</p>
-                        <a href="{{ url_for('sign_up') }}" class="cta-btn get-started-btn">GET STARTED</a>
+                <div class="landing-hero-copy">
+                    <p class="landing-eyebrow">Asset management, made clear</p>
+                    <h1 class="hero-header">A clear view of every company asset.</h1>
+                    <div class="hero-sub-header">
+                        <div class="hero-subcontainer">
+                            <p class="hero-subcontainer-p">Keep equipment details, locations, categories, and change history together in one organised inventory.</p>
+                            <div class="landing-hero-actions">
+                                <a href="{{ url_for('sign_up') }}" class="cta-btn get-started-btn">Start for free</a>
+                                <a href="#features" class="landing-secondary-link">Explore features <span aria-hidden="true">↓</span></a>
+                            </div>
+                        </div>
                     </div>
-                    <img class="hero-image" src="/static/img/hero5.jpg">
                 </div>
-              
-            
+                <figure class="landing-product-preview" aria-labelledby="preview-caption">
+                    <div class="preview-window-bar">
+                        <span class="preview-window-dots" aria-hidden="true">
+                            <i></i><i></i><i></i>
+                        </span>
+                        <span class="preview-wordmark">assety</span>
+                        <span class="preview-account-mark" aria-hidden="true">A</span>
+                    </div>
+                    <div class="preview-workspace">
+                        <aside class="preview-rail" aria-hidden="true">
+                            <span class="preview-rail-mark">A</span>
+                            <i></i><i></i><i></i><i></i>
+                        </aside>
+                        <div class="preview-main">
+                            <div class="preview-crumb">WORKSPACE <span>/</span> ASSETS</div>
+                            <div class="preview-title-row">
+                                <div>
+                                    <p class="preview-sample-label">SAMPLE WORKSPACE</p>
+                                    <p class="preview-inventory-title">Asset inventory</p>
+                                </div>
+                                <span class="preview-record-count">24 records</span>
+                            </div>
+                            <div class="preview-metrics">
+                                <div><span>Total assets</span><strong>24</strong></div>
+                                <div><span>Categories</span><strong>06</strong></div>
+                                <div><span>Locations</span><strong>04</strong></div>
+                            </div>
+                            <div class="preview-table-head">
+                                <span>ASSET</span><span>LOCATION</span><span>STATUS</span>
+                            </div>
+                            <div class="preview-table-row">
+                                <span><i class="preview-device-icon device-laptop" aria-hidden="true">L</i><span><strong>MacBook Pro 14″</strong><small>AST-0018 · Computer</small></span></span>
+                                <span>London office</span><em>Assigned</em>
+                            </div>
+                            <div class="preview-table-row">
+                                <span><i class="preview-device-icon device-monitor" aria-hidden="true">M</i><span><strong>Studio display</strong><small>AST-0012 · Equipment</small></span></span>
+                                <span>Design studio</span><em>In stock</em>
+                            </div>
+                            <div class="preview-table-row">
+                                <span><i class="preview-device-icon device-camera" aria-hidden="true">C</i><span><strong>Digital camera</strong><small>AST-0007 · Equipment</small></span></span>
+                                <span>London office</span><em>Assigned</em>
+                            </div>
+                        </div>
+                    </div>
+                    <figcaption id="preview-caption" class="sr-only">
+                        Example Assety inventory showing equipment, categories,
+                        locations, and status.
+                    </figcaption>
+                </figure>
             </div>
         </div>
     </section>
 
    <!-- Features Section -->
    <section id="features" class="features">
-    <h2 class="page-headers">Why Choose Assety?</h2>
+    <p class="landing-eyebrow">One place for the details that matter</p>
+    <h2 class="page-headers">Your inventory, easier to manage</h2>
     <div class="features-wrapper">
         <div class="features-grid">
             <div class="feature-item">
-                <h3 class="feature-item-header feature-item-first-header">Real-Time Tracking</h3>
-                <img class="feature-item-first-image feature-item-image" src="/static/img/features1.svg">
-                <p>Monitor inventory levels, orders, and updates in real time.</p>
+                <h3 class="feature-item-header feature-item-first-header">Asset tracking</h3>
+                <img class="feature-item-first-image feature-item-image" src="/static/img/features1.svg" alt="">
+                <p>See current asset records and a history of the changes you make.</p>
             </div>
             <div class="feature-item">
-                <h3 class="feature-item-header feature-item-second-header"> Smart Analytics</h3>
-                <img class="feature-item-first-image feature-item-image" src="/static/img/features2.svg">
-                <p>Get detailed reports and insights to optimize your inventory.</p>
+                <h3 class="feature-item-header feature-item-second-header"> Inventory reports</h3>
+                <img class="feature-item-first-image feature-item-image" src="/static/img/features2.svg" alt="">
+                <p>View category totals and export your asset records as CSV or PDF.</p>
             </div>
             <div class="feature-item">
-                <h3 class="feature-item-header"> Easy Product Management</h3>
-                <img class="feature-item-first-image feature-item-image" src="/static/img/features3.svg">
-                <p>Add, update, and organize products effortlessly.</p>
+                <h3 class="feature-item-header"> Simple asset management</h3>
+                <img class="feature-item-first-image feature-item-image" src="/static/img/features3.svg" alt="">
+                <p>Add, edit, find, and remove assets from one place.</p>
             </div>
         </div>
     </div>
+</section>
+
+<!-- Pricing Section -->
+<section id="pricing" class="pricing landing-pricing" aria-labelledby="pricing-heading">
+    <div class="landing-section-intro">
+        <p class="landing-eyebrow">Clear, straightforward pricing</p>
+        <h2 id="pricing-heading" class="page-headers">The tools you need, free to use.</h2>
+        <p>Create an account to use the features available in Assety. This version has no paid tiers, subscriptions, or payment processing.</p>
+    </div>
+    <article class="pricing-card">
+        <div class="pricing-card-heading">
+            <div><p class="pricing-plan-label">CURRENT PLAN</p><h3>Free</h3></div>
+            <p class="pricing-amount">£0 <span>/ this version</span></p>
+        </div>
+        <p class="pricing-summary">Explore all features available in this version. No checkout or subscription is required.</p>
+        <ul class="pricing-features">
+            <li>Manage assets, categories, and locations</li>
+            <li>Review reports and change history</li>
+            <li>Export available records to CSV and PDF</li>
+        </ul>
+        <a href="{{ url_for('sign_up') }}" class="cta-btn pricing-cta">Create a free account</a>
+        <p class="pricing-login">Already registered? <a href="{{ url_for('login') }}">Sign in</a></p>
+    </article>
 </section>
 
 <!-- How It Works Section -->
 <section id="how-it-works" class="how-it-works">
-    <h2 class="page-headers">How It Works</h2>
+    <p class="landing-eyebrow">A simple place to start</p>
+    <h2 class="page-headers">From first record to full inventory</h2>
     <div class="how-it-works-wrapper">
         <div class="steps">
             <div class="step">
-                <a class="how-it-works-sign-up" href="{{ url_for('sign_up') }}"> <h3 class="step-header">1️⃣ Sign Up Here</h3></a>
-                <p class="step-paragraph">Create your free account in minutes.</p>
+                <span class="step-number" aria-hidden="true">01</span>
+                <h3 class="step-header">Create your account</h3>
+                <p class="step-paragraph">Set up your company workspace and get started.</p>
             </div>
             <div class="step">
-                <h3 class="step-header">2️⃣ Add Your Inventory</h3>
-                <p class="step-paragraph">Upload products and stock details easily.</p>
+                <span class="step-number" aria-hidden="true">02</span>
+                <h3 class="step-header">Add your assets</h3>
+                <p class="step-paragraph">Add equipment with useful details, categories, and locations.</p>
             </div>
             <div class="step">
-                <h3 class="step-header">3️⃣ Track & Optimize</h3>
-                <p class="step-paragraph">Monitor stock levels and optimize efficiency.</p>
+                <span class="step-number" aria-hidden="true">03</span>
+                <h3 class="step-header">Keep records current</h3>
+                <p class="step-paragraph">Review asset information and follow changes over time.</p>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Testimonials Section -->
-<section class="testimonials">
-    <h2 class="page-headers">What Our Users Say</h2>
-    
-        <div class="user-testimonials-wrapper">
-            <div class="testimonial">
-                <p>"Assety has transformed our business! Managing stock has never been easier." – Sarah L.</p>
-            </div>
-            <div class="testimonial">
-                <p>"A must-have for any business handling inventory. Highly recommended!" – Mark R.</p>
-            </div>
-            <div class="testimonial">
-                <p>"Outstanding tool for streamlining operations. Saved us hours each week!" – Jenna L.</p>
-            </div>
-        </div>
-    
+<!-- Use cases -->
+<section class="testimonials landing-use-cases" aria-labelledby="use-cases-heading">
+    <p class="landing-eyebrow">Designed for day-to-day work</p>
+    <h2 id="use-cases-heading" class="page-headers">Keep teams and equipment organised</h2>
+        <div class="use-case-grid">
+        <article class="use-case-card"><span class="use-case-index" aria-hidden="true">01</span><h3>Office managers</h3><p>Keep track of shared equipment and the office locations where it belongs.</p></article>
+        <article class="use-case-card"><span class="use-case-index" aria-hidden="true">02</span><h3>Small businesses</h3><p>Review asset counts, purchase details, and recent updates in one place.</p></article>
+        <article class="use-case-card"><span class="use-case-index" aria-hidden="true">03</span><h3>Inventory teams</h3><p>Find and update records, then export the information you need to share.</p></article>
+    </div>
 </section>
 
     <!-- Call to Action Section -->
     <section class="cta">
-        <h2 class="page-headers">Ready to take control of your inventory?</h2>
-        <a href="{{ url_for('sign_up') }}" class="cta-btn free-trial-btn">Start Your Free Trial</a>
+        <p class="landing-eyebrow">Bring your inventory into focus</p>
+        <h2 class="page-headers">Start with a clearer picture of your assets.</h2>
+        <a href="{{ url_for('sign_up') }}" class="cta-btn free-trial-btn">Create your account</a>
     </section>
 
      <!-- FAQ Section -->
      <section class="faq">
         <h2 class="page-headers">Frequently Asked Questions</h2>
         <div class="faq-container">
-            <details>
-                <summary>Is there a free trial?</summary>
-                <p>Yes! We offer a 14-day free trial for all new users.</p>
-            </details>
-            <details>
-                <summary>Can I cancel anytime?</summary>
-                <p>Yes, you can cancel your subscription at any time with no extra fees.</p>
-            </details>
-            <details>
-                <summary>What types of assets can I manage?</summary>
-                <p>You can manage hardware, software, licenses, cloud resources, and peripheral devices from a centralized dashboard.</p>
-            </details>
-            <details>
-                <summary>Is the system cloud-based?</summary>
-                <p>Yes, our IT asset management system is fully cloud-based, allowing you to access your assets from anywhere with secure authentication.</p>
-            </details>
-            <details>
-                <summary>Does it support integrations with other tools?</summary>
-                <p>Absolutely. We support integrations with major platforms like Microsoft Intune, ServiceNow, Jira, and more.</p>
-            </details>
-            <details>
-                <summary>How secure is my data?</summary>
-                <p>We implement enterprise-grade security protocols, including encryption at rest and in transit, multi-factor authentication, and regular security audits.</p>
-            </details>
-            <details>
-                <summary>Can I assign assets to specific users or departments?</summary>
-                <p>Yes, assets can be assigned to individual users, departments, or even locations for better tracking and accountability.</p>
-            </details>
-            <details>
-                <summary>Is there a mobile app available?</summary>
-                <p>No, but we are planninh to offer a companion mobile app for both Android and iOS to manage assets on the go.</p>
-            </details>
+            <details><summary>What can I track?</summary><p>Record equipment and other company assets, including tags, serial numbers, categories, locations, purchase costs, warranty dates, and notes.</p></details>
+            <details><summary>How do I get started?</summary><p>Create an account, add a category and an optional location, then add your first asset.</p></details>
+            <details><summary>Can I export my records?</summary><p>Yes. Reports provides CSV and PDF downloads. Logs can also be exported as PDF.</p></details>
+            <details><summary>Can I use Assety on my phone?</summary><p>Yes. The interface adapts to phones, tablets, and desktop browsers.</p></details>
+            <details><summary>Who can see my assets?</summary><p>Sign-in is required for inventory pages. Each account has a separate company workspace, and the application checks access to records and images.</p></details>
         </div>
     </section>
     
@@ -168,27 +220,30 @@
     <!-- Contact Section -->
     <section id="contact" class="contact">
         <div class="contact-container">
-            <h2>Get in Touch</h2>
-            <p>Have questions? We're here to help.</p>
-            <a href="mailto:support@Assety.com" class="cta-btn contact-support-btn">Contact Support</a>
+            <h2>Ready to organise your assets?</h2>
+            <p>Create an account to start your inventory, or sign in to your existing workspace.</p>
+            <a href="{{ url_for('sign_up') }}" class="cta-btn contact-support-btn">Get started</a>
         </div>
        
     </section>
   
 
 {% endblock %}
+</main>
     <!-- Footer Section -->
     <footer>
-        <p>&copy; 2025 Assety. All rights reserved.</p>
+        <p><span class="footer-brand">Assety</span><span aria-hidden="true"> · </span>Inventory management for clearer records.</p>
     </footer>
     
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="{{ url_for('static', filename='scripts/script.js') }}"></script>
     
     
     <script>
         document.addEventListener("DOMContentLoaded", function() {
     // Animate "Why Choose Assety?" heading from the right
+    if (typeof gsap === 'undefined' || !document.querySelector('#features') || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (typeof ScrollTrigger === 'undefined') return;
+    gsap.registerPlugin(ScrollTrigger);
     gsap.from("#features h2", { 
         x: 100, 
         opacity: 0, 
@@ -223,7 +278,7 @@
 });
 document.addEventListener("DOMContentLoaded", function() {
     const heroContent = document.querySelector(".hero-content");
-    heroContent.classList.add("animate"); // Only triggers animation on first load
+    if (heroContent) heroContent.classList.add("animate");
 });
 
     </script>

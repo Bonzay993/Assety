@@ -5,11 +5,16 @@ if (typeof document !== "undefined") {
 function passwordValidator() {
     const passwordInput = document.getElementById("password");
     const confirmPasswordInput = document.getElementById("confirm-password");
-    const submitButton = document.querySelector("button[type='submit']");
-    const confirmPasswordGroup = confirmPasswordInput.closest('.sign-up-form-group');
+    // Login and landing pages also load this script, without confirmation fields.
+    if (!passwordInput || !confirmPasswordInput) return;
+    const form = passwordInput.closest('form');
+    const submitButton = form && form.querySelector("button[type='submit']");
+    if (!submitButton || passwordInput.dataset.validationInitialized) return;
+    passwordInput.dataset.validationInitialized = 'true';
+    const confirmPasswordGroup = confirmPasswordInput.closest('.sign-up-form-group, .form-group') || confirmPasswordInput;
 
     // Ensure validation container is added only once
-    let validationContainer = document.querySelector(".password-validation");
+    let validationContainer = form.querySelector(".password-validation");
     if (!validationContainer) {
         validationContainer = document.createElement("div");
         validationContainer.classList.add("password-validation");
@@ -81,6 +86,7 @@ function passwordValidator() {
     // Event listeners for real-time validation
     passwordInput.addEventListener("input", validatePassword);
     confirmPasswordInput.addEventListener("input", validatePassword);
+    submitButton.disabled = !(passwordInput.value.length >= 6 && /[A-Z]/.test(passwordInput.value) && passwordInput.value === confirmPasswordInput.value);
 
     // Show validation on focus (but not before typing)
     passwordInput.addEventListener("focus", () => {

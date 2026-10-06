@@ -4,14 +4,12 @@
     <div class="default-list-top-container">
         <h1 class="assets-heading">{{ trans('locations_list') }}</h1>
         <div class="create-new-element-btn create-new-category">
-            <a href="{{ url_for('new_location') }}">
-                <button class="new-element-btn">{{ trans('create_new') }}</button>
-            </a>
+            <a href="{{ url_for('new_location') }}" class="new-element-btn">{{ trans('create_new') }}</a>
         </div>
     </div>
 </section>
 
-<section class="assets-list">
+<div class="assets-list location-records">
     <div class="assets-list-container">
         <div class="assets-list-heading-container">
             <p class="asset-list-title-item"><strong>{{ trans('name') }}</strong></p>
@@ -25,49 +23,50 @@
 
         {% for location in locations %}
         <div class="assets-list-items-container {% if loop.index0 % 2 == 0 %}blue-row{% else %}lightblue-row{% endif %}">
-            <div class="title-body-group">
+            <div class="title-body-group" data-label="{{ trans('name') }}">
                 
                 <p>{{ location.location_tag }}</p>
             </div>
-            <div class="title-body-group">
+            <div class="title-body-group" data-label="{{ trans('phone') }}">
                 
                 <p>{{ location.phone }}</p>
             </div>
-            <div class="title-body-group">
+            <div class="title-body-group" data-label="{{ trans('address') }}">
                 
                 <p>{{ location.address }}</p>
             </div>
-            <div class="title-body-group">
+            <div class="title-body-group" data-label="{{ trans('city') }}">
                 
                 <p>{{ location.city }}</p>
             </div>
-            <div class="title-body-group">
+            <div class="title-body-group" data-label="{{ trans('state') }}">
                 
                 <p>{{ location.state }}</p>
             </div>
-            <div class="title-body-group">
+            <div class="title-body-group" data-label="{{ trans('postal_code') }}">
                 
                 <p>{{ location.post_code }}</p>
             </div>
-            <div class="title-body-group title-body-group-actions">
+            <div class="title-body-group title-body-group-actions" data-label="{{ trans('actions') }}">
                 
                 <div class="inner-action-group">
                     <div class="assets-interactive-btn">
-                        <a href="{{ url_for('location_properties', location_id=location._id) }}">
-                            <button class="assets-edit-button">
-                                <i class="fa-solid fa-pencil"></i>
-                            </button>
-                        </a>
+                        <a href="{{ url_for('location_properties', location_id=location._id) }}" class="assets-edit-button" aria-label="Edit record" title="Edit">
+                                <i class="fa-solid fa-pencil" aria-hidden="true"></i>
+                            </a>
                         <form action="{{ url_for('delete_location', location_id=location._id) }}" method="POST" onsubmit="return confirm('{{ trans('delete_location_confirm') }}');">
-                            <button class="assets-delete-button">
-                                <i class="fa-solid fa-trash"></i>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button class="assets-delete-button" aria-label="Delete record" title="Delete">
+                                <i class="fa-solid fa-trash" aria-hidden="true"></i>
                             </button>
                         </form>
                     </div>
                 </div>
             </div>
         </div> 
+    {% else %}
+        <div class="empty-state"><p>No locations yet.</p><a href="{{ url_for('new_location') }}">Create your first location</a></div>
     {% endfor %}
     </div>
-</section>
+</div>
 {% endblock %}

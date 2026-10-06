@@ -2,10 +2,10 @@
 
 {% block content %}
 <section class="logs-section">
-    <h2 class="dashboard-heading">{{ trans('logs') }}</h2>
+    <h1 class="dashboard-heading">{{ trans('logs') }}</h1>
     <form method="get" class="logs-filter-form">
-        <label>{{ trans('start_date') }} <input type="date" name="start_date" value="{{ start_date }}"></label>
-        <label>{{ trans('end_date') }} <input type="date" name="end_date" value="{{ end_date }}"></label>
+        <label>{{ trans('start_date') }} <input type="date" name="start_date" value="{{ start_date or '' }}"></label>
+        <label>{{ trans('end_date') }} <input type="date" name="end_date" value="{{ end_date or '' }}"></label>
         <button type="submit" class="new-element-btn">{{ trans('filter') }}</button>
         <a href="{{ url_for('export_logs', start_date=start_date, end_date=end_date) }}" class="new-element-btn">{{ trans('export_pdf') }}</a>
     </form>
@@ -20,11 +20,11 @@
         {% if activities %}
             {% for activity in activities %}
             <div class="activity-items-container {% if loop.index0 % 2 == 0 %}blue-row{% else %}lightblue-row{% endif %}">
-                <span class="activity-item activity-date">{{ activity.date }}</span>
-                <span class="activity-item activity-user">{{ activity.user }}</span>
-                <span class="activity-item activity-action">{{ activity.action }}</span>
-                <span class="activity-item activity-asset">{{ activity.asset }}</span>
-                <span class="activity-item activity-asset">{{ activity.location }}</span>
+                <span class="activity-item activity-date" data-label="{{ trans('date') }}">{{ activity.date }}</span>
+                <span class="activity-item activity-user" data-label="{{ trans('user') }}">{{ activity.user }}</span>
+                <span class="activity-item activity-action" data-label="{{ trans('action') }}">{{ activity.action }}</span>
+                <span class="activity-item activity-asset" data-label="{{ trans('asset') }}">{{ activity.asset }}</span>
+                <span class="activity-item activity-asset" data-label="{{ trans('location') }}">{{ activity.location }}</span>
             </div>
             {% endfor %}
         {% else %}

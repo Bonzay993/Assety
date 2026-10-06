@@ -6,15 +6,16 @@
             <h1 class="assets-heading">{{ trans('edit_location') }}</h1>
         </div>
         <form class="new-location-form default-form" action="{{ url_for('save_location') }}" method="POST" id="location-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <input type="hidden" name="location_id" value="{{ location._id if location else '' }}">  <!-- Store ID -->
             <div class="form-group">
                 <label for="location-tag">{{ trans('location_name') }}</label>
-                <input type="text" id="location-tag" name="location-tag" value="{{ location.location_tag }}" required>
+                <input type="text" id="location-tag" name="location-tag" value="{{ location.location_tag }}" required maxlength="200">
             </div>
 
             <div class="form-group">
                 <label for="phone">{{ trans('phone') }}</label>
-                <input type="number" id="phone" name="phone" value="{{ location.phone}}">
+                <input type="tel" id="phone" autocomplete="tel" maxlength="32" name="phone" value="{{ location.phone}}">
             </div>
 
             <div class="form-group">
@@ -24,11 +25,11 @@
 
             <div class="form-group">
                 <label for="city">{{ trans('city') }}</label>
-                <input type text="text" name="city" value="{{ location.city }}" >
+                <input type="text" id="city" name="city" value="{{ location.city }}" >
             </div>
 
             <div class="form-group">
-                <label for="state">{{ trans('state') }}</label>>
+                <label for="state">{{ trans('state') }}</label>
                 <input type="text" id="state"  name="state" value="{{ location.state }}">
             </div>
 
@@ -38,8 +39,8 @@
             </div>
 
             <div class="form-actions">
-                <a href="javascript:window.history.back()" class="form-cancel">{{ trans('cancel') }}</a>
-                <button type="submit" class="btn save-btn"><i class="fa-solid fa-check"></i> {{ trans('save') }}</button>
+                <a href="{{ url_for('locations') }}" class="form-cancel">{{ trans('cancel') }}</a>
+                <button type="submit" class="btn save-btn"><i class="fa-solid fa-check" aria-hidden="true"></i> {{ trans('save') }}</button>
             </div>
         </form>
     </div>
