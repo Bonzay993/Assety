@@ -347,6 +347,13 @@ body.auth-page .btn:hover:not(:disabled) { background: #0b526a; transform: trans
 body.auth-page .login-links-container { gap: 10px; margin-top: 18px; }
 body.auth-page .login-link { color: #126982; font-weight: 600; text-decoration: none; }
 body.auth-page .login-link:hover { text-decoration: underline; text-underline-offset: 3px; }
+body.auth-page .forgot-form .login-form-group,
+body.auth-page .forgot-form .login-input-wrapper { width: 100%; }
+body.auth-page .forgot-form .login-input-wrapper { position: relative; }
+body.auth-page .forgot-form .login-input-wrapper input { width: 100%; padding-left: 35px; box-sizing: border-box; }
+body.auth-page .forgot-form .forgot-btn { min-height: 48px; border: 0; border-radius: 9px; background: #126982; color: #fff; font-weight: 750; transition: background-color .18s ease, transform .18s ease; }
+body.auth-page .forgot-form .forgot-btn:hover:not(:disabled) { background: #0b526a; transform: translateY(-1px); }
+body.auth-page .forgot-links-container { display: flex; flex-direction: column; gap: 10px; margin-top: 18px; }
 body.auth-page > footer { padding: 18px 20px; background: #173b4c; color: #d3e0e5; text-align: center; }
 
 body.inventory-app-body {
