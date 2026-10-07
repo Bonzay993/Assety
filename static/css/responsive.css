@@ -74,9 +74,12 @@ footer { height: auto; min-height: 50px; }
 .dropdown-arrow { margin-left: auto; }
 .dropdown-menu { padding-left: 32px; }
 .dropdown-menu-item { display: block; padding: 10px 8px; min-height: 44px; border-radius: 4px; }
-.sidebar.minimized .dropdown:hover .dropdown-menu { display: none; }
-.sidebar.minimized .dropdown-menu.show { display: block; position: static; width: 100%; padding: 0; max-height: none; background: transparent; text-align: center; }
-.sidebar.minimized .dropdown-menu li a { padding: 10px 0; font-size: 11px; overflow-wrap: anywhere; }
+.sidebar.minimized .dropdown-menu.show { display: block; position: absolute; top: 0; left: calc(100% + 10px); z-index: 1200; width: max-content; min-width: 168px; max-width: 240px; max-height: none; margin: 0; padding: 6px; overflow: visible; border: 1px solid rgba(255, 255, 255, .12); border-radius: 10px; background: #173b4c; box-shadow: 0 12px 28px rgba(12, 34, 45, .24); text-align: left; }
+.sidebar.minimized .dropdown { position: relative; }
+.sidebar.minimized .dropdown-menu li { padding: 0; }
+.sidebar.minimized .dropdown-menu li a { display: flex; min-height: 42px; align-items: center; padding: 9px 12px; border-radius: 7px; color: #d9e6eb; font-size: .84rem; font-weight: 600; text-decoration: none; white-space: nowrap; }
+.sidebar.minimized .dropdown-menu li a:hover,
+.sidebar.minimized .dropdown-menu li a:focus-visible { background: rgba(255, 255, 255, .12); color: #fff; text-decoration: none; }
 .version { margin-top: auto; padding: 24px 0 0; text-align: center; }
 .version-number { position: static; font-size: 12px; }
 .main-content { width: 0; min-width: 0; flex: 1 1 0; min-height: 100vh; padding-bottom: 24px; }
@@ -650,6 +653,7 @@ body.inventory-app-body .inventory-app-container { width: 100%; max-width: 100%;
 body.inventory-app-body #main-content { width: 0; max-width: 100%; min-width: 0; flex: 1 1 0; }
 body.inventory-app-body .sidebar { flex: 0 0 248px; transition: width .28s ease, flex-basis .28s ease, padding .28s ease; }
 body.inventory-app-body .sidebar.minimized { width: 76px; flex-basis: 76px; }
+body.inventory-app-body .sidebar.minimized { z-index: 110; overflow: visible; }
 body.inventory-app-body .sidebar .menu-item .text { max-width: 160px; opacity: 1; overflow: hidden; white-space: nowrap; transition: max-width .22s ease, opacity .15s ease; }
 body.inventory-app-body .sidebar.minimized .menu-item .text { display: block; max-width: 0; flex: 0 1 0; margin: 0; opacity: 0; }
 body.inventory-app-body .sidebar.minimized .sidebar-brand { display: none; }
