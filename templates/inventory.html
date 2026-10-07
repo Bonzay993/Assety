@@ -32,7 +32,7 @@
                 <!-- Categories Dropdown -->
                 <li class="dropdown">
                     <button type="button" class="menu-item{% if request.endpoint in ['categories', 'new_category', 'category_properties', 'locations', 'new_location', 'location_properties'] %} is-active{% endif %}" id="categories-btn" aria-label="{{ trans('categories') }}" aria-controls="categories-menu" aria-expanded="false">
-                        <i class="fas fa-box" aria-hidden="true"></i>
+                        <i class="fas fa-tags" aria-hidden="true"></i>
                         <span class="text">{{ trans('categories') }}</span>
                         <i class="fas fa-chevron-left dropdown-arrow" aria-hidden="true" id="dropdown-arrow"></i>
                     </button>

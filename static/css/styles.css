@@ -1106,43 +1106,6 @@ input[type="file"]{
       display: none;
   }
 
-  /* Show dropdown on hover when sidebar is minimized */
-  .sidebar.minimized .dropdown:hover .dropdown-menu {
-    display: block;
-    position: absolute;
-    background: rgb(34, 45, 50);
-    padding: 0px;
-    margin: 0 auto;
-    left: 80px;  /* Adjust to position it to the right of the sidebar */
-    top: 250px;      /* Align dropdown on the same level as the category */
-    width: 100px;
-    max-height: 200px;
-    z-index: 100;
-    text-align: center;
-    font-weight: bold;
-}
-
-  .sidebar.minimized .dropdown-menu li {
-      padding: 0px;
-  }
-
-  .sidebar.minimized .dropdown-menu li a {
-      color: #fff;
-      text-decoration: none;
-      font-size:90%;
-  }
-
-  .sidebar.minimized .dropdown-menu li a:hover {
-      text-decoration: none;
-      
-  }
-
-  .sidebar.minimized .dropdown-menu li a:hover{
-    background-color:#007bff;
-    padding:7px;
-    border-radius: 3px;
-  }
-
 .dropdown-menu {
     display: none;
     list-style: none;
