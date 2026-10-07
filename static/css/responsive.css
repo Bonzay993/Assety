@@ -1,5 +1,7 @@
 /* Shared layout rules. Keep content readable rather than shrinking it to fit. */
-html { overflow-y: auto; scrollbar-gutter: auto; }
+/* Reserve the same scrollbar space on short and long pages so centered shared
+   elements (especially the header) stay in the same horizontal position. */
+html { overflow-y: auto; scrollbar-gutter: stable; }
 body { display: flex; height: auto; min-height: 100vh; min-height: 100dvh; flex-direction: column; overflow-y: visible; }
 #main-content { width: 100%; flex: 1 0 auto; }
 body.auth-page #main-content { display: flex; flex-direction: column; }
@@ -798,6 +800,20 @@ body.inventory-app-body .sidebar-brand .brand-name { color: #fff; font-size: 1.4
 .landing-page > footer { margin-top: 64px; padding: 28px 20px; background: #162e3e; color: #cbd9df; font-size: .9rem; text-align: center; }
 .landing-page .footer-brand { color: #fff; font-weight: 750; letter-spacing: -.02em; }
 
+/* Use one public shell style across the landing and account pages. */
+.landing-page > header,
+body.auth-page > header { background: var(--public-shell-color); }
+.landing-page > footer,
+body.auth-page > footer { background: var(--public-shell-color); }
+.landing-page .brand-name,
+body.auth-page .brand-name { font-size: 1.6rem; }
+.landing-page .nav-container,
+body.auth-page .nav-container { gap: 8px; }
+.landing-page .nav-item-url,
+body.auth-page .nav-item-url { padding: 7px 12px; }
+.landing-page .nav-cta,
+body.auth-page .nav-cta { margin-left: 4px; padding-inline: 17px; }
+
 @media (max-width: 900px) {
     .landing-page .hero { min-height: 0; margin: 22px 18px 48px; padding: 36px; }
     .landing-page .hero-container { grid-template-columns: minmax(0, 1fr); gap: 22px; }
@@ -854,4 +870,26 @@ body.inventory-app-body .sidebar-brand .brand-name { color: #fff; font-size: 1.4
 
 @media (prefers-reduced-motion: reduce) {
     .landing-page *, .landing-page *::before, .landing-page *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+}
+
+@media (max-width: 767px) {
+    .landing-page > header,
+    body.auth-page > header { padding: 8px 12px; }
+    .landing-page .header-container,
+    body.auth-page .header-container { flex-direction: row; justify-content: space-between; gap: 8px; }
+    .landing-page .header-container nav,
+    body.auth-page .header-container nav { width: auto; }
+    .landing-page .nav-container,
+    body.auth-page .nav-container { justify-content: flex-end; flex-wrap: wrap; gap: 2px; }
+    .landing-page .nav-item-url,
+    body.auth-page .nav-item-url { min-height: 40px; padding: 6px 8px; font-size: .84rem; }
+}
+
+@media (max-width: 420px) {
+    .landing-page .header-container,
+    body.auth-page .header-container { flex-direction: column; }
+    .landing-page .header-container nav,
+    body.auth-page .header-container nav { width: 100%; }
+    .landing-page .nav-container,
+    body.auth-page .nav-container { justify-content: center; }
 }

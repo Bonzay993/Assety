@@ -5,6 +5,10 @@
     box-sizing: border-box;
 }
 
+:root {
+    --public-shell-color: #173b4c;
+}
+
 html{
     scroll-behavior: smooth;
     overflow-y: scroll;
@@ -37,7 +41,7 @@ body {
 header {
     display:flex;
     flex-direction: row;
-    background-color:rgb(39, 77, 97);
+    background-color: var(--public-shell-color);
     color: rgb(255, 255, 255);
     padding-left:20px;
     padding-right:20px;
@@ -574,7 +578,7 @@ header .logo h1 {
 }
 
 footer {
-    background-color: black;
+    background-color: var(--public-shell-color);
     color:white;
     text-align: center;
     padding: 10px;
