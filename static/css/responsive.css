@@ -679,6 +679,111 @@ body.inventory-app-body .sidebar.minimized #dropdown-arrow { display: none; }
     body.inventory-app-body .sidebar.minimized .menu-item .text { max-width: 160px; flex: initial; margin: 0; opacity: 1; }
 }
 
+/* Keep every record list on the same table rhythm. */
+body.inventory-app-body .assets-list,
+body.inventory-app-body .reports-summary {
+    width: auto;
+    max-width: none;
+    margin-inline: clamp(18px, 3vw, 36px);
+    box-sizing: border-box;
+}
+body.inventory-app-body .assets-list-container {
+    width: 100%;
+    min-width: 0;
+}
+body.inventory-app-body .assets-list-heading-container,
+body.inventory-app-body .assets-list-items-container {
+    box-sizing: border-box;
+    align-items: center;
+}
+body.inventory-app-body .assets-list-heading-container {
+    height: 46px;
+    min-height: 46px;
+    padding: 0 14px;
+}
+body.inventory-app-body .assets-list-heading-container > *,
+body.inventory-app-body .assets-list-items-container > * {
+    min-width: 0;
+    margin: 0;
+}
+body.inventory-app-body .assets-list-items-container {
+    height: 72px;
+    min-height: 72px;
+    max-height: 72px;
+    padding: 8px 14px;
+    overflow: hidden;
+}
+body.inventory-app-body .title-body-group {
+    display: flex;
+    height: 100%;
+    min-height: 0;
+    max-height: 100%;
+    align-items: center;
+    overflow: hidden;
+    line-height: 1.4;
+}
+body.inventory-app-body .title-body-group p {
+    display: -webkit-box;
+    max-height: 2.8em;
+    margin: 0;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow-wrap: anywhere;
+}
+body.inventory-app-body .title-body-group-image-name .asset-thumbnail {
+    width: 64px;
+    height: 48px;
+    object-fit: contain;
+}
+body.inventory-app-body .title-body-group-actions,
+body.inventory-app-body .assets-interactive-btn {
+    align-items: center;
+}
+body.inventory-app-body .title-body-group-actions .assets-interactive-btn { gap: 8px; }
+body.inventory-app-body .title-body-group-actions form { margin: 0; }
+body.inventory-app-body .assets-edit-button,
+body.inventory-app-body .assets-delete-button {
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
+    min-height: 42px;
+}
+body.inventory-app-body .reports-summary .assets-list-items-container { height: 72px; min-height: 72px; max-height: 72px; }
+body.inventory-app-body .recent-assets-header,
+body.inventory-app-body .recent-activities-container {
+    min-height: 46px;
+    align-items: center;
+}
+body.inventory-app-body .recent-assets-container,
+body.inventory-app-body .activity-items-container {
+    min-height: 72px;
+    align-items: center;
+}
+body.inventory-app-body .report-table th,
+body.inventory-app-body .report-table td {
+    height: 72px;
+    vertical-align: middle;
+}
+body.inventory-app-body .report-table th { height: 46px; }
+
+@media (max-width: 767px) {
+    body.inventory-app-body .assets-list-items-container,
+    body.inventory-app-body .reports-summary .assets-list-items-container {
+        height: auto;
+        min-height: 0;
+        max-height: none;
+        align-items: start;
+    }
+    body.inventory-app-body .assets-list-items-container .title-body-group {
+        height: auto;
+        min-height: 56px;
+        max-height: none;
+    }
+    body.inventory-app-body .recent-assets-container,
+    body.inventory-app-body .activity-items-container { min-height: 0; }
+}
+
 /* Landing page refresh: a clear product hero, focused sections and a useful
    pricing destination. Scoped here so signed-in app screens keep their styles. */
 .landing-page {
