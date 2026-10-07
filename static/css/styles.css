@@ -839,7 +839,12 @@ input[type="file"]{
 }
 
 .forgot-form .form-group {
+    position: relative;
     width: 100%;
+}
+
+.forgot-form .form-group input {
+    padding-left: 35px;
 }
 
 
