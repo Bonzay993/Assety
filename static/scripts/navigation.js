@@ -57,7 +57,9 @@ function setupNavigation() {
             sidebar.classList.remove('mobile-open');
             setDropdown(false);
             updateToggle();
+            return;
         }
+        if (dropdown.classList.contains('show') && !sidebar.contains(event.target)) setDropdown(false);
     }
     toggle.addEventListener('click', toggleNavigation);
     categories.addEventListener('click', toggleDropdown);
