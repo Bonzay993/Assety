@@ -1,5 +1,7 @@
 # Assety
 
+![Assety landing page with an asset inventory dashboard preview](docs/images/landing-page-preview.png)
+
 Assety is a responsive inventory and asset-management web application for small organisations. Users can keep a searchable register of equipment, organise it by category and location, review activity, and export reports. It was built as a Code Institute Diploma in Full Stack Software Development Milestone Project 3.
 
 > This repository contains the application and its local development setup. Local work is not automatically deployed: review the changes, run the checks, then commit and push when ready. See [CHANGELOG.md](CHANGELOG.md) for the current local change groups and [local-testing.md](local-testing.md) for this Windows checkout's start, stop, and test instructions.
@@ -35,9 +37,7 @@ Assety is a responsive inventory and asset-management web application for small 
 
 ## Screens and illustrations
 
-The landing page introduces Assety and its workflow. The image below shows the asset inventory interface and visual direction.
-
-![Assety landing page with an asset inventory dashboard preview](docs/images/landing-page-preview.png)
+The landing page introduces Assety and its workflow. The responsive layout is summarized in [Responsive layouts](#responsive-layouts).
 
 The following diagram shows the main request and storage relationships. Users authenticate through Flask; the account's company determines the inventory collection, while uploaded images use MongoDB GridFS.
 
