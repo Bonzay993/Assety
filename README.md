@@ -1,5 +1,7 @@
 # Assety
 
+![Assety landing page with an asset inventory dashboard preview](docs/images/landing-page-preview.png)
+
 Assety is a responsive inventory and asset-management web application for small organisations. Users can keep a searchable register of equipment, organise it by category and location, review activity, and export reports. It was built as a Code Institute Diploma in Full Stack Software Development Milestone Project 3.
 
 > This repository contains the application and its local development setup. Local work is not automatically deployed: review the changes, run the checks, then commit and push when ready. See [CHANGELOG.md](CHANGELOG.md) for the current local change groups and [local-testing.md](local-testing.md) for this Windows checkout's start, stop, and test instructions.
@@ -8,6 +10,7 @@ Assety is a responsive inventory and asset-management web application for small 
 
 - [At a glance](#at-a-glance)
 - [Screens and illustrations](#screens-and-illustrations)
+- [Responsive layouts](#responsive-layouts)
 - [Features](#features)
 - [How the application works](#how-the-application-works)
 - [Routes](#routes)
@@ -34,15 +37,25 @@ Assety is a responsive inventory and asset-management web application for small 
 
 ## Screens and illustrations
 
-The landing page introduces the product and its workflow. The image below is a bundled hero photograph used by the public-facing design.
-
-![Assety landing-page inventory and workspace theme](static/img/hero1.jpg)
+The landing page introduces Assety and its workflow. The responsive layout is summarized in [Responsive layouts](#responsive-layouts).
 
 The following diagram shows the main request and storage relationships. Users authenticate through Flask; the account's company determines the inventory collection, while uploaded images use MongoDB GridFS.
 
 ![Assety application and MongoDB data-flow diagram](docs/images/architecture.svg)
 
 Assety also bundles three feature illustrations used by the public pages: [inventory illustration](static/img/features1.svg), [organisation illustration](static/img/features2.svg), and [reporting illustration](static/img/features3.svg). The current responsive brand mark is [`static/img/assety-mark.svg`](static/img/assety-mark.svg); the older `logo.png` file is retained as an unused legacy asset. The empty-image placeholder is also in [`static/img`](static/img/).
+
+## Responsive layouts
+
+Assety adapts both its public landing page and signed-in dashboard to phone, tablet, and desktop viewports. The table summarizes the layout at representative widths.
+
+| Viewport width | Device example | Landing page | Dashboard |
+| --- | --- | --- | --- |
+| 320–390 px | Phone | The hero copy and product preview stack vertically. Navigation and the inventory preview tighten to fit a narrow screen. | The sidebar becomes a compact, expandable menu. Dashboard panels and summary cards fit the screen width. |
+| 767–1024 px | Large phone / tablet | The hero stays in one column through 900 px; feature and pricing sections also stack for easier reading. | The workspace keeps its responsive navigation and adjusts dashboard spacing and cards for the available width. |
+| 1440–1920 px | Desktop | The hero uses a two-column layout, with the product preview beside the introduction. | The workspace shows its full sidebar and dashboard panels in the wider layout. |
+
+The responsive regression pass covers 320, 375, 390, 767, 768, 1024, 1440, and 1920 px widths. The refreshed landing page was also checked specifically at 390 px and 1440 px. See [local responsive testing notes](local-testing.md#responsive-interface-checks) for the recorded QA details.
 
 ## Features
 
@@ -218,3 +231,4 @@ Assety is an educational project rather than a commercial subscription service. 
 ## Credits
 
 Created for the Code Institute Diploma in Full Stack Software Development. The project uses Flask, MongoDB, SendGrid, Jest, and other open-source libraries listed in the dependency manifests. Public-page images and illustrations are bundled in `static/img/`; consult their source/license metadata when redistributing the project outside its educational context.
+
