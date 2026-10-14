@@ -1,6 +1,6 @@
 # Assety
 
-![Assety landing page with an asset inventory dashboard preview](docs/images/landing-page-preview.png)
+![Assety landing page shown on desktop, tablet, and phone](docs/images/landing-responsive-mockup.jpg)
 
 Assety is a responsive inventory and asset-management web application for small organisations. Users can keep a searchable register of equipment, organise it by category and location, review activity, and export reports. It was built as a Code Institute Diploma in Full Stack Software Development Milestone Project 3.
 
@@ -48,6 +48,10 @@ Assety also bundles three feature illustrations used by the public pages: [inven
 ## Responsive layouts
 
 Assety adapts both its public landing page and signed-in dashboard to phone, tablet, and desktop viewports. The table summarizes the layout at representative widths.
+
+### Dashboard on desktop, tablet, and phone
+
+![Assety dashboard shown on desktop, tablet, and phone](docs/images/dashboard-responsive-mockup.jpg)
 
 | Viewport width | Device example | Landing page | Dashboard |
 | --- | --- | --- | --- |
